@@ -1,0 +1,19 @@
+/* App.css */
+@keyframes load-progress {
+  0% {
+    width: 0%;
+  }
+  100% {
+    width: 100%;
+  }
+}
+
+.animate-load-progress {
+  animation: load-progress 3s ease-in-out infinite;
+}
+
+img[src="/loading.png"] {
+  max-width: none !important;
+  width: 100% !important;
+  height: auto !important;
+}
