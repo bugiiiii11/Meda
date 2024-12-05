@@ -13,6 +13,7 @@ import dummyMemes from './data/dummyMemes';
 import { priceService } from './services/priceService';
 import { ENDPOINTS } from './config/api';
 
+// Add this right after your imports
 useEffect(() => {
   // Debug Telegram WebApp initialization
   console.log('Telegram Object:', {
@@ -31,6 +32,7 @@ useEffect(() => {
     console.log('Not running inside Telegram WebApp');
   }
 }, []);
+
 
 const LoadingScreen = () => (
   <div className="fixed inset-0 bg-[#1a1b1e] flex flex-col items-center justify-between p-0 overflow-hidden">
