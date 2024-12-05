@@ -1,12 +1,12 @@
 {
-  "name": "cryptomeme-telegram-bot",
+  "name": "telegram-bot",
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "start": "node src/index.js",
-    "dev": "nodemon src/index.js"
+  "start": "node src/index.js",
+  "dev": "nodemon src/index.js"
   },
-  "keywords": ["telegram", "bot", "commands"],
+  "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {

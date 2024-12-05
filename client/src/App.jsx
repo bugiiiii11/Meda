@@ -13,26 +13,6 @@ import dummyMemes from './data/dummyMemes';
 import { priceService } from './services/priceService';
 import { ENDPOINTS } from './config/api';
 
-// Add this right after your imports
-useEffect(() => {
-  // Debug Telegram WebApp initialization
-  console.log('Telegram Object:', {
-    exists: !!window.Telegram,
-    WebApp: !!window.Telegram?.WebApp,
-    initData: window.Telegram?.WebApp?.initData,
-    user: window.Telegram?.WebApp?.initDataUnsafe?.user
-  });
-
-  // Check if we're running inside Telegram
-  if (window.Telegram?.WebApp) {
-    console.log('Running inside Telegram WebApp');
-    const user = window.Telegram.WebApp.initDataUnsafe?.user;
-    console.log('Telegram User Data:', user);
-  } else {
-    console.log('Not running inside Telegram WebApp');
-  }
-}, []);
-
 
 const LoadingScreen = () => (
   <div className="fixed inset-0 bg-[#1a1b1e] flex flex-col items-center justify-between p-0 overflow-hidden">
