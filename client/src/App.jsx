@@ -58,21 +58,35 @@ function App() {
           console.log('Telegram WebApp detected');
           window.Telegram.WebApp.ready();
           window.Telegram.WebApp.expand();
-
+        
+          // Add detailed WebApp logging
+          const webAppData = window.Telegram.WebApp.initData;
           const tgUser = window.Telegram.WebApp.initDataUnsafe?.user;
+          
+          console.log('Full WebApp data:', {
+            initData: webAppData,
+            platform: window.Telegram.WebApp.platform,
+            version: window.Telegram.WebApp.version,
+            colorScheme: window.Telegram.WebApp.colorScheme
+          });
+          
           console.log('Telegram user data:', tgUser);
-
+        
           if (tgUser) {
             try {
               console.log('Initializing user with Telegram data:', {
                 id: tgUser.id,
-                username: tgUser.username
+                username: tgUser.username,
+                firstName: tgUser.first_name,
+                lastName: tgUser.last_name,
+                languageCode: tgUser.language_code
               });
-
+        
               const response = await fetch(`${ENDPOINTS.users.create}`, {
                 method: 'POST',
                 headers: {
                   'Content-Type': 'application/json',
+                  'X-Telegram-Init-Data': webAppData || ''
                 },
                 body: JSON.stringify({
                   telegramId: tgUser.id.toString(),
@@ -84,24 +98,25 @@ function App() {
 
               const data = await response.json();
               console.log('User initialization response:', data);
-
+        
               if (data.success) {
+                console.log('User successfully initialized:', data.data);
                 setUserData(data.data);
                 setIsTelegram(true);
+              } else {
+                console.error('User initialization failed:', data.error);
               }
             } catch (userError) {
               console.error('User initialization error:', userError);
+              console.error('Error details:', {
+                name: userError.name,
+                message: userError.message,
+                stack: userError.stack
+              });
             }
+          } else {
+            console.warn('No Telegram user data available');
           }
-        } else if (process.env.NODE_ENV === 'development') {
-          // Development mode fallback
-          console.log('Development mode: using test user');
-          setUserData({
-            id: 'test123',
-            username: 'testUser',
-            firstName: 'Test',
-            lastName: 'User'
-          });
         }
 
         // Test backend connectivity
@@ -146,7 +161,7 @@ function App() {
 
   if (isLoading) {
     return <LoadingScreen />;
-  }
+  }d
 
   return (
     <div className="fixed inset-0 bg-[#1a1b1e] overflow-hidden">
