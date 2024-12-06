@@ -50,118 +50,87 @@ function App() {
   };
 
   useEffect(() => {
-    async function initializeApp() {
-      console.log('Initializing app...');
-      try {
-        // Initialize Telegram WebApp
-        if (window.Telegram?.WebApp) {
-          console.log('Telegram WebApp detected');
-          window.Telegram.WebApp.ready();
-          window.Telegram.WebApp.expand();
-        
-          // Add detailed WebApp logging
-          const webAppData = window.Telegram.WebApp.initData;
-          const tgUser = window.Telegram.WebApp.initDataUnsafe?.user;
-          
-          console.log('Full WebApp data:', {
-            initData: webAppData,
-            platform: window.Telegram.WebApp.platform,
-            version: window.Telegram.WebApp.version,
-            colorScheme: window.Telegram.WebApp.colorScheme
-          });
-          
-          console.log('Telegram user data:', tgUser);
-        
-          if (tgUser) {
-            try {
-              console.log('Initializing user with Telegram data:', {
-                id: tgUser.id,
-                username: tgUser.username,
-                firstName: tgUser.first_name,
-                lastName: tgUser.last_name,
-                languageCode: tgUser.language_code
-              });
-        
-              const response = await fetch(`${ENDPOINTS.users.create}`, {
-                method: 'POST',
-                headers: {
-                  'Content-Type': 'application/json',
-                  'X-Telegram-Init-Data': webAppData || ''
-                },
-                body: JSON.stringify({
-                  telegramId: tgUser.id.toString(),
-                  username: tgUser.username || `user${tgUser.id.toString().slice(-4)}`,
-                  firstName: tgUser.first_name,
-                  lastName: tgUser.last_name
-                })
-              });
+  async function initializeApp() {
+    console.log('Initializing app...');
+    try {
+      if (window.Telegram?.WebApp) {
+        WebApp.ready();
+        WebApp.expand();
 
-              const data = await response.json();
-              console.log('User initialization response:', data);
-        
-              if (data.success) {
-                console.log('User successfully initialized:', data.data);
-                setUserData(data.data);
-                setIsTelegram(true);
-              } else {
-                console.error('User initialization failed:', data.error);
-              }
-            } catch (userError) {
-              console.error('User initialization error:', userError);
-              console.error('Error details:', {
-                name: userError.name,
-                message: userError.message,
-                stack: userError.stack
-              });
+        // Get and log Telegram user data
+        const tgUser = window.Telegram.WebApp.initDataUnsafe?.user;
+        console.log('Telegram User Data:', tgUser);
+
+        if (tgUser) {
+          try {
+            const response = await fetch(`${ENDPOINTS.users.create}`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'X-Telegram-Init-Data': window.Telegram.WebApp.initData || '',
+              },
+              body: JSON.stringify({
+                telegramId: tgUser.id.toString(),
+                username: tgUser.username || `user${tgUser.id.toString().slice(-4)}`,
+                firstName: tgUser.first_name,
+                lastName: tgUser.last_name
+              })
+            });
+
+            const userData = await response.json();
+            console.log('User initialization response:', userData);
+            if (userData.success) {
+              setUserData(userData.data);
             }
-          } else {
-            console.warn('No Telegram user data available');
+          } catch (userError) {
+            console.error('User initialization error:', userError);
           }
         }
-
-        // Test backend connectivity
-        try {
-          const response = await fetch(ENDPOINTS.debug || `${ENDPOINTS.base}/health`);
-          const data = await response.json();
-          console.log('Backend health check:', data);
-
-          const testResponse = await fetch(ENDPOINTS.interactions.debug);
-          console.log('Interaction endpoint test:', await testResponse.json());
-        } catch (error) {
-          console.error('Backend connectivity test failed:', error);
-        }
-
-        // Initialize price service
-        const priceServiceResult = await priceService.initializeData();
-        console.log('Price service initialized:', priceServiceResult);
-
-      } catch (error) {
-        console.error('Initialization error:', error);
-        setInitError(error.message);
-      } finally {
-        setTimeout(() => {
-          setIsLoading(false);
-        }, 1500);
       }
+
+      // Test backend connectivity
+      try {
+        const response = await fetch(ENDPOINTS.debug || `${ENDPOINTS.base}/health`);
+        const data = await response.json();
+        console.log('Backend health check:', data);
+
+        const testResponse = await fetch(ENDPOINTS.interactions.debug);
+        console.log('Interaction endpoint test:', await testResponse.json());
+      } catch (error) {
+        console.error('Backend connectivity test failed:', error);
+      }
+
+      // Initialize price service
+      const priceServiceResult = await priceService.initializeData();
+      console.log('Price service initialized:', priceServiceResult);
+
+    } catch (error) {
+      console.error('Initialization error:', error);
+      setInitError(error.message);
+    } finally {
+      setTimeout(() => {
+        setIsLoading(false);
+      }, 1500);
     }
-
-    initializeApp();
-  }, []);
-
-  if (initError) {
-    return (
-      <div className="fixed inset-0 bg-[#1a1b1e] flex items-center justify-center">
-        <div className="text-red-500 text-center">
-          <h2 className="text-xl mb-2">Failed to initialize app</h2>
-          <p>{initError}</p>
-        </div>
-      </div>
-    );
   }
 
-  if (isLoading) {
-    return <LoadingScreen />;
-  }d
+  initializeApp();
+}, []);
+
+if (initError) {
+  return (
+    <div className="fixed inset-0 bg-[#1a1b1e] flex items-center justify-center">
+      <div className="text-red-500 text-center">
+        <h2 className="text-xl mb-2">Failed to initialize app</h2>
+        <p>{initError}</p>
+      </div>
+    </div>
+  );
+}
+
+if (isLoading) {
+  return <LoadingScreen />;
+}
 
   return (
     <div className="fixed inset-0 bg-[#1a1b1e] overflow-hidden">
