@@ -5,50 +5,30 @@ const User = require('../models/User');
 class UserController {
   static async createUser(req, res) {
     try {
-      const { telegramId, username, firstName, lastName } = req.body;
-      console.log('Creating/updating user:', { telegramId, username, firstName, lastName });
-  
-      let user = await User.findOne({ telegramId });
+      const { telegramId, username } = req.body;
+      console.log('Creating user with data:', req.body);
       
-      if (user) {
-        // Update existing user
-        user.username = username || user.username;
-        user.firstName = firstName || user.firstName;
-        user.lastName = lastName || user.lastName;
-        await user.save();
-        console.log('Updated existing user:', user);
-      } else {
-        // Create new user
+      // Check if user exists
+      let user = await User.findOne({ telegramId });
+      console.log('Existing user:', user);
+  
+      if (!user) {
         user = new User({
           telegramId,
-          username: username || `user${telegramId.slice(-4)}`,
-          firstName,
-          lastName,
-          totalPoints: 0,
-          pointsBreakdown: {
-            likes: 0,
-            dislikes: 0,
-            superLikes: 0,
-            tasks: 0,
-            referrals: 0
-          }
+          username
         });
         await user.save();
-        console.log('Created new user:', user);
+        console.log('New user created:', user);
       }
   
-      res.status(201).json({
-        success: true,
-        data: user
-      });
+      res.json({ success: true, data: user });
     } catch (error) {
-      console.error('Create user error:', error);
-      res.status(500).json({
-        success: false,
-        error: error.message
-      });
+      console.error('Database error:', error);
+      res.status(500).json({ success: false, error: error.message });
     }
   }
+  
+  
 
   static async getUser(req, res) {
     try {

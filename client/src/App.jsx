@@ -13,7 +13,6 @@ import dummyMemes from './data/dummyMemes';
 import { priceService } from './services/priceService';
 import { ENDPOINTS } from './config/api';
 
-
 const LoadingScreen = () => (
   <div className="fixed inset-0 bg-[#1a1b1e] flex flex-col items-center justify-between p-0 overflow-hidden">
     <div className="w-full flex-1 flex items-center justify-center p-0">
@@ -50,82 +49,30 @@ function App() {
     setCurrentMeme(meme);
   };
 
-  const initializeUser = async () => {
-    try {
-      // Ensure WebApp is properly initialized
-      if (window.Telegram?.WebApp) {
-        window.Telegram.WebApp.ready();
-        window.Telegram.WebApp.expand();
-  
-        // Get user data from Telegram
-        const tgUser = window.Telegram.WebApp.initDataUnsafe?.user;
-        console.log('Raw Telegram User:', tgUser);
-  
-        if (tgUser) {
-          const userData = {
-            telegramId: tgUser.id.toString(),
-            username: tgUser.username || `user${tgUser.id.toString().slice(-4)}`,
-            firstName: tgUser.first_name,
-            lastName: tgUser.last_name
-          };
-  
-          console.log('Sending user data to backend:', userData);
-  
-          const response = await fetch(`${ENDPOINTS.users.create}`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'X-Telegram-Init-Data': window.Telegram.WebApp.initData || '',
-            },
-            body: JSON.stringify(userData)
-          });
-  
-          if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-          }
-  
-          const data = await response.json();
-          console.log('Server response:', data);
-  
-          if (data.success) {
-            setUserData(data.data);
-          }
-        }
-      } else if (process.env.NODE_ENV === 'development') {
-        // Development fallback
-        setUserData({
-          id: 'test123',
-          username: 'testUser',
-          firstName: 'Test',
-          lastName: 'User'
-        });
-      } else {
-        console.log('No Telegram WebApp found and not in development mode');
-      }
-    } catch (error) {
-      console.error('User initialization error:', error);
-    }
-  };
-
   useEffect(() => {
     async function initializeApp() {
       console.log('Initializing app...');
       try {
+        // Initialize Telegram WebApp
         if (window.Telegram?.WebApp) {
-          WebApp.ready();
-          WebApp.expand();
-  
-          // Get and log Telegram user data
+          console.log('Telegram WebApp detected');
+          window.Telegram.WebApp.ready();
+          window.Telegram.WebApp.expand();
+
           const tgUser = window.Telegram.WebApp.initDataUnsafe?.user;
-          console.log('Telegram User Data:', tgUser);
-  
+          console.log('Telegram user data:', tgUser);
+
           if (tgUser) {
             try {
+              console.log('Initializing user with Telegram data:', {
+                id: tgUser.id,
+                username: tgUser.username
+              });
+
               const response = await fetch(`${ENDPOINTS.users.create}`, {
                 method: 'POST',
                 headers: {
                   'Content-Type': 'application/json',
-                  'X-Telegram-Init-Data': window.Telegram.WebApp.initData || '',
                 },
                 body: JSON.stringify({
                   telegramId: tgUser.id.toString(),
@@ -134,34 +81,45 @@ function App() {
                   lastName: tgUser.last_name
                 })
               });
-  
-              const userData = await response.json();
-              console.log('User initialization response:', userData);
-              if (userData.success) {
-                setUserData(userData.data);
+
+              const data = await response.json();
+              console.log('User initialization response:', data);
+
+              if (data.success) {
+                setUserData(data.data);
+                setIsTelegram(true);
               }
             } catch (userError) {
               console.error('User initialization error:', userError);
             }
           }
+        } else if (process.env.NODE_ENV === 'development') {
+          // Development mode fallback
+          console.log('Development mode: using test user');
+          setUserData({
+            id: 'test123',
+            username: 'testUser',
+            firstName: 'Test',
+            lastName: 'User'
+          });
         }
-  
+
         // Test backend connectivity
         try {
           const response = await fetch(ENDPOINTS.debug || `${ENDPOINTS.base}/health`);
           const data = await response.json();
           console.log('Backend health check:', data);
-  
+
           const testResponse = await fetch(ENDPOINTS.interactions.debug);
           console.log('Interaction endpoint test:', await testResponse.json());
         } catch (error) {
           console.error('Backend connectivity test failed:', error);
         }
-  
+
         // Initialize price service
         const priceServiceResult = await priceService.initializeData();
         console.log('Price service initialized:', priceServiceResult);
-  
+
       } catch (error) {
         console.error('Initialization error:', error);
         setInitError(error.message);
@@ -171,10 +129,10 @@ function App() {
         }, 1500);
       }
     }
-  
+
     initializeApp();
   }, []);
-  
+
   if (initError) {
     return (
       <div className="fixed inset-0 bg-[#1a1b1e] flex items-center justify-center">
@@ -185,7 +143,7 @@ function App() {
       </div>
     );
   }
-  
+
   if (isLoading) {
     return <LoadingScreen />;
   }
