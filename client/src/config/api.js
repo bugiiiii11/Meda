@@ -1,21 +1,9 @@
 // client/src/config/api.js
-const BASE_URL = import.meta.env.NODE_ENV === 'production'
+const BASE_URL = import.meta.env.VITE_ENV === 'production'
   ? 'https://fynder-production.up.railway.app'
   : 'http://localhost:3001';
 
-console.log('API Configuration:', {
-  environment: import.meta.env.NODE_ENV,
-  viteEnv: import.meta.env.VITE_ENV,
-  baseUrl: BASE_URL,
-  isTelegram: !!window.Telegram?.WebApp,
-  endpoints: {
-    interactionsUpdate: `${BASE_URL}/api/interactions/update`,
-    usersCreate: `${BASE_URL}/api/users/create`,
-    leaderboard: `${BASE_URL}/api/interactions/leaderboard`
-  }
-});
-
-  // Add request logging
+// Keep the makeRequest helper
 const makeRequest = async (url, options = {}) => {
   console.log(`Making request to: ${url}`, options);
   const response = await fetch(url, {
@@ -30,11 +18,17 @@ const makeRequest = async (url, options = {}) => {
   return data;
 };
 
+// Update environment logging
 console.log('API Configuration:', {
-  environment: process.env.NODE_ENV,
-  hostname: window.location.hostname,
+  environment: import.meta.env.NODE_ENV,
+  viteEnv: import.meta.env.VITE_ENV,
   baseUrl: BASE_URL,
-  isTelegram: !!window.Telegram?.WebApp
+  isTelegram: !!window.Telegram?.WebApp,
+  endpoints: {
+    interactionsUpdate: `${BASE_URL}/api/interactions/update`,
+    usersCreate: `${BASE_URL}/api/users/create`,
+    leaderboard: `${BASE_URL}/api/interactions/leaderboard`
+  }
 });
 
 export const ENDPOINTS = {
@@ -65,7 +59,6 @@ export const getHeaders = () => {
     'Content-Type': 'application/json'
   };
 
-  // Add debugging for header creation
   console.log('Creating headers, Telegram WebApp available:', !!window.Telegram?.WebApp);
 
   if (window.Telegram?.WebApp) {
@@ -76,5 +69,4 @@ export const getHeaders = () => {
   return headers;
 };
 
-// Keep this default export
 export default ENDPOINTS;

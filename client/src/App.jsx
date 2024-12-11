@@ -68,12 +68,18 @@ function App() {
       });
   
       try {
+        // Initialize price service
+        const priceServiceResult = await priceService.initializeData();
+        console.log('Price service initialized:', priceServiceResult);
+  
+        // Check if running in Telegram WebApp
         if (window.Telegram?.WebApp) {
           console.log('Telegram WebApp detected');
           
           WebApp.ready();
           WebApp.expand();
           
+          // Debug Telegram environment
           console.log('Telegram WebApp Environment:', {
             isTelegram: true,
             initData: window.Telegram.WebApp.initData,
@@ -82,6 +88,7 @@ function App() {
             platform: window.Telegram.WebApp.platform,
           });
   
+          // Get Telegram user data
           const tgUser = window.Telegram.WebApp.initDataUnsafe?.user;
           console.log('Telegram User Data:', tgUser);
   
@@ -94,7 +101,7 @@ function App() {
                 lastName: tgUser.last_name
               });
   
-              const response = await fetch(`${ENDPOINTS.users.create}`, {
+              const response = await fetch(ENDPOINTS.users.create, {
                 method: 'POST',
                 headers: getHeaders(),
                 body: JSON.stringify({
@@ -114,19 +121,60 @@ function App() {
                 console.log('User successfully initialized:', userData.data);
               } else {
                 console.error('User initialization failed:', userData.error);
+                setInitError(userData.error);
               }
             } catch (userError) {
               console.error('User initialization error:', userError);
+              setInitError('Failed to initialize user: ' + userError.message);
             }
           } else {
             console.warn('No Telegram user data available');
+            if (import.meta.env.VITE_ENV === 'development') {
+              // Use mock data in development
+              const mockUser = {
+                id: 'test123',
+                username: 'testUser',
+                first_name: 'Test',
+                last_name: 'User'
+              };
+              setUserData(mockUser);
+              console.log('Using mock user:', mockUser);
+            } else {
+              setInitError('No Telegram user data available');
+            }
           }
         } else {
           console.log('Not running in Telegram WebApp');
+          if (import.meta.env.VITE_ENV === 'development') {
+            // Use mock data in development
+            setUserData({
+              id: 'test123',
+              username: 'testUser',
+              first_name: 'Test',
+              last_name: 'User'
+            });
+          } else {
+            setInitError('Not running in Telegram WebApp');
+          }
         }
+  
+        // Test backend connectivity
+        try {
+          console.log('Testing backend connectivity...');
+          const testResponse = await fetch(ENDPOINTS.interactions.debug);
+          console.log('Backend test response:', await testResponse.json());
+        } catch (error) {
+          console.error('Backend connectivity test failed:', error);
+          setInitError('Backend connectivity test failed: ' + error.message);
+        }
+  
       } catch (error) {
         console.error('Initialization error:', error);
         setInitError(error.message);
+      } finally {
+        setTimeout(() => {
+          setIsLoading(false);
+        }, 1500);
       }
     }
   
@@ -145,7 +193,7 @@ if (initError) {
 }
 
 if (isLoading) {
-  return <LoadingScreen />;
+  return <LoadingScreen error={initError} />;
 }
   return (
     <div className="fixed inset-0 bg-[#1a1b1e] overflow-hidden">
