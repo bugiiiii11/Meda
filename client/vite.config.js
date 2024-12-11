@@ -1,11 +1,11 @@
+//vite.config.js
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
-import path from 'path';
 
 export default defineConfig({
   plugins: [react()],
   build: {
-    outDir: 'build',  // This tells Vite to output to a 'build' directory
+    outDir: 'build',
     sourcemap: true
   },
   server: {
@@ -18,15 +18,7 @@ export default defineConfig({
       },
     },
   },
-  esbuild: {
-    loader: 'jsx',
-    include: /.*\.(jsx|js)$/,
-  },
-  optimizeDeps: {
-    esbuildOptions: {
-      loader: {
-        '.js': 'jsx',
-      },
-    },
-  },
-})
+  define: {
+    'process.env': {}
+  }
+});

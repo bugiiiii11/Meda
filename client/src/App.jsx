@@ -58,95 +58,80 @@ function App() {
   };
 
   // In App.jsx, find the useEffect for initialization
-useEffect(() => {
-  async function initializeApp() {
-    console.log('Initializing app...');
-    try {
-      // Check if running in Telegram WebApp
-      if (window.Telegram?.WebApp) {
-        console.log('Telegram WebApp detected');
-        
-        // Initialize WebApp
-        WebApp.ready();
-        WebApp.expand();
-        
-        // Debug Telegram environment
-        console.log('Telegram WebApp Environment:', {
-          isTelegram: true,
-          initData: window.Telegram.WebApp.initData,
-          user: window.Telegram.WebApp.initDataUnsafe?.user,
-          version: window.Telegram.WebApp.version,
-          platform: window.Telegram.WebApp.platform,
-        });
-
-        // Get Telegram user data
-        const tgUser = window.Telegram.WebApp.initDataUnsafe?.user;
-        console.log('Telegram User Data:', tgUser);
-
-        if (tgUser) {
-          try {
-            console.log('Attempting to initialize user with data:', {
-              telegramId: tgUser.id.toString(),
-              username: tgUser.username || `user${tgUser.id.toString().slice(-4)}`,
-              firstName: tgUser.first_name,
-              lastName: tgUser.last_name
-            });
-
-            const response = await fetch(`${ENDPOINTS.users.create}`, {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-                'X-Telegram-Init-Data': window.Telegram.WebApp.initData || '',
-              },
-              body: JSON.stringify({
+  useEffect(() => {
+    async function initializeApp() {
+      console.log('App Environment:', {
+        nodeEnv: import.meta.env.NODE_ENV,
+        viteEnv: import.meta.env.VITE_ENV,
+        apiUrl: import.meta.env.VITE_API_URL,
+        botUsername: import.meta.env.VITE_BOT_USERNAME
+      });
+  
+      try {
+        if (window.Telegram?.WebApp) {
+          console.log('Telegram WebApp detected');
+          
+          WebApp.ready();
+          WebApp.expand();
+          
+          console.log('Telegram WebApp Environment:', {
+            isTelegram: true,
+            initData: window.Telegram.WebApp.initData,
+            user: window.Telegram.WebApp.initDataUnsafe?.user,
+            version: window.Telegram.WebApp.version,
+            platform: window.Telegram.WebApp.platform,
+          });
+  
+          const tgUser = window.Telegram.WebApp.initDataUnsafe?.user;
+          console.log('Telegram User Data:', tgUser);
+  
+          if (tgUser) {
+            try {
+              console.log('Attempting to initialize user with data:', {
                 telegramId: tgUser.id.toString(),
                 username: tgUser.username || `user${tgUser.id.toString().slice(-4)}`,
                 firstName: tgUser.first_name,
                 lastName: tgUser.last_name
-              })
-            });
-
-            console.log('User initialization response status:', response.status);
-            const userData = await response.json();
-            console.log('User initialization response data:', userData);
-
-            if (userData.success) {
-              setUserData(userData.data);
-              console.log('User successfully initialized:', userData.data);
-            } else {
-              console.error('User initialization failed:', userData.error);
+              });
+  
+              const response = await fetch(`${ENDPOINTS.users.create}`, {
+                method: 'POST',
+                headers: getHeaders(),
+                body: JSON.stringify({
+                  telegramId: tgUser.id.toString(),
+                  username: tgUser.username || `user${tgUser.id.toString().slice(-4)}`,
+                  firstName: tgUser.first_name,
+                  lastName: tgUser.last_name
+                })
+              });
+  
+              console.log('User initialization response status:', response.status);
+              const userData = await response.json();
+              console.log('User initialization response data:', userData);
+  
+              if (userData.success) {
+                setUserData(userData.data);
+                console.log('User successfully initialized:', userData.data);
+              } else {
+                console.error('User initialization failed:', userData.error);
+              }
+            } catch (userError) {
+              console.error('User initialization error:', userError);
             }
-          } catch (userError) {
-            console.error('User initialization error:', userError);
+          } else {
+            console.warn('No Telegram user data available');
           }
         } else {
-          console.warn('No Telegram user data available');
+          console.log('Not running in Telegram WebApp');
         }
-      } else {
-        console.log('Not running in Telegram WebApp');
-      }
-
-      // Test backend connectivity
-      try {
-        console.log('Testing backend connectivity...');
-        const testResponse = await fetch(ENDPOINTS.interactions.debug);
-        console.log('Backend test response:', await testResponse.json());
       } catch (error) {
-        console.error('Backend connectivity test failed:', error);
+        console.error('Initialization error:', error);
+        setInitError(error.message);
       }
-
-    } catch (error) {
-      console.error('Initialization error:', error);
-      setInitError(error.message);
-    } finally {
-      setTimeout(() => {
-        setIsLoading(false);
-      }, 1500);
     }
-  }
-
-  initializeApp();
-}, []);
+  
+    initializeApp();
+  }, []);
 
 if (initError) {
   return (
