@@ -1,3 +1,4 @@
+//App.jsx
 import React, { useState, useEffect } from 'react';
 import WebApp from '@twa-dev/sdk';
 import './App.css';
@@ -49,20 +50,41 @@ function App() {
     setCurrentMeme(meme);
   };
 
-  useEffect(() => {
+  // In App.jsx, find the useEffect for initialization
+useEffect(() => {
   async function initializeApp() {
     console.log('Initializing app...');
     try {
+      // Check if running in Telegram WebApp
       if (window.Telegram?.WebApp) {
+        console.log('Telegram WebApp detected');
+        
+        // Initialize WebApp
         WebApp.ready();
         WebApp.expand();
+        
+        // Debug Telegram environment
+        console.log('Telegram WebApp Environment:', {
+          isTelegram: true,
+          initData: window.Telegram.WebApp.initData,
+          user: window.Telegram.WebApp.initDataUnsafe?.user,
+          version: window.Telegram.WebApp.version,
+          platform: window.Telegram.WebApp.platform,
+        });
 
-        // Get and log Telegram user data
+        // Get Telegram user data
         const tgUser = window.Telegram.WebApp.initDataUnsafe?.user;
         console.log('Telegram User Data:', tgUser);
 
         if (tgUser) {
           try {
+            console.log('Attempting to initialize user with data:', {
+              telegramId: tgUser.id.toString(),
+              username: tgUser.username || `user${tgUser.id.toString().slice(-4)}`,
+              firstName: tgUser.first_name,
+              lastName: tgUser.last_name
+            });
+
             const response = await fetch(`${ENDPOINTS.users.create}`, {
               method: 'POST',
               headers: {
@@ -77,32 +99,34 @@ function App() {
               })
             });
 
+            console.log('User initialization response status:', response.status);
             const userData = await response.json();
-            console.log('User initialization response:', userData);
+            console.log('User initialization response data:', userData);
+
             if (userData.success) {
               setUserData(userData.data);
+              console.log('User successfully initialized:', userData.data);
+            } else {
+              console.error('User initialization failed:', userData.error);
             }
           } catch (userError) {
             console.error('User initialization error:', userError);
           }
+        } else {
+          console.warn('No Telegram user data available');
         }
+      } else {
+        console.log('Not running in Telegram WebApp');
       }
 
       // Test backend connectivity
       try {
-        const response = await fetch(ENDPOINTS.debug || `${ENDPOINTS.base}/health`);
-        const data = await response.json();
-        console.log('Backend health check:', data);
-
+        console.log('Testing backend connectivity...');
         const testResponse = await fetch(ENDPOINTS.interactions.debug);
-        console.log('Interaction endpoint test:', await testResponse.json());
+        console.log('Backend test response:', await testResponse.json());
       } catch (error) {
         console.error('Backend connectivity test failed:', error);
       }
-
-      // Initialize price service
-      const priceServiceResult = await priceService.initializeData();
-      console.log('Price service initialized:', priceServiceResult);
 
     } catch (error) {
       console.error('Initialization error:', error);
@@ -131,7 +155,6 @@ if (initError) {
 if (isLoading) {
   return <LoadingScreen />;
 }
-
   return (
     <div className="fixed inset-0 bg-[#1a1b1e] overflow-hidden">
       {activeTab === 'memes' ? (
