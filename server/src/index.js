@@ -56,28 +56,17 @@ const startServer = async () => {
   try {
     await connectDB();
     const PORT = process.env.PORT || 3001;
-    
-    app.listen(PORT, () => {
-      console.log(`
-🚀 Server is running on port ${PORT}
-📱 Environment: ${process.env.NODE_ENV}
-🌐 API URL: http://localhost:${PORT}
-      `);
+    app.listen(PORT, '0.0.0.0', () => {
+      console.log(`🚀 Server is running on port ${PORT}`);
+      console.log(`📱 Environment: ${process.env.NODE_ENV}`);
       
-      // Log available routes
-      console.log('\nAvailable API Routes:');
-      console.log('- /api/interactions');
-      console.log('- /api/leaderboard');
-      console.log('- /api/memes');
-      console.log('- /api/prices');
-      console.log('- /api/referrals');
-      console.log('- /api/tasks');
-      console.log('- /api/users');
+      // Only log local URL in development
+      if (process.env.NODE_ENV === 'development') {
+        console.log(`🌐 API URL: http://localhost:${PORT}`);
+      }
     });
-
   } catch (error) {
     console.error('Failed to start server:', error);
-    console.error('Error details:', error.stack);
     process.exit(1);
   }
 };

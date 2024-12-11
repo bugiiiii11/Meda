@@ -1,6 +1,10 @@
 {
-  "dependencies": {
-    "http-proxy-middleware": "^3.0.3",
-    "lucide-react": "^0.263.1"
+  "name": "cryptomeme",
+  "version": "1.0.0",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "scripts": {
+    "start": "cd server && npm install && npm start"
   }
 }

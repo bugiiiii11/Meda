@@ -1,6 +1,6 @@
 // client/src/config/api.js
 const BASE_URL = process.env.NODE_ENV === 'production'
-  ? 'https://cryptomeme.onrender.com'  // Your actual production URL
+  ? 'fynder-production.up.railway.app'  // Your actual production URL
   : 'http://localhost:3001';
 
   // Add request logging
