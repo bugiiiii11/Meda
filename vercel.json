@@ -3,7 +3,7 @@
     {
       "source": "/api/(.*)",
       "headers": [
-        { "key": "Access-Control-Allow-Origin", "value": "https://cryptomeme-theta.vercel.app" },
+        { "key": "Access-Control-Allow-Origin", "value": "https://fynder-2h5q.vercel.app/" },
         { "key": "Access-Control-Allow-Methods", "value": "GET, POST, OPTIONS, PUT, DELETE" },
         { "key": "Access-Control-Allow-Headers", "value": "Origin, X-Requested-With, Content-Type, Accept, Authorization" },
         { "key": "Access-Control-Allow-Credentials", "value": "true" }
@@ -22,10 +22,10 @@
       "has": [
         {
           "type": "host",
-          "value": "(?!cryptomeme-theta.vercel.app).*"
+          "value": "(?!fynder-2h5q.vercel.app/).*"
         }
       ],
-      "destination": "https://cryptomeme-theta.vercel.app/:path*",
+      "destination": "https://fynder-2h5q.vercel.app/:path*",
       "permanent": true
     }
   ]

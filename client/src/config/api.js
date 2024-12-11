@@ -1,18 +1,19 @@
 // client/src/config/api.js
 const BASE_URL = process.env.NODE_ENV === 'production'
-  ? 'fynder-production.up.railway.app'  // Your actual production URL
+  ? 'https://fynder-production.up.railway.app'  // Note the https:// added here
   : 'http://localhost:3001';
 
-  console.log('API Configuration:', {
-    environment: process.env.NODE_ENV,
-    baseUrl: BASE_URL,
-    isTelegram: !!window.Telegram?.WebApp,
-    endpoints: {
-      interactionsUpdate: `${BASE_URL}/api/interactions/update`,
-      usersCreate: `${BASE_URL}/api/users/create`,
-      leaderboard: `${BASE_URL}/api/interactions/leaderboard`
-    }
-  });
+// Keep the debug logging we added earlier
+console.log('API Configuration:', {
+  environment: process.env.NODE_ENV,
+  baseUrl: BASE_URL,
+  isTelegram: !!window.Telegram?.WebApp,
+  endpoints: {
+    interactionsUpdate: `${BASE_URL}/api/interactions/update`,
+    usersCreate: `${BASE_URL}/api/users/create`,
+    leaderboard: `${BASE_URL}/api/interactions/leaderboard`
+  }
+});
 
   // Add request logging
 const makeRequest = async (url, options = {}) => {

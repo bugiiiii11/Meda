@@ -14,6 +14,13 @@ import dummyMemes from './data/dummyMemes';
 import { priceService } from './services/priceService';
 import { ENDPOINTS } from './config/api';
 
+console.log('App Environment:', {
+  nodeEnv: process.env.NODE_ENV,
+  viteEnv: import.meta.env.VITE_ENV,
+  apiUrl: import.meta.env.VITE_API_URL,
+  botUsername: import.meta.env.VITE_BOT_USERNAME
+});
+
 const LoadingScreen = () => (
   <div className="fixed inset-0 bg-[#1a1b1e] flex flex-col items-center justify-between p-0 overflow-hidden">
     <div className="w-full flex-1 flex items-center justify-center p-0">
