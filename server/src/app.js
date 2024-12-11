@@ -9,13 +9,10 @@ const app = express();
 
 // CORS configuration
 app.use(cors({
-  origin: [
-    'http://localhost:3000',  // Development
-    'https://cryptomeme-theta.vercel.app'  // Production
-  ],
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  credentials: true,
-  allowedHeaders: ['Content-Type', 'Authorization']
+  origin: ['https://fynder-2h5q.vercel.app', 'http://localhost:3000'],
+  methods: ['GET', 'POST', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'X-Telegram-Init-Data', 'Authorization'],
+  credentials: true
 }));
 
 // Basic security headers
