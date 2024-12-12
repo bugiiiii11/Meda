@@ -60,9 +60,19 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
       const action = direction === 'right' ? 'like' : 
                     direction === 'left' ? 'dislike' : 'superlike';
 
+      console.log('Sending interaction:', {
+        action,
+        memeId: currentMeme.id,
+        telegramId: userData?.telegramId,
+        currentEngagement: currentMeme.engagement
+      });
+
       const response = await fetch(ENDPOINTS.interactions.update, {
         method: 'POST',
-        headers: getHeaders(),
+        headers: {
+          'Content-Type': 'application/json',
+          'Origin': window.location.origin
+        },
         body: JSON.stringify({
           action,
           memeId: currentMeme.id,
@@ -73,18 +83,18 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
       const data = await response.json();
       console.log('Interaction response:', data);
 
-      // Transition to next meme
-      if (nextMeme) {
-        setCurrentMeme(nextMeme);
-        onMemeChange(nextMeme);
+      if (data.success) {
+        // Update current meme engagement locally
+        setCurrentMeme(prev => ({
+          ...prev,
+          engagement: data.data.meme.engagement
+        }));
         
-        // Fetch new next meme
-        const newNextMeme = await getNextMeme();
-        if (newNextMeme) {
-          setNextMeme(newNextMeme);
-        }
+        // Update next meme with proper timing
+        setTimeout(transitionToNextMeme, 150);
+      } else {
+        throw new Error(data.error || 'Interaction failed');
       }
-
     } catch (error) {
       console.error('Interaction error:', error);
     } finally {
@@ -111,15 +121,21 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
 
       {/* Current Meme */}
       <AnimatePresence mode="wait">
-        {currentMeme && !isAnimating && (
+        {currentMeme && (
           <motion.div
             key={currentMeme.id}
             className="absolute inset-0 z-20"
             initial={false}
-            animate={{ x: 0, y: 0, opacity: isDragging ? 0.5 : 1 }}
+            animate={{ 
+              opacity: isDragging ? 0.5 : 1,
+              scale: 1
+            }}
             exit={{ 
               opacity: 0,
-              transition: { duration: 0.1 }
+              transition: { 
+                duration: 0.1,
+                ease: "linear"
+              }
             }}
           >
             <MemeCard
@@ -129,7 +145,22 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
               isMobile={isMobile}
               userData={userData}
               onDragStart={() => setIsDragging(true)}
-              onDragEnd={() => setIsDragging(false)}
+              onDragEnd={(e, info) => {
+                setIsDragging(false);
+                
+                const xVel = info.velocity.x;
+                const yVel = info.velocity.y;
+                const xOffset = info.offset.x;
+                const yOffset = info.offset.y;
+                
+                if (Math.abs(yVel) > Math.abs(xVel) && yOffset < -50) {
+                  handleSwipe('super');
+                } else if (xOffset > 50) {
+                  handleSwipe('right');
+                } else if (xOffset < -50) {
+                  handleSwipe('left');
+                }
+              }}
             />
           </motion.div>
         )}
@@ -152,7 +183,7 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
                 'bg-blue-500/90'
               }`}
             >
-              <div className="text-4xl font-bold text-white">
+              <div className="text-4xl font-bold text-white flex items-center gap-3">
                 {lastSwipe === 'right' ? 'LIKE' : lastSwipe === 'left' ? 'NOPE' : 'SUPER'}
               </div>
             </motion.div>
