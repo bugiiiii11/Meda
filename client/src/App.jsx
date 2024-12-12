@@ -12,6 +12,7 @@ import ProfilePage from './components/ProfilePage';
 import RanksPage from './components/RanksPage';
 import dummyMemes from './data/dummyMemes';
 import { priceService } from './services/priceService';
+import { ENDPOINTS, getHeaders } from '../config/api';
 import { ENDPOINTS } from './config/api';
 
 console.log('App Environment:', {
@@ -68,101 +69,116 @@ function App() {
       });
   
       try {
+        // Initialize price service
+        const priceServiceResult = await priceService.initializeData();
+        console.log('Price service initialized:', priceServiceResult);
+  
+        // Check if running in Telegram WebApp
         if (window.Telegram?.WebApp) {
           console.log('Telegram WebApp detected');
           
           WebApp.ready();
           WebApp.expand();
           
+          // Debug Telegram environment
+          console.log('Telegram WebApp Environment:', {
+            isTelegram: true,
+            initData: window.Telegram.WebApp.initData,
+            user: window.Telegram.WebApp.initDataUnsafe?.user,
+            version: window.Telegram.WebApp.version,
+            platform: window.Telegram.WebApp.platform,
+          });
+  
+          // Get Telegram user data
           const tgUser = window.Telegram.WebApp.initDataUnsafe?.user;
-          console.log('Telegram User Data:', tgUser);
-  
-          if (!tgUser) {
-            console.warn('No Telegram user data available');
-            if (import.meta.env.VITE_ENV === 'development') {
-              const mockUser = {
-                telegramId: 'test123',
-                username: 'testUser',
-                firstName: 'Test',
-                lastName: 'User'
-              };
-              setUserData(mockUser);
-              console.log('Using mock user:', mockUser);
-            } else {
-              console.error('No Telegram user data in production!');
-              setInitError('Failed to get Telegram user data');
-              return;
-            }
-          } else {
-            try {
-              const response = await fetch(ENDPOINTS.users.create, {
-                method: 'POST',
-                headers: getHeaders(),
-                body: JSON.stringify({
-                  telegramId: tgUser.id.toString(),
-                  username: tgUser.username || `user${tgUser.id.toString().slice(-4)}`,
-                  firstName: tgUser.first_name,
-                  lastName: tgUser.last_name
-                })
-              });
-  
-              if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-              }
-  
-              const userData = await response.json();
-              if (userData.success) {
-                setUserData(userData.data);
-              } else {
-                throw new Error(userData.error || 'Failed to initialize user');
-              }
-            } catch (error) {
-              console.error('User initialization error:', error);
-              setInitError(`User initialization failed: ${error.message}`);
-              return;
-            }
-          }
-        } else {
-          console.log('Not running in Telegram WebApp');
-          if (import.meta.env.VITE_ENV !== 'production') {
-            // Use mock data in development
-            setUserData({
+        console.log('Telegram User Data:', tgUser);
+
+        if (!tgUser) {
+          console.warn('No Telegram user data available');
+          if (import.meta.env.VITE_ENV === 'development') {
+            const mockUser = {
               telegramId: 'test123',
               username: 'testUser',
               firstName: 'Test',
               lastName: 'User'
-            });
+            };
+            setUserData(mockUser);
+            console.log('Using mock user:', mockUser);
           } else {
-            setInitError('This app must be run within Telegram');
+            console.error('No Telegram user data in production!');
+            setInitError('Failed to get Telegram user data');
+            return;
+          }
+        } else {
+          try {
+            const response = await fetch(ENDPOINTS.users.create, {
+              method: 'POST',
+              headers: getHeaders(),
+              body: JSON.stringify({
+                telegramId: tgUser.id.toString(),
+                username: tgUser.username || `user${tgUser.id.toString().slice(-4)}`,
+                firstName: tgUser.first_name,
+                lastName: tgUser.last_name
+              })
+            });
+
+            if (!response.ok) {
+              throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const userData = await response.json();
+            if (userData.success) {
+              setUserData(userData.data);
+            } else {
+              throw new Error(userData.error || 'Failed to initialize user');
+            }
+          } catch (error) {
+            console.error('User initialization error:', error);
+            setInitError(`User initialization failed: ${error.message}`);
             return;
           }
         }
-  
-        // Test backend connectivity
-        try {
-          const response = await fetch(ENDPOINTS.interactions.debug);
-          if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-          }
-          await response.json();
-        } catch (error) {
-          console.error('Backend connectivity test failed:', error);
-          setInitError('Failed to connect to backend');
+      } else {
+        console.log('Not running in Telegram WebApp');
+        if (import.meta.env.VITE_ENV !== 'production') {
+          // Use mock data in development
+          setUserData({
+            telegramId: 'test123',
+            username: 'testUser',
+            firstName: 'Test',
+            lastName: 'User'
+          });
+        } else {
+          setInitError('This app must be run within Telegram');
           return;
         }
-  
-      } catch (error) {
-        console.error('Initialization error:', error);
-        setInitError(error.message);
-      } finally {
-        setTimeout(() => {
-          setIsLoading(false);
-        }, 1500);
       }
+
+      // Test backend connectivity
+      try {
+        const response = await fetch(ENDPOINTS.interactions.debug);
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        await response.json();
+      } catch (error) {
+        console.error('Backend connectivity test failed:', error);
+        setInitError('Failed to connect to backend');
+        return;
+      }
+
+    } catch (error) {
+      console.error('Initialization error:', error);
+      setInitError(error.message);
+    } finally {
+      setTimeout(() => {
+        setIsLoading(false);
+      }, 1500);
     }
-  
-    initializeApp();
-  }, []);
+  }
+
+  initializeApp();
+}, []);
 
 if (initError) {
   return (

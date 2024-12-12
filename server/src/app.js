@@ -1,4 +1,6 @@
 //server/src/app.js
+process.env.NODE_ENV = process.env.NODE_ENV || 'production';
+
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
@@ -9,17 +11,40 @@ const app = express();
 
 // CORS configuration
 app.use(cors({
-  origin: ['https://fynder-2h5q.vercel.app', 'http://localhost:3000'],
-  methods: ['GET', 'POST', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'X-Telegram-Init-Data', 'Authorization'],
-  credentials: true
+  origin: function(origin, callback) {
+    const allowedOrigins = [
+      'https://fynder-2h5q.vercel.app', 
+      'http://localhost:3000',
+      'https://fynder-production.up.railway.app'
+    ];
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.indexOf(origin) === -1) {
+      const msg = 'The CORS policy for this site does not allow access from the specified Origin.';
+      return callback(new Error(msg), false);
+    }
+    return callback(null, true);
+  },
+  methods: ['GET', 'POST', 'OPTIONS', 'PUT', 'PATCH', 'DELETE'],
+  allowedHeaders: [
+    'Content-Type', 
+    'X-Telegram-Init-Data', 
+    'Authorization',
+    'Origin',
+    'X-Requested-With',
+    'Accept'
+  ],
+  credentials: true,
+  maxAge: 86400 // 24 hours
 }));
 
+/*
 // Basic security headers
 app.use((req, res, next) => {
   res.setHeader('Content-Security-Policy', "default-src 'self'; img-src 'self' data: https:; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline';");
   next();
 });
+*/
 
 // Middleware
 app.use(morgan('dev'));
@@ -77,6 +102,17 @@ app.use('/api/users', userRoutes);
 app.use('/api/interactions', interactionRoutes);
 app.use('/api/referrals', referralRoutes);
 app.use('/api/coingecko', priceRoutes);
+
+if (process.env.NODE_ENV !== 'production') {
+  app.get('/debug/env', (req, res) => {
+    res.json({
+      nodeEnv: process.env.NODE_ENV,
+      mongoUri: process.env.MONGODB_URI ? 'Set' : 'Not Set',
+      telegramToken: process.env.TELEGRAM_BOT_TOKEN ? 'Set' : 'Not Set',
+      port: process.env.PORT || 3001
+    });
+  });
+}
 
 // Handle OPTIONS requests
 app.use((req, res, next) => {
