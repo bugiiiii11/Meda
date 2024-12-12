@@ -53,7 +53,7 @@ export const ENDPOINTS = {
     get: (telegramId) => `${BASE_URL}/api/users/${telegramId}`,
     points: `${BASE_URL}/api/users/points`
   }
-};gm
+};
 
 export const getHeaders = () => {
   const headers = {
