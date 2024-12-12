@@ -5,16 +5,23 @@ const InteractionController = require('../controllers/InteractionController');
 const { validateRequest } = require('../middleware/validation');
 const { bypassAuthInDevelopment } = require('../middleware/auth');
 
+router.get('/debug', (req, res) => {
+  res.json({ 
+    status: 'ok',
+    timestamp: new Date().toISOString(),
+    environment: process.env.NODE_ENV
+  });
+});
+
 router.post('/update',
   bypassAuthInDevelopment,
   validateRequest('handleInteraction'),
   InteractionController.handleInteraction
 );
 
-// Add this new route
 router.get('/leaderboard',
   bypassAuthInDevelopment,
-  InteractionController.getLeaderboard  // We'll add this method
+  InteractionController.getLeaderboard  
 );
 
 if (process.env.NODE_ENV === 'development') {
