@@ -112,7 +112,10 @@ function App() {
           try {
             const response = await fetch(ENDPOINTS.users.create, {
               method: 'POST',
-              headers: getHeaders(),
+              headers: {
+                ...getHeaders(),
+                'Origin': window.location.origin
+              },
               body: JSON.stringify({
                 telegramId: tgUser.id.toString(),
                 username: tgUser.username || `user${tgUser.id.toString().slice(-4)}`,
@@ -120,8 +123,12 @@ function App() {
                 lastName: tgUser.last_name
               })
             });
-          
-            console.log('User creation response status:', response.status);
+            
+            console.log('User creation response:', {
+              status: response.status,
+              statusText: response.statusText,
+              headers: Object.fromEntries(response.headers.entries())
+            });
             
             if (!response.ok) {
               const errorText = await response.text();

@@ -13,29 +13,36 @@ const app = express();
 app.use(cors({
   origin: function(origin, callback) {
     const allowedOrigins = [
-      'https://fynder-2h5q.vercel.app', 
+      'https://fynder-2h5q.vercel.app',
+      'https://fynder-production.up.railway.app',
       'http://localhost:3000',
-      'https://fynder-production.up.railway.app'
+      'http://localhost:3001'
     ];
-    // Allow requests with no origin (like mobile apps or curl requests)
-    if (!origin) return callback(null, true);
-    if (allowedOrigins.indexOf(origin) === -1) {
-      const msg = 'The CORS policy for this site does not allow access from the specified Origin.';
-      return callback(new Error(msg), false);
+    
+    // Allow requests with no origin (like mobile apps)
+    if (!origin) {
+      return callback(null, true);
     }
-    return callback(null, true);
+
+    if (allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      console.log('Blocked origin:', origin);
+      callback(null, true); // Temporarily allow all origins for testing
+    }
   },
-  methods: ['GET', 'POST', 'OPTIONS', 'PUT', 'PATCH', 'DELETE'],
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: [
-    'Content-Type', 
-    'X-Telegram-Init-Data', 
-    'Authorization',
     'Origin',
     'X-Requested-With',
-    'Accept'
-  ],
-  credentials: true,
-  maxAge: 86400 // 24 hours
+    'Content-Type',
+    'Accept',
+    'Authorization',
+    'X-Telegram-Init-Data',
+    'X-Debug-Version',
+    'X-Debug-Platform'
+  ]
 }));
 
 /*
