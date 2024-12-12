@@ -12,24 +12,23 @@ const QuickStatIcon = ({ children, count, text }) => (
   </div>
 );
 
-const MemeCard = ({ meme, onSwipe, isTop, isMobile, userData }) => {
+const MemeCard = ({ meme, onSwipe, isTop, isMobile, userData, onDragStart, onDragEnd }) => {
   const x = useMotionValue(0);
   const y = useMotionValue(0);
   const rotate = useTransform(x, [-100, 0, 100], [-15, 0, 15]);
-  const opacity = useTransform(x, [-200, -150, 0, 150, 200], [0, 1, 1, 1, 0]);
-  const [imageError, setImageError] = React.useState(false);
+  const opacity = useTransform(
+    x,
+    [-200, -150, -100, 0, 100, 150, 200],
+    [0, 0.5, 0.8, 1, 0.8, 0.5, 0]
+  );
 
-  // Log component props for debugging
-  React.useEffect(() => {
-    console.log('MemeCard props:', { meme, isTop, userData });
-  }, [meme, isTop, userData]);
+  const handleDragStart = () => {
+    onDragStart?.();
+  };
 
   const handleDragEnd = (_, info) => {
-    if (!userData) {
-      console.error('No user data available for interaction');
-      return;
-    }
-
+    onDragEnd?.();
+    
     const xValue = x.get();
     const yValue = y.get();
     
@@ -45,20 +44,13 @@ const MemeCard = ({ meme, onSwipe, isTop, isMobile, userData }) => {
     }
   };
 
-  const handleClick = (action) => {
-    if (!userData) {
-      console.error('No user data available for interaction');
-      return;
-    }
-    onSwipe(action);
-  };
-
   return (
     <motion.div
       className="absolute w-full"
       style={{ x, y, rotate, opacity }}
       drag={isTop}
       dragConstraints={{ left: 0, right: 0, top: 0, bottom: 0 }}
+      onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
       dragElastic={1}
       initial={false}
