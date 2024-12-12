@@ -4,10 +4,12 @@ const User = require('../models/User');
 
 class UserController {
   static async createUser(req, res) {
-    console.log('Received user creation request:', {
+    console.log('Create user request:', {
+      headers: req.headers,
       body: req.body,
-      headers: req.headers
+      telegramUser: req.telegramUser
     });
+  
     try {
       const { telegramId, username, firstName, lastName } = req.body;
       console.log('Creating/updating user with data:', {

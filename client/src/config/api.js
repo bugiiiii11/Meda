@@ -59,13 +59,20 @@ export const getHeaders = () => {
     'Content-Type': 'application/json'
   };
 
-  console.log('Creating headers, Telegram WebApp available:', !!window.Telegram?.WebApp);
-
+  console.log('Creating headers, WebApp available:', !!window.Telegram?.WebApp);
+  
   if (window.Telegram?.WebApp) {
-    headers['X-Telegram-Init-Data'] = window.Telegram.WebApp.initData || '';
-    console.log('Added Telegram init data to headers');
+    const initData = window.Telegram.WebApp.initData;
+    console.log('InitData available:', !!initData);
+    console.log('InitData:', initData);
+    
+    headers['X-Telegram-Init-Data'] = initData;
+    // Add additional debug headers
+    headers['X-Debug-Platform'] = window.Telegram.WebApp.platform;
+    headers['X-Debug-Version'] = window.Telegram.WebApp.version;
   }
 
+  console.log('Final headers:', headers);
   return headers;
 };
 

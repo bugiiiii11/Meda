@@ -120,11 +120,15 @@ function App() {
                 lastName: tgUser.last_name
               })
             });
-
+          
+            console.log('User creation response status:', response.status);
+            
             if (!response.ok) {
-              throw new Error(`HTTP error! status: ${response.status}`);
+              const errorText = await response.text();
+              console.error('Error response:', errorText);
+              throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
             }
-
+          
             const userData = await response.json();
             if (userData.success) {
               setUserData(userData.data);
