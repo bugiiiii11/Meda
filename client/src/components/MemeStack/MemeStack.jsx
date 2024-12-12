@@ -116,8 +116,8 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
         )}
       </div>
 
-      {/* Current Meme */}
-      <AnimatePresence mode="wait">
+       {/* Current Meme */}
+       <AnimatePresence mode="wait">
         {currentMeme && (
           <motion.div
             key={currentMeme.id}
@@ -125,12 +125,11 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
             initial={false}
             animate={{ 
               opacity: isDragging ? 0.5 : 1,
-              scale: 1,
-              x: 0,
-              y: 0
+              scale: 1
             }}
             exit={{ 
               opacity: 0,
+              // Don't specify x/y in exit animation to maintain last dragged position
               transition: { 
                 duration: 0.1,
                 ease: "linear"
@@ -144,7 +143,23 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
               isMobile={isMobile}
               userData={userData}
               onDragStart={() => setIsDragging(true)}
-              onDragEnd={() => setIsDragging(false)}
+              onDragEnd={(e, info) => {
+                setIsDragging(false);
+                
+                // Determine swipe direction based on velocity and offset
+                const xVel = info.velocity.x;
+                const yVel = info.velocity.y;
+                const xOffset = info.offset.x;
+                const yOffset = info.offset.y;
+                
+                if (Math.abs(yVel) > Math.abs(xVel) && yOffset < -50) {
+                  handleSwipe('super');
+                } else if (xOffset > 50) {
+                  handleSwipe('right');
+                } else if (xOffset < -50) {
+                  handleSwipe('left');
+                }
+              }}
             />
           </motion.div>
         )}

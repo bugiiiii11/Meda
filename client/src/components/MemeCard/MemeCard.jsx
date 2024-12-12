@@ -22,37 +22,16 @@ const MemeCard = ({ meme, onSwipe, isTop, isMobile, userData, onDragStart, onDra
     [0, 0.5, 0.8, 1, 0.8, 0.5, 0]
   );
 
-  const handleDragStart = () => {
-    onDragStart?.();
-  };
-
-  const handleDragEnd = (_, info) => {
-    onDragEnd?.();
-    
-    const xValue = x.get();
-    const yValue = y.get();
-    
-    if (yValue < -100) {
-      onSwipe('super');
-    } else if (xValue > 100) {
-      onSwipe('right');
-    } else if (xValue < -100) {
-      onSwipe('left');
-    } else {
-      x.set(0);
-      y.set(0);
-    }
-  };
-
   return (
     <motion.div
       className="absolute w-full"
       style={{ x, y, rotate, opacity }}
       drag={isTop}
       dragConstraints={{ left: 0, right: 0, top: 0, bottom: 0 }}
-      onDragStart={handleDragStart}
-      onDragEnd={handleDragEnd}
       dragElastic={1}
+      onDragStart={onDragStart}
+      onDragEnd={onDragEnd}
+      dragTransition={{ bounceStiffness: 600, bounceDamping: 20 }}
       initial={false}
     >
       <div className="card rounded-xl overflow-hidden shadow-xl">
