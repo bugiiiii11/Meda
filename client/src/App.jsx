@@ -43,37 +43,53 @@ const LoadingScreen = () => (
   </div>
 );
 
+
 function App() {
   const [isLoading, setIsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('memes');
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
-  const [currentMeme, setCurrentMeme] = useState(dummyMemes[0]);
+  const [currentMeme, setCurrentMeme] = useState(null);  // Changed from dummyMemes[0]
   const [initError, setInitError] = useState(null);
   const [isTelegram, setIsTelegram] = useState(false);
   const [userData, setUserData] = useState(null);
   const [memes, setMemes] = useState([]);
 
+  // Handle meme change
+  const handleMemeChange = (meme) => {
+    console.log('Changing meme to:', meme);
+    setCurrentMeme(meme);
+  };
+
+  // Load initial memes
   useEffect(() => {
     const loadMemes = async () => {
       try {
-        const response = await fetch(ENDPOINTS.memes.withEngagement);
-        const data = await response.json();
+        const response = await fetch(ENDPOINTS.memes.next(userData?.telegramId || 'test123'), {
+          headers: getHeaders()
+        });
         
-        if (data.success) {
-          setMemes(data.data);
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        console.log('Loaded memes:', data);
+        
+        if (data.success && data.data) {
+          setMemes(prevMemes => [...prevMemes, data.data]);
+          if (!currentMeme) {
+            setCurrentMeme(data.data);
+          }
         }
       } catch (error) {
         console.error('Error loading memes:', error);
       }
     };
     
-    loadMemes();
-  }, []);
-  
-  const handleMemeChange = (meme) => {
-    console.log('Changing meme to:', meme);
-    setCurrentMeme(meme);
-  };
+    if (userData) {
+      loadMemes();
+    }
+  }, [userData]);
 
   // In App.jsx, find the useEffect for initialization
   useEffect(() => {
@@ -222,50 +238,51 @@ if (initError) {
 if (isLoading) {
   return <LoadingScreen error={initError} />;
 }
-  return (
-    <div className="fixed inset-0 bg-[#1a1b1e] overflow-hidden">
-      {activeTab === 'memes' ? (
-        <>
-          <div className="fixed top-0 left-0 right-0 z-[70]">
-            <div className="w-full bg-[#1a1b1e] py-4">
-              <ProjectHeader meme={currentMeme} />
-            </div>
+
+return (
+  <div className="fixed inset-0 bg-[#1a1b1e] overflow-hidden">
+    {activeTab === 'memes' ? (
+      <>
+        <div className="fixed top-0 left-0 right-0 z-[70]">
+          <div className="w-full bg-[#1a1b1e] py-4">
+            <ProjectHeader meme={currentMeme} />
           </div>
-          <div className="fixed top-[72px] left-0 right-0 z-[60]">
-            <div className="w-full bg-[#1a1b1e] border-t border-[#2c2d31]">
-              <TopBar
-                meme={currentMeme}
-                onDetailsClick={() => setIsDetailsOpen(!isDetailsOpen)}
-                isDetailsOpen={isDetailsOpen}
+        </div>
+        <div className="fixed top-[72px] left-0 right-0 z-[60]">
+          <div className="w-full bg-[#1a1b1e] border-t border-[#2c2d31]">
+            <TopBar
+              meme={currentMeme}
+              onDetailsClick={() => setIsDetailsOpen(!isDetailsOpen)}
+              isDetailsOpen={isDetailsOpen}
+            />
+          </div>
+        </div>
+        <div className="absolute inset-0 pt-[190px] pb-[60px]">
+          <div className="h-full flex items-start justify-center">
+            <div className="w-full px-4">
+              <MemeStack
+                memes={memes}  // Changed from dummyMemes to memes
+                onMemeChange={handleMemeChange}
+                currentMeme={currentMeme}
+                userData={userData}
               />
             </div>
           </div>
-          <div className="absolute inset-0 pt-[190px] pb-[60px]">
-            <div className="h-full flex items-start justify-center">
-              <div className="w-full px-4">
-                <MemeStack
-                  memes={dummyMemes}
-                  onMemeChange={handleMemeChange}
-                  currentMeme={currentMeme}
-                  userData={userData}
-                />
-              </div>
-            </div>
-          </div>
-          <DetailsPage isOpen={isDetailsOpen} meme={currentMeme} />
-        </>
-      ) : activeTab === 'tasks' ? (
-        <TasksPage userData={userData} />
-      ) : activeTab === 'ranks' ? (
-        <RanksPage userData={userData} />
-      ) : (
-        <ProfilePage userData={userData} />
-      )}
-      <div className="fixed bottom-0 left-0 right-0 z-[60]">
-        <Navigation activeTab={activeTab} onTabChange={setActiveTab} />
-      </div>
+        </div>
+        <DetailsPage isOpen={isDetailsOpen} meme={currentMeme} />
+      </>
+    ) : activeTab === 'tasks' ? (
+      <TasksPage userData={userData} />
+    ) : activeTab === 'ranks' ? (
+      <RanksPage userData={userData} />
+    ) : (
+      <ProfilePage userData={userData} />
+    )}
+    <div className="fixed bottom-0 left-0 right-0 z-[60]">
+      <Navigation activeTab={activeTab} onTabChange={setActiveTab} />
     </div>
-  );
+  </div>
+);
 }
 
 export default App;
