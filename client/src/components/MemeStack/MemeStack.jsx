@@ -1,3 +1,4 @@
+// MemeStack.jsx
 const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData }) => {
   const [currentMeme, setCurrentMeme] = React.useState(null);
   const [nextMeme, setNextMeme] = React.useState(null);
