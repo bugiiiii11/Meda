@@ -75,24 +75,5 @@ memeSchema.methods.updateEngagement = async function(action) {
   return this.save();
 };
 
-// Add method to format content path
-memeSchema.methods.getFormattedContent = function() {
-  return `/assets/memes/meme${this.id}.png`;
-};
-
-// Add method to format logo path
-memeSchema.methods.getFormattedLogo = function() {
-  // Extract logo number from the stored path or use project-specific logic
-  const logoNumber = this.logo.match(/logo(\d+)/)[1];
-  return `/assets/logos/logo${logoNumber}.png`;
-};
-
-// Indexes for efficient querying
-memeSchema.index({ 'engagement.likes': -1 });
-memeSchema.index({ 'engagement.superLikes': -1 });
-memeSchema.index({ status: 1 });
-memeSchema.index({ weight: 1 });
-
 const Meme = mongoose.model('Meme', memeSchema);
-
 module.exports = Meme;

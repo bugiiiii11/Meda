@@ -11,14 +11,15 @@ export const ENDPOINTS = {
     debug: `${BASE_URL}/api/interactions/debug`
   },
   memes: {
+    withEngagement: `${BASE_URL}/api/memes/withEngagement`, // Changed API_URL to BASE_URL
     create: `${BASE_URL}/api/memes/create`,
-    next: (telegramId) => `${BASE_URL}/api/memes/next/${telegramId}`,
+    next: `${BASE_URL}/api/memes/next`,
     interact: `${BASE_URL}/api/memes/interact`
   },
   users: {
     create: `${BASE_URL}/api/users/create`,
     get: (telegramId) => `${BASE_URL}/api/users/${telegramId}`,
-    stats: (telegramId) => `${BASE_URL}/api/users/${telegramId}/stats`
+    points: `${BASE_URL}/api/users/points`
   }
 };
 
