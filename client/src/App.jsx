@@ -12,8 +12,7 @@ import ProfilePage from './components/ProfilePage';
 import RanksPage from './components/RanksPage';
 import dummyMemes from './data/dummyMemes';
 import { priceService } from './services/priceService';
-import { ENDPOINTS, getHeaders } from '../config/api';
-import { ENDPOINTS } from './config/api';
+import { ENDPOINTS, getHeaders } from './config/api';
 
 console.log('App Environment:', {
   nodeEnv: process.env.NODE_ENV,
