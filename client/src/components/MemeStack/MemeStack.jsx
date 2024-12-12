@@ -70,8 +70,12 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
       const action = direction === 'right' ? 'like' : 
                     direction === 'left' ? 'dislike' : 'superlike';
 
-      // Transition faster now that we removed the sliding animation
-      setTimeout(transitionToNextMeme, 150);
+      console.log('Sending interaction:', {
+        action,
+        memeId: currentMeme.id,
+        telegramId: userData?.telegramId,
+        currentEngagement: currentMeme.engagement
+      });
 
       const response = await fetch(ENDPOINTS.interactions.update, {
         method: 'POST',
@@ -89,7 +93,16 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
       const data = await response.json();
       console.log('Interaction response:', data);
 
-      if (!data.success) {
+      if (data.success) {
+        // Update current meme engagement locally
+        setCurrentMeme(prev => ({
+          ...prev,
+          engagement: data.data.meme.engagement
+        }));
+        
+        // Update next meme with proper timing
+        setTimeout(transitionToNextMeme, 150);
+      } else {
         throw new Error(data.error || 'Interaction failed');
       }
     } catch (error) {
@@ -104,7 +117,7 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
 
   return (
     <div className="relative max-w-[calc(100vw-32px)] mx-auto aspect-square">
-      {/* Next Meme (Background) - Always visible */}
+      {/* Next Meme (Background) */}
       <div className="absolute inset-0 z-10">
         {nextMeme && (
           <MemeCard
@@ -116,8 +129,8 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
         )}
       </div>
 
-       {/* Current Meme */}
-       <AnimatePresence mode="wait">
+      {/* Current Meme */}
+      <AnimatePresence mode="wait">
         {currentMeme && (
           <motion.div
             key={currentMeme.id}
@@ -129,7 +142,6 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
             }}
             exit={{ 
               opacity: 0,
-              // Don't specify x/y in exit animation to maintain last dragged position
               transition: { 
                 duration: 0.1,
                 ease: "linear"
@@ -146,7 +158,6 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
               onDragEnd={(e, info) => {
                 setIsDragging(false);
                 
-                // Determine swipe direction based on velocity and offset
                 const xVel = info.velocity.x;
                 const yVel = info.velocity.y;
                 const xOffset = info.offset.x;
@@ -189,40 +200,6 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
           </motion.div>
         )}
       </AnimatePresence>
-
-      {/* Interaction Buttons */}
-      <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 z-30 flex gap-4">
-        <button
-          onClick={() => !isAnimating && handleSwipe('left')}
-          className="p-4 rounded-full bg-red-500/20 hover:bg-red-500/40 transition-colors"
-          disabled={isAnimating}
-        >
-          <div className="flex flex-col items-center">
-            <span className="text-2xl">👎</span>
-            <span className="text-xs text-white mt-1">Dislike</span>
-          </div>
-        </button>
-        <button
-          onClick={() => !isAnimating && handleSwipe('right')}
-          className="p-4 rounded-full bg-green-500/20 hover:bg-green-500/40 transition-colors"
-          disabled={isAnimating}
-        >
-          <div className="flex flex-col items-center">
-            <span className="text-2xl">👍</span>
-            <span className="text-xs text-white mt-1">Like</span>
-          </div>
-        </button>
-        <button
-          onClick={() => !isAnimating && handleSwipe('super')}
-          className="p-4 rounded-full bg-blue-500/20 hover:bg-blue-500/40 transition-colors"
-          disabled={isAnimating}
-        >
-          <div className="flex flex-col items-center">
-            <span className="text-2xl">⭐</span>
-            <span className="text-xs text-white mt-1">Super</span>
-          </div>
-        </button>
-      </div>
     </div>
   );
 };
