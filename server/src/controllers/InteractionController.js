@@ -22,39 +22,25 @@ class InteractionController {
 
     const { action, memeId, telegramId } = req.body;
 
-    // Validate action
-    if (!['like', 'dislike', 'superlike'].includes(action)) {
-      throw new Error('Invalid action');
-    }
-
-    // Get or create user
-    let user = await User.findOne({ telegramId }).session(session);
-    if (!user) {
-      throw new Error('User not found');
-    }
-
-    // Find meme
+    // Find meme and include current engagement data
     const meme = await Meme.findOne({ id: memeId }).session(session);
     if (!meme) {
       throw new Error('Meme not found');
     }
 
-    // Update meme engagement
+    // Ensure engagement object exists
     meme.engagement = meme.engagement || { likes: 0, superLikes: 0, dislikes: 0 };
+
+    // Update engagement counts
     if (action === 'like') {
       meme.engagement.likes += 1;
     } else if (action === 'superlike') {
       meme.engagement.superLikes += 1;
-    } else {
+    } else if (action === 'dislike') {
       meme.engagement.dislikes += 1;
     }
 
-    // Update user points
-    const points = InteractionController.POINTS[action];
-    user.pointsBreakdown[action === 'superlike' ? 'superLikes' : action === 'like' ? 'likes' : 'dislikes'] += 1;
-    user.totalPoints += points;
-
-    // Update project score
+    // Update project stats if needed
     if (action !== 'dislike') {
       const project = await Project.findOne({ name: meme.projectName }).session(session);
       if (project) {
@@ -62,31 +48,29 @@ class InteractionController {
       }
     }
 
-    // Record view history
-    const viewHistory = await ViewHistory.findOneAndUpdate(
-      { user: telegramId, memeId },
-      {
-        $push: { interactions: { type: action, timestamp: new Date() } },
-        $inc: { viewCount: 1 },
-        $set: { lastViewed: new Date() }
-      },
-      { upsert: true, new: true, session }
-    );
+    // Save meme with updated engagement
+    await meme.save({ session });
 
-    // Save changes
-    await Promise.all([
-      meme.save({ session }),
-      user.save({ session }),
-    ]);
+    // Update user points
+    const user = await User.findOne({ telegramId }).session(session);
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+    const points = InteractionController.POINTS[action];
+    user.pointsBreakdown[action === 'superlike' ? 'superLikes' : action === 'like' ? 'likes' : 'dislikes'] += 1;
+    user.totalPoints += points;
+    await user.save({ session });
 
     await session.commitTransaction();
 
+    // Return updated engagement data
     res.json({
       success: true,
       data: {
         meme: {
           id: meme.id,
-          engagement: meme.engagement
+          engagement: meme.engagement // Send back updated engagement counts
         },
         user: {
           telegramId: user.telegramId,
