@@ -1,154 +1,126 @@
 //MemeStack.jsx
+// MemeStack.jsx
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import MemeCard from '../MemeCard/MemeCard';
 import { ENDPOINTS } from '../../config/api';
 
-const mockTelegramUser = {
-  id: 'test123',
-  username: 'testUser',
-  first_name: 'Test',
-  last_name: 'User'
-};
-
-const getUserData = () => {
-  const telegramUser = window.Telegram?.WebApp?.initDataUnsafe?.user;
-  const isLocalhost = window.location.hostname === 'localhost';
-  
-  // Use mock user for localhost, real Telegram data otherwise
-  return isLocalhost ? mockTelegramUser : (telegramUser || mockTelegramUser);
-};
-
-const MemeStack = ({ memes, onMemeChange }) => {
+const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData }) => {
   const [currentMeme, setCurrentMeme] = React.useState(null);
   const [nextMeme, setNextMeme] = React.useState(null);
   const [lastSwipe, setLastSwipe] = React.useState(null);
   const [isAnimating, setIsAnimating] = React.useState(false);
   const [isMobile, setIsMobile] = React.useState(false);
 
-  
-    // Function to select a random meme based on weight - MOVED UP
-    const getWeightedRandomMeme = () => {
-      const totalWeight = memes.reduce((sum, meme) => sum + (meme.weight || 1), 0);
-      let random = Math.random() * totalWeight;
-      
-      for (const meme of memes) {
-        random -= (meme.weight || 1);
-        if (random <= 0) {
-          return {
-            ...meme,
-            engagement: meme.engagement || { likes: 0, superLikes: 0 }
-          };
-        }
-      }
-      
-      return {
-        ...memes[0],
-        engagement: memes[0]?.engagement || { likes: 0, superLikes: 0 }
-      };
-    };
+  // Function to select a random meme
+  const getWeightedRandomMeme = () => {
+    const availableMemes = memes.filter(meme => meme.id !== currentMeme?.id);
+    if (availableMemes.length === 0) return memes[0];
 
-      // Check if running in Telegram WebApp
+    const totalWeight = availableMemes.reduce((sum, meme) => sum + (meme.weight || 1), 0);
+    let random = Math.random() * totalWeight;
+    
+    for (const meme of availableMemes) {
+      random -= (meme.weight || 1);
+      if (random <= 0) {
+        return {
+          ...meme,
+          engagement: meme.engagement || { likes: 0, superLikes: 0 }
+        };
+      }
+    }
+    
+    return {
+      ...availableMemes[0],
+      engagement: availableMemes[0]?.engagement || { likes: 0, superLikes: 0 }
+    };
+  };
+
+
+
+     // Initialize memes
+  React.useEffect(() => {
+    if (memes.length > 0 && !currentMeme) {
+      const firstMeme = propCurrentMeme || getWeightedRandomMeme();
+      console.log('Initial meme:', firstMeme);
+      setCurrentMeme(firstMeme);
+      
+      const secondMeme = getWeightedRandomMeme();
+      setNextMeme(secondMeme);
+    }
+  }, [memes, propCurrentMeme]);
+
+  // Check if running in Telegram WebApp
   React.useEffect(() => {
     setIsMobile(!!window.Telegram?.WebApp);
   }, []);
 
-  
-    // Test API connection on component mount
-    React.useEffect(() => {
-      const testAPI = async () => {
-        try {
-          const response = await fetch(ENDPOINTS.interactions.debug);
-          const data = await response.json();
-          console.log('API test response:', data);
-          
-          // Log current user data
-          const userData = getUserData();
-          console.log('Current user:', userData);
-        } catch (error) {
-          console.error('API test error:', error);
-        }
-      };
-      
-      testAPI();
-    }, []);
-
-
-    // Initialize current and next memes
-    React.useEffect(() => {
-      if (memes.length > 0 && !currentMeme) {
-        const firstMeme = getWeightedRandomMeme();
-        console.log('Initial meme:', firstMeme);
-        setCurrentMeme(firstMeme);
-        onMemeChange(firstMeme);
-        
-        const secondMeme = getWeightedRandomMeme();
-        setNextMeme(secondMeme);
-      }
-    }, [memes]); // eslint-disable-line react-hooks/exhaustive-deps
-  
-    const handleSwipe = async (direction) => {
-      if (isAnimating) return;
-      
-      setIsAnimating(true);
-      setLastSwipe(direction);
+  const handleSwipe = async (direction) => {
+    if (isAnimating || !currentMeme) return;
     
-      try {
-        const action = direction === 'right' ? 'like' : 
-                      direction === 'left' ? 'dislike' : 'superlike';
-        
-        // Get current user data from props or context
-        const telegramId = userData?.telegramId || 'test123';
-        
-        console.log('Sending interaction:', {
+    setIsAnimating(true);
+    setLastSwipe(direction);
+
+    try {
+      const action = direction === 'right' ? 'like' : 
+                    direction === 'left' ? 'dislike' : 'superlike';
+      
+      console.log('Handling swipe:', {
+        direction,
+        action,
+        memeId: currentMeme.id,
+        userData
+      });
+
+      if (!userData?.telegramId) {
+        console.error('No user data available for interaction');
+        throw new Error('User data not available');
+      }
+
+      const response = await fetch(ENDPOINTS.interactions.update, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Origin': window.location.origin
+        },
+        body: JSON.stringify({
           action,
           memeId: currentMeme.id,
-          telegramId,
-          direction
-        });
-                      
-        const response = await fetch(ENDPOINTS.interactions.update, {
-          method: 'POST',
-          headers: { 
-            'Content-Type': 'application/json',
-            'Origin': window.location.origin
-          },
-          body: JSON.stringify({
-            action,
-            memeId: currentMeme.id,
-            telegramId,
-          })
-        });
-    
-        const data = await response.json();
-        console.log('Interaction response:', data);
-    
-        if (data.success) {
-          // Update local meme state
-          const updatedMeme = {
-            ...currentMeme,
-            engagement: data.data.meme.engagement
-          };
-          
-          // Transition to next meme
+          telegramId: userData.telegramId
+        })
+      });
+
+      const data = await response.json();
+      console.log('Interaction response:', data);
+
+      if (data.success) {
+        // Update current meme with new engagement data
+        const updatedCurrentMeme = {
+          ...currentMeme,
+          engagement: data.data.meme.engagement
+        };
+        
+        // Trigger meme change after successful interaction
+        setTimeout(() => {
           setCurrentMeme(nextMeme);
           const newNextMeme = getWeightedRandomMeme();
           setNextMeme(newNextMeme);
           onMemeChange(nextMeme);
-        } else {
-          throw new Error(data.error || 'Interaction failed');
-        }
-      } catch (error) {
-        console.error('Interaction error:', error);
-        // Revert animation if error occurs
-        setLastSwipe(null);
-      } finally {
-        setTimeout(() => {
-          setLastSwipe(null);
-          setIsAnimating(false);
-        }, 800);
+        }, 500); // Wait for animation
+      } else {
+        throw new Error(data.error || 'Interaction failed');
       }
-    };
+    } catch (error) {
+      console.error('Interaction error:', error);
+      // Show error toast or feedback to user
+    } finally {
+      // Reset animation state after delay
+      setTimeout(() => {
+        setLastSwipe(null);
+        setIsAnimating(false);
+      }, 800);
+    }
+  };
 
   const indicatorVariants = {
     initial: {
@@ -182,53 +154,24 @@ const MemeStack = ({ memes, onMemeChange }) => {
         {lastSwipe && (
           <motion.div 
             className="absolute inset-0 flex items-center justify-center z-30 pointer-events-none"
-            variants={indicatorVariants}
-            initial="initial"
-            animate="animate"
-            exit="exit"
+            initial={{ opacity: 0, scale: 0.5 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.8 }}
           >
-            <motion.div 
-              className={`px-8 py-4 rounded-2xl border-4 border-white shadow-xl backdrop-blur-sm ${
-                lastSwipe === 'right' ? 'bg-green-500/90' :
-                lastSwipe === 'left' ? 'bg-red-500/90' :
-                'bg-blue-500/90'
-              }`}
-              animate={{
-                rotate: lastSwipe === 'right' ? 12 : lastSwipe === 'left' ? -12 : 0,
-                scale: [1, 1.1, 1],
-              }}
-              transition={{
-                duration: 0.3,
-                ease: "easeOut",
-                scale: {
-                  duration: 0.2,
-                  times: [0, 0.5, 1]
-                }
-              }}
-            >
-              <div className="text-4xl font-bold text-white flex items-center gap-3">
-                <motion.span
-                  initial={{ opacity: 0, scale: 0.5 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: 0.1 }}
-                >
-                  {lastSwipe === 'right' ? 'LIKE' : lastSwipe === 'left' ? 'NOPE' : 'SUPER'}
-                </motion.span>
-                <motion.span 
-                  className="text-5xl"
-                  initial={{ opacity: 0, scale: 0.5, rotate: -180 }}
-                  animate={{ opacity: 1, scale: 1, rotate: 0 }}
-                  transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
-                >
-                  {lastSwipe === 'right' ? '👍' : lastSwipe === 'left' ? '👎' : '⭐'}
-                </motion.span>
+            <div className={`px-8 py-4 rounded-2xl border-4 border-white shadow-xl backdrop-blur-sm ${
+              lastSwipe === 'right' ? 'bg-green-500/90' :
+              lastSwipe === 'left' ? 'bg-red-500/90' :
+              'bg-blue-500/90'
+            }`}>
+              <div className="text-4xl font-bold text-white">
+                {lastSwipe === 'right' ? 'LIKE' : lastSwipe === 'left' ? 'NOPE' : 'SUPER'}
               </div>
-            </motion.div>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
 
-       {/* Cards */}
+      {/* Current Meme */}
       <AnimatePresence>
         {currentMeme && (
           <motion.div
@@ -243,21 +186,18 @@ const MemeStack = ({ memes, onMemeChange }) => {
               scale: 0.8,
               transition: { duration: 0.2 }
             }}
-            transition={{
-              type: "spring",
-              stiffness: 300,
-              damping: 30
-            }}
           >
             <MemeCard
               meme={currentMeme}
               onSwipe={handleSwipe}
               isTop={true}
               isMobile={isMobile}
+              userData={userData}
             />
           </motion.div>
         )}
         
+        {/* Next Meme (Background) */}
         {nextMeme && (
           <motion.div
             key={nextMeme.id + "-next"}
@@ -269,13 +209,14 @@ const MemeStack = ({ memes, onMemeChange }) => {
               meme={nextMeme}
               onSwipe={() => {}}
               isTop={false}
+              userData={userData}
             />
           </motion.div>
         )}
       </AnimatePresence>
 
- {/* Show browser interaction buttons only if not in mobile/Telegram */}
- {!isMobile && (
+      {/* Browser Controls */}
+      {!isMobile && (
         <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 z-30 flex gap-4">
           <button
             onClick={() => handleSwipe('left')}

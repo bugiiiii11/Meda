@@ -12,23 +12,27 @@ const QuickStatIcon = ({ children, count, text }) => (
   </div>
 );
 
-const MemeCard = ({ meme, onSwipe, isTop }) => {
+const MemeCard = ({ meme, onSwipe, isTop, isMobile, userData }) => {
   const x = useMotionValue(0);
   const y = useMotionValue(0);
   const rotate = useTransform(x, [-100, 0, 100], [-15, 0, 15]);
   const opacity = useTransform(x, [-200, -150, 0, 150, 200], [0, 1, 1, 1, 0]);
-
-  // Add image error handling
   const [imageError, setImageError] = React.useState(false);
 
-  // Log meme data for debugging
+  // Log component props for debugging
   React.useEffect(() => {
-    console.log('Meme data:', meme);
-  }, [meme]);
+    console.log('MemeCard props:', { meme, isTop, userData });
+  }, [meme, isTop, userData]);
 
   const handleDragEnd = (_, info) => {
+    if (!userData) {
+      console.error('No user data available for interaction');
+      return;
+    }
+
     const xValue = x.get();
     const yValue = y.get();
+    
     if (yValue < -100) {
       onSwipe('super');
     } else if (xValue > 100) {
@@ -41,8 +45,11 @@ const MemeCard = ({ meme, onSwipe, isTop }) => {
     }
   };
 
-  // Add click handlers for browser interaction
   const handleClick = (action) => {
+    if (!userData) {
+      console.error('No user data available for interaction');
+      return;
+    }
     onSwipe(action);
   };
 
@@ -50,16 +57,11 @@ const MemeCard = ({ meme, onSwipe, isTop }) => {
     <motion.div
       className="absolute w-full"
       style={{ x, y, rotate, opacity }}
-      drag={isTop ? true : false}
+      drag={isTop}
       dragConstraints={{ left: 0, right: 0, top: 0, bottom: 0 }}
       onDragEnd={handleDragEnd}
       dragElastic={1}
       initial={false}
-      transition={{
-        type: "spring",
-        damping: 50,
-        stiffness: 500
-      }}
     >
       <div className="card rounded-xl overflow-hidden shadow-xl">
         <img
@@ -69,7 +71,7 @@ const MemeCard = ({ meme, onSwipe, isTop }) => {
           onError={(e) => {
             console.error('Image load error:', meme.content);
             setImageError(true);
-            e.target.src = '/placeholder.png'; // Add a placeholder image
+            e.target.src = '/placeholder.png';
           }}
         />
         <div className="bg-gradient-to-b from-[#2c2d31] to-[#1a1b1e] border-t border-[#3c3d41]/30 p-4">
@@ -80,29 +82,6 @@ const MemeCard = ({ meme, onSwipe, isTop }) => {
             <QuickStatIcon count={meme.engagement?.superLikes || 0} text="Super Likes">
               ⭐
             </QuickStatIcon>
-            {/* Add browser interaction buttons */}
-            {isTop && (
-              <div className="flex gap-2">
-                <button
-                  onClick={() => handleClick('left')}
-                  className="p-2 rounded-full hover:bg-red-500/20"
-                >
-                  👎
-                </button>
-                <button
-                  onClick={() => handleClick('right')}
-                  className="p-2 rounded-full hover:bg-green-500/20"
-                >
-                  👍
-                </button>
-                <button
-                  onClick={() => handleClick('super')}
-                  className="p-2 rounded-full hover:bg-blue-500/20"
-                >
-                  ⭐
-                </button>
-              </div>
-            )}
           </div>
         </div>
       </div>
