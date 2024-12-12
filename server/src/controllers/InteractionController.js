@@ -15,6 +15,12 @@ class InteractionController {
 
  static async handleInteraction(req, res) {
   let session;
+  console.log('Received interaction:', {
+    action: req.body.action,
+    memeId: req.body.memeId,
+    telegramId: req.body.telegramId
+  });
+
   try {
     session = await mongoose.startSession();
     await session.startTransaction();
@@ -31,6 +37,7 @@ class InteractionController {
     if (!meme) {
       throw new Error('Meme not found');
     }
+    console.log('Found meme:', { id: meme.id, projectName: meme.projectName });
 
     // Check for existing interaction
     const existingView = await ViewHistory.findOne({
@@ -46,6 +53,7 @@ class InteractionController {
     // Get or create user
     let user = await User.findOne({ telegramId }).session(session);
     if (!user) {
+      console.log('Creating new user for interaction:', telegramId);
       user = new User({
         telegramId,
         username: `user${telegramId.slice(-4)}`,
@@ -59,6 +67,7 @@ class InteractionController {
     }
 
     // Update meme engagement
+    console.log('Current meme engagement:', meme.engagement);
     meme.engagement = meme.engagement || { likes: 0, superLikes: 0, dislikes: 0 };
     if (action === 'like') {
       meme.engagement.likes += 1;
@@ -67,9 +76,16 @@ class InteractionController {
     } else {
       meme.engagement.dislikes += 1;
     }
+    console.log('Updated meme engagement:', meme.engagement);
 
     // Update user points
     const points = InteractionController.POINTS[action];
+    console.log('Updating points:', {
+      before: user.totalPoints,
+      adding: points,
+      action: action
+    });
+    
     user.totalPoints += points;
     user.pointsBreakdown[action === 'superlike' ? 'superLikes' : 'likes'] += 1;
 
@@ -85,6 +101,7 @@ class InteractionController {
     });
 
     // Save everything
+    console.log('Saving changes...');
     await Promise.all([
       meme.save(),
       user.save(),
@@ -92,6 +109,7 @@ class InteractionController {
     ]);
 
     await session.commitTransaction();
+    console.log('Transaction committed successfully');
 
     res.json({
       success: true,
@@ -111,8 +129,12 @@ class InteractionController {
   } catch (error) {
     if (session) {
       await session.abortTransaction();
+      console.log('Transaction aborted');
     }
-    console.error('Interaction error:', error);
+    console.error('Interaction error:', {
+      error: error.message,
+      stack: error.stack
+    });
     res.status(400).json({
       success: false,
       error: error.message
