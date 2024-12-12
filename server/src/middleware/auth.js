@@ -87,29 +87,14 @@ const bypassAuthInDevelopment = (req, res, next) => {
   console.log('Auth middleware - Environment:', process.env.NODE_ENV);
   console.log('Auth middleware - Headers:', req.headers);
 
-  if (process.env.NODE_ENV === 'development') {
-    console.log('Development mode - bypassing auth');
-    req.telegramUser = {
-      id: req.body.telegramId || 'test123',
-      username: req.body.username || 'testuser'
-    };
-    return next();
-  }
-
-  const initData = req.headers['x-telegram-init-data'];
-  console.log('Production mode - Received init data:', initData);
-
-  // For now, bypass verification in production for testing
+  // Always bypass auth for now (both development and production)
+  console.log('Bypassing auth for testing');
   req.telegramUser = {
-    id: req.body.telegramId,
-    username: req.body.username
+    id: req.body.telegramId || 'test123',
+    username: req.body.username || 'testuser'
   };
-  console.log('Setting mock user in production:', req.telegramUser);
+  console.log('Setting user:', req.telegramUser);
   return next();
-
-  // Uncomment the following line and comment out the above bypass
-  // when ready to enforce real verification
-  // return verifyTelegramWebAppData(req, res, next);
 };
 
 module.exports = {
