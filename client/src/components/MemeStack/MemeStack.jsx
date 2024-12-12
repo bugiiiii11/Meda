@@ -1,9 +1,3 @@
-// MemeStack.jsx
-import React from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import MemeCard from '../MemeCard/MemeCard';
-import { ENDPOINTS } from '../../config/api';
-
 const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData }) => {
   const [currentMeme, setCurrentMeme] = React.useState(null);
   const [nextMeme, setNextMeme] = React.useState(null);
@@ -12,53 +6,43 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
   const [isMobile, setIsMobile] = React.useState(false);
   const [isDragging, setIsDragging] = React.useState(false);
 
-  const getWeightedRandomMeme = React.useCallback(() => {
-    const availableMemes = memes.filter(meme => meme.id !== currentMeme?.id);
-    if (availableMemes.length === 0) return memes[0];
-
-    const totalWeight = availableMemes.reduce((sum, meme) => sum + (meme.weight || 1), 0);
-    let random = Math.random() * totalWeight;
-    
-    for (const meme of availableMemes) {
-      random -= (meme.weight || 1);
-      if (random <= 0) {
-        return {
-          ...meme,
-          engagement: meme.engagement || { likes: 0, superLikes: 0 }
-        };
-      }
-    }
-    
-    return availableMemes[0];
-  }, [memes, currentMeme]);
-
-  React.useEffect(() => {
-    if (memes.length > 0 && !currentMeme) {
-      const firstMeme = propCurrentMeme || getWeightedRandomMeme();
-      setCurrentMeme(firstMeme);
-      onMemeChange(firstMeme);
+  const getNextMeme = React.useCallback(async () => {
+    try {
+      if (!userData?.telegramId) return null;
       
-      const secondMeme = getWeightedRandomMeme();
-      setNextMeme(secondMeme);
+      const response = await fetch(ENDPOINTS.memes.next(userData.telegramId), {
+        headers: getHeaders()
+      });
+      const data = await response.json();
+      
+      if (data.success && data.data) {
+        return data.data;
+      }
+      return null;
+    } catch (error) {
+      console.error('Error fetching next meme:', error);
+      return null;
     }
-  }, [memes, propCurrentMeme, getWeightedRandomMeme, onMemeChange]);
+  }, [userData]);
 
   React.useEffect(() => {
-    setIsMobile(!!window.Telegram?.WebApp);
-  }, []);
-
-  const transitionToNextMeme = React.useCallback(() => {
-    if (!nextMeme) return;
+    const initializeMemes = async () => {
+      if (!currentMeme) {
+        const firstMeme = await getNextMeme();
+        if (firstMeme) {
+          setCurrentMeme(firstMeme);
+          onMemeChange(firstMeme);
+          
+          const secondMeme = await getNextMeme();
+          if (secondMeme) {
+            setNextMeme(secondMeme);
+          }
+        }
+      }
+    };
     
-    setCurrentMeme(nextMeme);
-    onMemeChange(nextMeme);
-    
-    // Generate next meme in background only after current transition is complete
-    setTimeout(() => {
-      const newNextMeme = getWeightedRandomMeme();
-      setNextMeme(newNextMeme);
-    }, 300);
-  }, [nextMeme, getWeightedRandomMeme, onMemeChange]);
+    initializeMemes();
+  }, [userData]);
 
   const handleSwipe = async (direction) => {
     if (isAnimating || !currentMeme) return;
@@ -70,19 +54,9 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
       const action = direction === 'right' ? 'like' : 
                     direction === 'left' ? 'dislike' : 'superlike';
 
-      console.log('Sending interaction:', {
-        action,
-        memeId: currentMeme.id,
-        telegramId: userData?.telegramId,
-        currentEngagement: currentMeme.engagement
-      });
-
       const response = await fetch(ENDPOINTS.interactions.update, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Origin': window.location.origin
-        },
+        headers: getHeaders(),
         body: JSON.stringify({
           action,
           memeId: currentMeme.id,
@@ -93,18 +67,18 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
       const data = await response.json();
       console.log('Interaction response:', data);
 
-      if (data.success) {
-        // Update current meme engagement locally
-        setCurrentMeme(prev => ({
-          ...prev,
-          engagement: data.data.meme.engagement
-        }));
+      // Transition to next meme
+      if (nextMeme) {
+        setCurrentMeme(nextMeme);
+        onMemeChange(nextMeme);
         
-        // Update next meme with proper timing
-        setTimeout(transitionToNextMeme, 150);
-      } else {
-        throw new Error(data.error || 'Interaction failed');
+        // Fetch new next meme
+        const newNextMeme = await getNextMeme();
+        if (newNextMeme) {
+          setNextMeme(newNextMeme);
+        }
       }
+
     } catch (error) {
       console.error('Interaction error:', error);
     } finally {
