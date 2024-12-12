@@ -1,3 +1,4 @@
+// MemeCard.jsx
 import React from 'react';
 import { motion, useMotionValue, useTransform } from 'framer-motion';
 
@@ -20,6 +21,32 @@ const MemeCard = ({ meme, onSwipe, isTop, isMobile, userData, onDragStart, onDra
     [-200, -150, -100, 0, 100, 150, 200],
     [0, 0.5, 0.8, 1, 0.8, 0.5, 0]
   );
+
+  const handleDragEnd = (event, info) => {
+    const xOffset = info.offset.x;
+    const yOffset = info.offset.y;
+    const xVelocity = info.velocity.x;
+    
+    // Calculate swipe threshold based on velocity and offset
+    const swipeThreshold = Math.abs(xVelocity) > 500 ? 50 : 100;
+    
+    if (Math.abs(yOffset) > 100 && Math.abs(yOffset) > Math.abs(xOffset)) {
+      onSwipe('super');
+    } else if (xOffset > swipeThreshold) {
+      onSwipe('right');
+    } else if (xOffset < -swipeThreshold) {
+      onSwipe('left');
+    } else {
+      // Reset position if no swipe detected
+      x.set(0);
+      y.set(0);
+    }
+
+    if (onDragEnd) {
+      onDragEnd();
+    }
+  };
+
 
   return (
     <motion.div
@@ -56,6 +83,16 @@ const MemeCard = ({ meme, onSwipe, isTop, isMobile, userData, onDragStart, onDra
           </div>
         </div>
       </div>
+
+      {/* Swipe Areas */}
+      {isTop && (
+        <>
+          <div className="absolute inset-x-0 bottom-0 h-1/3 flex items-end opacity-0">
+            <div className="flex-1 h-full" onClick={() => onSwipe('left')} />
+            <div className="flex-1 h-full" onClick={() => onSwipe('right')} />
+          </div>
+        </>
+      )}
     </motion.div>
   );
 };
