@@ -51,23 +51,7 @@ const MemeCard = ({ meme, onSwipe, isTop, isMobile, userData, onDragStart, onDra
       drag={isTop}
       dragConstraints={{ left: 0, right: 0, top: 0, bottom: 0 }}
       onDragStart={onDragStart}
-      onDragEnd={(e, info) => {
-        const xOffset = info.offset.x;
-        const yOffset = info.offset.y;
-        
-        if (Math.abs(yOffset) > 100 && Math.abs(yOffset) > Math.abs(xOffset)) {
-          onSwipe('super');
-        } else if (xOffset > 100) {
-          onSwipe('right');
-        } else if (xOffset < -100) {
-          onSwipe('left');
-        } else {
-          x.set(0);
-          y.set(0);
-        }
-        
-        if (onDragEnd) onDragEnd();
-      }}
+      onDragEnd={handleDragEnd}
       dragElastic={1}
       initial={false}
     >
@@ -76,6 +60,7 @@ const MemeCard = ({ meme, onSwipe, isTop, isMobile, userData, onDragStart, onDra
           <img
             src={meme.content}
             className="w-full h-full object-cover"
+            aria-label={meme.projectName}
           />
         </div>
         <div className="bg-gradient-to-b from-[#2c2d31] to-[#1a1b1e] border-t border-[#3c3d41]/30 p-4">
