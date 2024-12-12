@@ -15,15 +15,10 @@ class InteractionController {
 
  static async handleInteraction(req, res) {
   let session;
-  console.log('Received interaction:', {
-    action: req.body.action,
-    memeId: req.body.memeId,
-    telegramId: req.body.telegramId
-  });
-
+  
   try {
     session = await mongoose.startSession();
-    await session.startTransaction();
+    session.startTransaction();
 
     const { action, memeId, telegramId } = req.body;
 
@@ -32,42 +27,19 @@ class InteractionController {
       throw new Error('Invalid action');
     }
 
-    // Find meme first
+    // Get or create user
+    let user = await User.findOne({ telegramId }).session(session);
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+    // Find meme
     const meme = await Meme.findOne({ id: memeId }).session(session);
     if (!meme) {
       throw new Error('Meme not found');
     }
-    console.log('Found meme:', { id: meme.id, projectName: meme.projectName });
-
-    // Check for existing interaction
-    const existingView = await ViewHistory.findOne({
-      user: telegramId,
-      memeId,
-      'interactions.type': action
-    }).session(session);
-
-    if (existingView) {
-      throw new Error('User has already performed this action on this meme');
-    }
-
-    // Get or create user
-    let user = await User.findOne({ telegramId }).session(session);
-    if (!user) {
-      console.log('Creating new user for interaction:', telegramId);
-      user = new User({
-        telegramId,
-        username: `user${telegramId.slice(-4)}`,
-        totalPoints: 0,
-        pointsBreakdown: {
-          likes: 0,
-          dislikes: 0,
-          superLikes: 0
-        }
-      });
-    }
 
     // Update meme engagement
-    console.log('Current meme engagement:', meme.engagement);
     meme.engagement = meme.engagement || { likes: 0, superLikes: 0, dislikes: 0 };
     if (action === 'like') {
       meme.engagement.likes += 1;
@@ -76,40 +48,38 @@ class InteractionController {
     } else {
       meme.engagement.dislikes += 1;
     }
-    console.log('Updated meme engagement:', meme.engagement);
 
     // Update user points
     const points = InteractionController.POINTS[action];
-    console.log('Updating points:', {
-      before: user.totalPoints,
-      adding: points,
-      action: action
-    });
-    
+    user.pointsBreakdown[action === 'superlike' ? 'superLikes' : action === 'like' ? 'likes' : 'dislikes'] += 1;
     user.totalPoints += points;
-    user.pointsBreakdown[action === 'superlike' ? 'superLikes' : 'likes'] += 1;
 
-    // Record the interaction
-    const viewHistory = new ViewHistory({
-      user: telegramId,
-      memeId,
-      projectName: meme.projectName,
-      interactions: [{
-        type: action,
-        timestamp: new Date()
-      }]
-    });
+    // Update project score
+    if (action !== 'dislike') {
+      const project = await Project.findOne({ name: meme.projectName }).session(session);
+      if (project) {
+        await project.updateMemeStats(memeId, action);
+      }
+    }
 
-    // Save everything
-    console.log('Saving changes...');
+    // Record view history
+    const viewHistory = await ViewHistory.findOneAndUpdate(
+      { user: telegramId, memeId },
+      {
+        $push: { interactions: { type: action, timestamp: new Date() } },
+        $inc: { viewCount: 1 },
+        $set: { lastViewed: new Date() }
+      },
+      { upsert: true, new: true, session }
+    );
+
+    // Save changes
     await Promise.all([
-      meme.save(),
-      user.save(),
-      viewHistory.save()
+      meme.save({ session }),
+      user.save({ session }),
     ]);
 
     await session.commitTransaction();
-    console.log('Transaction committed successfully');
 
     res.json({
       success: true,
@@ -129,19 +99,15 @@ class InteractionController {
   } catch (error) {
     if (session) {
       await session.abortTransaction();
-      console.log('Transaction aborted');
     }
-    console.error('Interaction error:', {
-      error: error.message,
-      stack: error.stack
-    });
+    console.error('Interaction error:', error);
     res.status(400).json({
       success: false,
       error: error.message
     });
   } finally {
     if (session) {
-      await session.endSession();
+      session.endSession();
     }
   }
 }

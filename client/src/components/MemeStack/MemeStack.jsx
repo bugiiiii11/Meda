@@ -96,15 +96,27 @@ const MemeStack = ({ memes, onMemeChange }) => {
       try {
         const action = direction === 'right' ? 'like' : 
                       direction === 'left' ? 'dislike' : 'superlike';
+        
+        // Get current user data from props or context
+        const telegramId = userData?.telegramId || 'test123';
+        
+        console.log('Sending interaction:', {
+          action,
+          memeId: currentMeme.id,
+          telegramId,
+          direction
+        });
                       
         const response = await fetch(ENDPOINTS.interactions.update, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 
+            'Content-Type': 'application/json',
+            'Origin': window.location.origin
+          },
           body: JSON.stringify({
             action,
             memeId: currentMeme.id,
-            telegramId: userData?.id,
-            telegramData: userData
+            telegramId,
           })
         });
     
@@ -112,14 +124,24 @@ const MemeStack = ({ memes, onMemeChange }) => {
         console.log('Interaction response:', data);
     
         if (data.success) {
-          // Force state update and meme change
+          // Update local meme state
+          const updatedMeme = {
+            ...currentMeme,
+            engagement: data.data.meme.engagement
+          };
+          
+          // Transition to next meme
           setCurrentMeme(nextMeme);
           const newNextMeme = getWeightedRandomMeme();
           setNextMeme(newNextMeme);
           onMemeChange(nextMeme);
+        } else {
+          throw new Error(data.error || 'Interaction failed');
         }
       } catch (error) {
         console.error('Interaction error:', error);
+        // Revert animation if error occurs
+        setLastSwipe(null);
       } finally {
         setTimeout(() => {
           setLastSwipe(null);

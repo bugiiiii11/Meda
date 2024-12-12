@@ -1,3 +1,4 @@
+//MemeController.js
 const mongoose = require('mongoose');
 // Import the Meme model directly instead of trying to access it through mongoose.model
 const Meme = require('../models/Meme');
