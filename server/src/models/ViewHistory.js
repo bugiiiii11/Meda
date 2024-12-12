@@ -45,5 +45,6 @@ const viewHistorySchema = new mongoose.Schema({
 viewHistorySchema.index({ user: 1, memeId: 1 });
 viewHistorySchema.index({ projectName: 1, lastViewed: -1 });
 viewHistorySchema.index({ user: 1, lastViewed: -1 });
+viewHistorySchema.index({ user: 1, projectName: 1, lastViewed: -1 });
 
 module.exports = mongoose.model('ViewHistory', viewHistorySchema);

@@ -4,6 +4,7 @@ const router = express.Router();
 const InteractionController = require('../controllers/InteractionController');
 const { validateRequest } = require('../middleware/validation');
 const { bypassAuthInDevelopment } = require('../middleware/auth');
+const { apiLimiter } = require('../middleware/rateLimit');
 
 router.get('/debug', (req, res) => {
   res.json({ 
@@ -14,6 +15,7 @@ router.get('/debug', (req, res) => {
 });
 
 router.post('/update',
+  apiLimiter,
   bypassAuthInDevelopment,
   validateRequest('handleInteraction'),
   InteractionController.handleInteraction

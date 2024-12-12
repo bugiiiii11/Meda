@@ -6,6 +6,7 @@ const Project = require('../models/Project');
 const PointsTransaction = require('../models/Points');
 const ViewHistory = require('../models/ViewHistory');
 
+
 class InteractionController {
  static POINTS = {
    like: 1,
