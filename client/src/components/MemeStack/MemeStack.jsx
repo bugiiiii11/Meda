@@ -60,19 +60,9 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
       const action = direction === 'right' ? 'like' : 
                     direction === 'left' ? 'dislike' : 'superlike';
 
-      console.log('Sending interaction:', {
-        action,
-        memeId: currentMeme.id,
-        telegramId: userData?.telegramId,
-        currentEngagement: currentMeme.engagement
-      });
-
       const response = await fetch(ENDPOINTS.interactions.update, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Origin': window.location.origin
-        },
+        headers: getHeaders(),
         body: JSON.stringify({
           action,
           memeId: currentMeme.id,
@@ -83,18 +73,18 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
       const data = await response.json();
       console.log('Interaction response:', data);
 
-      if (data.success) {
-        // Update current meme engagement locally
-        setCurrentMeme(prev => ({
-          ...prev,
-          engagement: data.data.meme.engagement
-        }));
+      // Transition to next meme
+      if (nextMeme) {
+        setCurrentMeme(nextMeme);
+        onMemeChange(nextMeme);
         
-        // Update next meme with proper timing
-        setTimeout(transitionToNextMeme, 150);
-      } else {
-        throw new Error(data.error || 'Interaction failed');
+        // Fetch new next meme
+        const newNextMeme = await getNextMeme();
+        if (newNextMeme) {
+          setNextMeme(newNextMeme);
+        }
       }
+
     } catch (error) {
       console.error('Interaction error:', error);
     } finally {
