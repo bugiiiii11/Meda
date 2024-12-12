@@ -86,31 +86,14 @@ const verifyTelegramWebAppData = (req, res, next) => {
 const bypassAuthInDevelopment = (req, res, next) => {
   console.log('Auth middleware - Environment:', process.env.NODE_ENV);
   console.log('Auth middleware - Headers:', req.headers);
-  console.log('Auth middleware - Body:', req.body);
 
-  if (process.env.NODE_ENV === 'development') {
-    console.log('Development mode - using mock user');
-    req.telegramUser = {
-      id: req.body.telegramId || 'test123',
-      username: req.body.username || 'testuser'
-    };
-    return next();
-  }
-
-  // For production, use the actual Telegram data
-  if (!req.body.telegramId) {
-    console.error('No telegramId provided in request body');
-    return res.status(401).json({
-      success: false,
-      error: 'No user data provided'
-    });
-  }
-
+  // Always bypass auth for now (both development and production)
+  console.log('Bypassing auth for testing');
   req.telegramUser = {
-    id: req.body.telegramId,
-    username: req.body.username
+    id: req.body.telegramId || 'test123',
+    username: req.body.username || 'testuser'
   };
-  console.log('Using Telegram user:', req.telegramUser);
+  console.log('Setting user:', req.telegramUser);
   return next();
 };
 
