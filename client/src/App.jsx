@@ -47,12 +47,13 @@ function App() {
   const [isLoading, setIsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('memes');
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
-  const [currentMeme, setCurrentMeme] = useState(dummyMemes[0]);
+  const [currentMeme, setCurrentMeme] = useState(null);  // Changed from dummyMemes[0]
   const [initError, setInitError] = useState(null);
   const [isTelegram, setIsTelegram] = useState(false);
   const [userData, setUserData] = useState(null);
   const [memes, setMemes] = useState([]);
 
+  // Load memes with engagement
   useEffect(() => {
     const loadMemes = async () => {
       try {
@@ -61,15 +62,20 @@ function App() {
         
         if (data.success) {
           setMemes(data.data);
+          // Set initial meme if none selected
+          if (!currentMeme && data.data.length > 0) {
+            setCurrentMeme(data.data[0]);
+          }
         }
       } catch (error) {
         console.error('Error loading memes:', error);
+        setInitError('Failed to load memes');
       }
     };
     
     loadMemes();
   }, []);
-  
+
   const handleMemeChange = (meme) => {
     console.log('Changing meme to:', meme);
     setCurrentMeme(meme);

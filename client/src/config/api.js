@@ -39,7 +39,7 @@ export const ENDPOINTS = {
     debug: `${BASE_URL}/api/interactions/debug`
   },
   memes: {
-    withEngagement: `${API_URL}/api/memes/withEngagement`,
+    withEngagement: `${BASE_URL}/api/memes/withEngagement`,
     create: `${BASE_URL}/api/memes/create`,
     next: `${BASE_URL}/api/memes/next`,
     interact: `${BASE_URL}/api/memes/interact`
@@ -53,7 +53,7 @@ export const ENDPOINTS = {
     get: (telegramId) => `${BASE_URL}/api/users/${telegramId}`,
     points: `${BASE_URL}/api/users/points`
   }
-};
+};gm
 
 export const getHeaders = () => {
   const headers = {
