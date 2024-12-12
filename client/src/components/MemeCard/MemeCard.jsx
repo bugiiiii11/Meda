@@ -21,6 +21,29 @@ const MemeCard = ({ meme, onSwipe, isTop, isMobile, userData, onDragStart, onDra
     [0, 0.5, 0.8, 1, 0.8, 0.5, 0]
   );
 
+  const handleDragEnd = (event, info) => {
+    const xOffset = info.offset.x;
+    const yOffset = info.offset.y;
+    const xVelocity = info.velocity.x;
+    
+    const swipeThreshold = Math.abs(xVelocity) > 500 ? 50 : 100;
+    
+    if (Math.abs(yOffset) > 100 && Math.abs(yOffset) > Math.abs(xOffset)) {
+      onSwipe('super');
+    } else if (xOffset > swipeThreshold) {
+      onSwipe('right');
+    } else if (xOffset < -swipeThreshold) {
+      onSwipe('left');
+    } else {
+      x.set(0);
+      y.set(0);
+    }
+
+    if (onDragEnd) {
+      onDragEnd();
+    }
+  };
+
   return (
     <motion.div
       className="absolute w-full"
