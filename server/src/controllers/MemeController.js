@@ -8,18 +8,6 @@ class MemeController {
       const { telegramId } = req.params;
       console.log('Getting next meme for user:', telegramId);
 
-      // Debug: Count total available memes
-      const totalMemes = await Meme.countDocuments({ status: 'active' });
-      console.log('Total active memes in database:', totalMemes);
-
-      if (totalMemes === 0) {
-        console.log('No memes available in database');
-        return res.json({
-          success: false,
-          error: 'No memes available in database'
-        });
-      }
-
       // Get user's view history for today
       const today = new Date();
       today.setHours(0, 0, 0, 0);
@@ -33,52 +21,67 @@ class MemeController {
 
       const viewedMemeIds = viewedMemes.map(vh => vh.memeId);
       
-      // Find memes not viewed today
-      let meme = await Meme.findOne({
-        id: { $nin: viewedMemeIds },
-        status: 'active'
-      }).lean();
+      // Find memes not viewed today, considering weight
+      const meme = await Meme.aggregate([
+        {
+          $match: {
+            id: { $nin: viewedMemeIds },
+            status: 'active'
+          }
+        },
+        // Use weight for random selection
+        { $sample: { size: 1 } }
+      ]);
 
-      if (!meme) {
-        console.log('No new memes available for user');
-        // If user has seen all memes today, reset and show random meme
-        meme = await Meme.findOne({ status: 'active' }).lean();
-        if (!meme) {
+      if (!meme || meme.length === 0) {
+        // If no unseen memes, get random meme
+        const randomMeme = await Meme.aggregate([
+          { $match: { status: 'active' } },
+          { $sample: { size: 1 } }
+        ]);
+
+        if (!randomMeme || randomMeme.length === 0) {
           return res.json({
             success: false,
             error: 'No memes available'
           });
         }
+        meme[0] = randomMeme[0];
       }
 
-      console.log('Selected meme:', meme.id);
+      // Format the content and logo paths
+      meme[0].content = `/assets/memes/meme${meme[0].id}.png`;
+      const logoNumber = meme[0].logo.match(/logo(\d+)/) ? 
+                        meme[0].logo.match(/logo(\d+)/)[1] : '1';
+      meme[0].logo = `/assets/logos/logo${logoNumber}.png`;
 
       // Record the view
       await ViewHistory.create({
         user: telegramId,
-        memeId: meme.id,
-        projectName: meme.projectName,
+        memeId: meme[0].id,
+        projectName: meme[0].projectName,
         lastViewed: new Date(),
         interactions: [{ type: 'view', timestamp: new Date() }]
       });
 
       // Add default engagement data if not present
-      meme.engagement = {
+      meme[0].engagement = {
         likes: 0,
         superLikes: 0,
         dislikes: 0,
-        ...(meme.engagement || {})
+        ...(meme[0].engagement || {})
       };
 
-      console.log('Returning meme with engagement:', {
-        id: meme.id,
-        projectName: meme.projectName,
-        engagement: meme.engagement
+      console.log('Returning meme:', {
+        id: meme[0].id,
+        projectName: meme[0].projectName,
+        content: meme[0].content,
+        logo: meme[0].logo
       });
 
       res.json({
         success: true,
-        data: meme
+        data: meme[0]
       });
 
     } catch (error) {

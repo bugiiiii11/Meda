@@ -1,4 +1,4 @@
-//server/src/models/Meme.js
+//Meme.js
 const mongoose = require('mongoose');
 
 const memeSchema = new mongoose.Schema({
@@ -17,29 +17,30 @@ const memeSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  engagement: {
-    likes: { type: Number, default: 0 },
-    superLikes: { type: Number, default: 0 },
-    dislikes: { type: Number, default: 0 }
+  logo: {
+    type: String,
+    required: true
   },
   weight: {
     type: Number,
     default: 1
   },
+  engagement: {
+    likes: { type: Number, default: 0 },
+    superLikes: { type: Number, default: 0 },
+    dislikes: { type: Number, default: 0 }
+  },
   projectDetails: {
-    type: { 
-      type: String, 
-      enum: ['Meme', 'Gaming', 'AI'],
-      default: 'Meme'
-    },
-    network: String,
-    price: String,
-    marketCap: Number,
-    priceChange24h: Number,
-    contract: String,
-    website: String,
-    twitter: String,
-    telegram: String
+    network: { type: String, required: true },
+    price: { type: String, required: true },
+    marketCap: { type: String, required: true },
+    priceChange24h: { type: Number, required: true },
+    contract: { type: String, required: true },
+    website: { type: String, required: true },
+    priceChart: { type: String },
+    buyLink: { type: String, required: true },
+    telegramUrl: { type: String },
+    twitterUrl: { type: String }
   },
   analytics: {
     linkClicks: {
@@ -74,11 +75,23 @@ memeSchema.methods.updateEngagement = async function(action) {
   return this.save();
 };
 
+// Add method to format content path
+memeSchema.methods.getFormattedContent = function() {
+  return `/assets/memes/meme${this.id}.png`;
+};
+
+// Add method to format logo path
+memeSchema.methods.getFormattedLogo = function() {
+  // Extract logo number from the stored path or use project-specific logic
+  const logoNumber = this.logo.match(/logo(\d+)/)[1];
+  return `/assets/logos/logo${logoNumber}.png`;
+};
+
 // Indexes for efficient querying
 memeSchema.index({ 'engagement.likes': -1 });
 memeSchema.index({ 'engagement.superLikes': -1 });
-memeSchema.index({ 'projectDetails.type': 1, 'projectDetails.network': 1 });
 memeSchema.index({ status: 1 });
+memeSchema.index({ weight: 1 });
 
 const Meme = mongoose.model('Meme', memeSchema);
 
