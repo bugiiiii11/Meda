@@ -15,27 +15,41 @@ class InteractionController {
 
  static async handleInteraction(req, res) {
   let session;
-  console.log('Starting interaction handling:', req.body);
-
+  
   try {
     session = await mongoose.startSession();
     session.startTransaction();
 
     const { action, memeId, telegramId } = req.body;
 
-    // Find and verify meme
+    // Find meme and include current engagement data
     const meme = await Meme.findOne({ id: memeId }).session(session);
     if (!meme) {
       throw new Error('Meme not found');
     }
-    console.log('Found meme:', {
-      id: meme.id,
-      currentEngagement: meme.engagement
-    });
 
-    // Update meme engagement
-    await meme.updateEngagement(action);
-    console.log('Updated meme engagement:', meme.engagement);
+    // Ensure engagement object exists
+    meme.engagement = meme.engagement || { likes: 0, superLikes: 0, dislikes: 0 };
+
+    // Update engagement counts
+    if (action === 'like') {
+      meme.engagement.likes += 1;
+    } else if (action === 'superlike') {
+      meme.engagement.superLikes += 1;
+    } else if (action === 'dislike') {
+      meme.engagement.dislikes += 1;
+    }
+
+    // Update project stats if needed
+    if (action !== 'dislike') {
+      const project = await Project.findOne({ name: meme.projectName }).session(session);
+      if (project) {
+        await project.updateMemeStats(memeId, action);
+      }
+    }
+
+    // Save meme with updated engagement
+    await meme.save({ session });
 
     // Update user points
     const user = await User.findOne({ telegramId }).session(session);
@@ -48,31 +62,15 @@ class InteractionController {
     user.totalPoints += points;
     await user.save({ session });
 
-    // Record interaction in view history
-    const viewHistory = await ViewHistory.findOneAndUpdate(
-      { user: telegramId, memeId },
-      {
-        $push: { interactions: { type: action, timestamp: new Date() } },
-        $inc: { viewCount: 1 },
-        $set: { lastViewed: new Date() }
-      },
-      { upsert: true, new: true, session }
-    );
-
     await session.commitTransaction();
 
-    console.log('Interaction complete:', {
-      memeId,
-      newEngagement: meme.engagement,
-      userPoints: user.totalPoints
-    });
-
+    // Return updated engagement data
     res.json({
       success: true,
       data: {
         meme: {
           id: meme.id,
-          engagement: meme.engagement
+          engagement: meme.engagement // Send back updated engagement counts
         },
         user: {
           telegramId: user.telegramId,
@@ -83,10 +81,10 @@ class InteractionController {
     });
 
   } catch (error) {
-    console.error('Interaction error:', error);
     if (session) {
       await session.abortTransaction();
     }
+    console.error('Interaction error:', error);
     res.status(400).json({
       success: false,
       error: error.message
