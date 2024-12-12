@@ -1,5 +1,4 @@
 // MemeCard.jsx
-import React from 'react';
 import { motion, useMotionValue, useTransform } from 'framer-motion';
 
 const QuickStatIcon = ({ children, count, text }) => (
@@ -27,7 +26,6 @@ const MemeCard = ({ meme, onSwipe, isTop, isMobile, userData, onDragStart, onDra
     const yOffset = info.offset.y;
     const xVelocity = info.velocity.x;
     
-    // Calculate swipe threshold based on velocity and offset
     const swipeThreshold = Math.abs(xVelocity) > 500 ? 50 : 100;
     
     if (Math.abs(yOffset) > 100 && Math.abs(yOffset) > Math.abs(xOffset)) {
@@ -37,7 +35,6 @@ const MemeCard = ({ meme, onSwipe, isTop, isMobile, userData, onDragStart, onDra
     } else if (xOffset < -swipeThreshold) {
       onSwipe('left');
     } else {
-      // Reset position if no swipe detected
       x.set(0);
       y.set(0);
     }
@@ -47,25 +44,25 @@ const MemeCard = ({ meme, onSwipe, isTop, isMobile, userData, onDragStart, onDra
     }
   };
 
-
   return (
     <motion.div
       className="absolute w-full"
       style={{ x, y, rotate, opacity }}
       drag={isTop}
       dragConstraints={{ left: 0, right: 0, top: 0, bottom: 0 }}
-      dragElastic={1}
       onDragStart={onDragStart}
-      onDragEnd={onDragEnd}
-      dragTransition={{ bounceStiffness: 600, bounceDamping: 20 }}
+      onDragEnd={handleDragEnd}
+      dragElastic={1}
       initial={false}
     >
       <div className="card rounded-xl overflow-hidden shadow-xl">
-        <img
-          src={meme.content}
-          alt={meme.projectName}
-          className="w-full aspect-square object-cover"
-        />
+        <div className="relative w-full aspect-square">
+          <img
+            src={meme.content}
+            className="w-full h-full object-cover"
+            aria-label={meme.projectName}
+          />
+        </div>
         <div className="bg-gradient-to-b from-[#2c2d31] to-[#1a1b1e] border-t border-[#3c3d41]/30 p-4">
           <div className="flex justify-between items-center">
             <QuickStatIcon 
@@ -83,16 +80,6 @@ const MemeCard = ({ meme, onSwipe, isTop, isMobile, userData, onDragStart, onDra
           </div>
         </div>
       </div>
-
-      {/* Swipe Areas */}
-      {isTop && (
-        <>
-          <div className="absolute inset-x-0 bottom-0 h-1/3 flex items-end opacity-0">
-            <div className="flex-1 h-full" onClick={() => onSwipe('left')} />
-            <div className="flex-1 h-full" onClick={() => onSwipe('right')} />
-          </div>
-        </>
-      )}
     </motion.div>
   );
 };
