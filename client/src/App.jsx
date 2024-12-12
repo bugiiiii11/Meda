@@ -10,7 +10,7 @@ import DetailsPage from './components/DetailsPage/DetailsPage';
 import TasksPage from './components/TasksPage';
 import ProfilePage from './components/ProfilePage';
 import RanksPage from './components/RanksPage';
-import dummyMemes from './data/dummyMemes';
+//import dummyMemes from './data/dummyMemes';
 import { priceService } from './services/priceService';
 import { ENDPOINTS, getHeaders } from './config/api';
 
@@ -224,6 +224,7 @@ function App() {
   initializeApp();
 }, []);
 
+// Loading and error states
 if (initError) {
   return (
     <div className="fixed inset-0 bg-[#1a1b1e] flex items-center justify-center">

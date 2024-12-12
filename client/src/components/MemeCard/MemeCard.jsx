@@ -50,9 +50,10 @@ const MemeCard = ({ meme, onSwipe, isTop, isMobile, userData, onDragStart, onDra
       style={{ x, y, rotate, opacity }}
       drag={isTop}
       dragConstraints={{ left: 0, right: 0, top: 0, bottom: 0 }}
-      onDragStart={onDragStart}
-      onDragEnd={handleDragEnd}
       dragElastic={1}
+      onDragStart={onDragStart}
+      onDragEnd={onDragEnd}
+      dragTransition={{ bounceStiffness: 600, bounceDamping: 20 }}
       initial={false}
     >
       <div className="card rounded-xl overflow-hidden shadow-xl">

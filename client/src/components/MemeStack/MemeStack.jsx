@@ -1,74 +1,64 @@
+// MemeStack.jsx
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import MemeCard from '../MemeCard/MemeCard';
-import { ENDPOINTS, getHeaders } from '../../config/api';
+import { ENDPOINTS } from '../../config/api';
 
-const MemeStack = ({ onMemeChange, userData }) => {
+const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData }) => {
   const [currentMeme, setCurrentMeme] = React.useState(null);
   const [nextMeme, setNextMeme] = React.useState(null);
-  const [isLoading, setIsLoading] = React.useState(false);
   const [lastSwipe, setLastSwipe] = React.useState(null);
   const [isAnimating, setIsAnimating] = React.useState(false);
+  const [isMobile, setIsMobile] = React.useState(false);
   const [isDragging, setIsDragging] = React.useState(false);
 
-  const getNextMeme = React.useCallback(async () => {
-    try {
-      if (!userData?.telegramId) {
-        console.log('No telegram ID available');
-        return null;
-      }
-      
-      const response = await fetch(ENDPOINTS.memes.next(userData.telegramId), {
-        headers: getHeaders()
-      });
-      
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      
-      const data = await response.json();
-      console.log('Next meme data:', data);
-      
-      if (data.success && data.data) {
-        return data.data;
-      }
-      
-      console.log('No meme data received');
-      return null;
-    } catch (error) {
-      console.error('Error fetching next meme:', error);
-      return null;
-    }
-  }, [userData]);
+  const getWeightedRandomMeme = React.useCallback(() => {
+    const availableMemes = memes.filter(meme => meme.id !== currentMeme?.id);
+    if (availableMemes.length === 0) return memes[0];
 
-  // Initialize memes
-  React.useEffect(() => {
-    const initializeMemes = async () => {
-      if (!currentMeme && userData?.telegramId) {
-        setIsLoading(true);
-        try {
-          const firstMeme = await getNextMeme();
-          if (firstMeme) {
-            console.log('Setting initial meme:', firstMeme);
-            setCurrentMeme(firstMeme);
-            onMemeChange(firstMeme);
-            
-            const secondMeme = await getNextMeme();
-            if (secondMeme) {
-              console.log('Setting next meme:', secondMeme);
-              setNextMeme(secondMeme);
-            }
-          }
-        } catch (error) {
-          console.error('Error initializing memes:', error);
-        } finally {
-          setIsLoading(false);
-        }
-      }
-    };
+    const totalWeight = availableMemes.reduce((sum, meme) => sum + (meme.weight || 1), 0);
+    let random = Math.random() * totalWeight;
     
-    initializeMemes();
-  }, [userData, getNextMeme, onMemeChange]);
+    for (const meme of availableMemes) {
+      random -= (meme.weight || 1);
+      if (random <= 0) {
+        return {
+          ...meme,
+          engagement: meme.engagement || { likes: 0, superLikes: 0 }
+        };
+      }
+    }
+    
+    return availableMemes[0];
+  }, [memes, currentMeme]);
+
+  React.useEffect(() => {
+    if (memes.length > 0 && !currentMeme) {
+      const firstMeme = propCurrentMeme || getWeightedRandomMeme();
+      setCurrentMeme(firstMeme);
+      onMemeChange(firstMeme);
+      
+      const secondMeme = getWeightedRandomMeme();
+      setNextMeme(secondMeme);
+    }
+  }, [memes, propCurrentMeme, getWeightedRandomMeme, onMemeChange]);
+
+  React.useEffect(() => {
+    setIsMobile(!!window.Telegram?.WebApp);
+  }, []);
+
+  const transitionToNextMeme = React.useCallback(() => {
+    if (!nextMeme) return;
+    
+    setCurrentMeme(nextMeme);
+    onMemeChange(nextMeme);
+    
+    // Generate next meme in background only after current transition is complete
+    setTimeout(() => {
+      const newNextMeme = getWeightedRandomMeme();
+      setNextMeme(newNextMeme);
+    }, 300);
+  }, [nextMeme, getWeightedRandomMeme, onMemeChange]);
 
   const handleSwipe = async (direction) => {
     if (isAnimating || !currentMeme) return;
@@ -80,15 +70,15 @@ const MemeStack = ({ onMemeChange, userData }) => {
       const action = direction === 'right' ? 'like' : 
                     direction === 'left' ? 'dislike' : 'superlike';
 
-      console.log('Sending interaction:', {
-        action,
-        memeId: currentMeme.id,
-        telegramId: userData?.telegramId
-      });
+      // Transition faster now that we removed the sliding animation
+      setTimeout(transitionToNextMeme, 150);
 
       const response = await fetch(ENDPOINTS.interactions.update, {
         method: 'POST',
-        headers: getHeaders(),
+        headers: {
+          'Content-Type': 'application/json',
+          'Origin': window.location.origin
+        },
         body: JSON.stringify({
           action,
           memeId: currentMeme.id,
@@ -99,33 +89,9 @@ const MemeStack = ({ onMemeChange, userData }) => {
       const data = await response.json();
       console.log('Interaction response:', data);
 
-      // Transition to next meme
-      if (nextMeme) {
-        setCurrentMeme(nextMeme);
-        onMemeChange(nextMeme);
-        
-        // Fetch new next meme
-        const newNextMeme = await getNextMeme();
-        if (newNextMeme) {
-          console.log('Setting new next meme:', newNextMeme);
-          setNextMeme(newNextMeme);
-        } else {
-          setNextMeme(null);
-        }
-      } else {
-        // If no next meme, try to fetch one
-        const newMeme = await getNextMeme();
-        if (newMeme) {
-          setCurrentMeme(newMeme);
-          onMemeChange(newMeme);
-          
-          const followingMeme = await getNextMeme();
-          if (followingMeme) {
-            setNextMeme(followingMeme);
-          }
-        }
+      if (!data.success) {
+        throw new Error(data.error || 'Interaction failed');
       }
-
     } catch (error) {
       console.error('Interaction error:', error);
     } finally {
@@ -136,13 +102,9 @@ const MemeStack = ({ onMemeChange, userData }) => {
     }
   };
 
-  if (isLoading) {
-    return <div className="flex items-center justify-center h-full">Loading...</div>;
-  }
-
   return (
     <div className="relative max-w-[calc(100vw-32px)] mx-auto aspect-square">
-      {/* Next Meme (Background) */}
+      {/* Next Meme (Background) - Always visible */}
       <div className="absolute inset-0 z-10">
         {nextMeme && (
           <MemeCard
@@ -154,8 +116,8 @@ const MemeStack = ({ onMemeChange, userData }) => {
         )}
       </div>
 
-      {/* Current Meme */}
-      <AnimatePresence mode="wait">
+       {/* Current Meme */}
+       <AnimatePresence mode="wait">
         {currentMeme && (
           <motion.div
             key={currentMeme.id}
@@ -167,29 +129,34 @@ const MemeStack = ({ onMemeChange, userData }) => {
             }}
             exit={{ 
               opacity: 0,
-              x: lastSwipe === 'left' ? -200 : lastSwipe === 'right' ? 200 : 0,
-              y: lastSwipe === 'super' ? -200 : 0,
-              transition: { duration: 0.2 }
+              // Don't specify x/y in exit animation to maintain last dragged position
+              transition: { 
+                duration: 0.1,
+                ease: "linear"
+              }
             }}
           >
             <MemeCard
               meme={currentMeme}
               onSwipe={handleSwipe}
               isTop={true}
+              isMobile={isMobile}
               userData={userData}
               onDragStart={() => setIsDragging(true)}
-              onDragEnd={(event, info) => {
+              onDragEnd={(e, info) => {
                 setIsDragging(false);
-                if (!info) return;
                 
-                const xOffset = info.offset?.x || 0;
-                const yOffset = info.offset?.y || 0;
+                // Determine swipe direction based on velocity and offset
+                const xVel = info.velocity.x;
+                const yVel = info.velocity.y;
+                const xOffset = info.offset.x;
+                const yOffset = info.offset.y;
                 
-                if (Math.abs(yOffset) > 100 && Math.abs(yOffset) > Math.abs(xOffset)) {
+                if (Math.abs(yVel) > Math.abs(xVel) && yOffset < -50) {
                   handleSwipe('super');
-                } else if (xOffset > 100) {
+                } else if (xOffset > 50) {
                   handleSwipe('right');
-                } else if (xOffset < -100) {
+                } else if (xOffset < -50) {
                   handleSwipe('left');
                 }
               }}
@@ -208,20 +175,54 @@ const MemeStack = ({ onMemeChange, userData }) => {
             exit={{ opacity: 0, scale: 0.8 }}
             transition={{ duration: 0.2 }}
           >
-            <div className={`px-8 py-4 rounded-2xl border-4 border-white shadow-xl backdrop-blur-sm ${
-              lastSwipe === 'right' ? 'bg-green-500/90' :
-              lastSwipe === 'left' ? 'bg-red-500/90' :
-              'bg-blue-500/90'
-            }`}>
-              <div className="text-4xl font-bold text-white">
-                {lastSwipe === 'right' ? 'LIKE' : 
-                 lastSwipe === 'left' ? 'NOPE' : 
-                 'SUPER'}
+            <motion.div 
+              className={`px-8 py-4 rounded-2xl border-4 border-white shadow-xl backdrop-blur-sm ${
+                lastSwipe === 'right' ? 'bg-green-500/90' :
+                lastSwipe === 'left' ? 'bg-red-500/90' :
+                'bg-blue-500/90'
+              }`}
+            >
+              <div className="text-4xl font-bold text-white flex items-center gap-3">
+                {lastSwipe === 'right' ? 'LIKE' : lastSwipe === 'left' ? 'NOPE' : 'SUPER'}
               </div>
-            </div>
+            </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Interaction Buttons */}
+      <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 z-30 flex gap-4">
+        <button
+          onClick={() => !isAnimating && handleSwipe('left')}
+          className="p-4 rounded-full bg-red-500/20 hover:bg-red-500/40 transition-colors"
+          disabled={isAnimating}
+        >
+          <div className="flex flex-col items-center">
+            <span className="text-2xl">👎</span>
+            <span className="text-xs text-white mt-1">Dislike</span>
+          </div>
+        </button>
+        <button
+          onClick={() => !isAnimating && handleSwipe('right')}
+          className="p-4 rounded-full bg-green-500/20 hover:bg-green-500/40 transition-colors"
+          disabled={isAnimating}
+        >
+          <div className="flex flex-col items-center">
+            <span className="text-2xl">👍</span>
+            <span className="text-xs text-white mt-1">Like</span>
+          </div>
+        </button>
+        <button
+          onClick={() => !isAnimating && handleSwipe('super')}
+          className="p-4 rounded-full bg-blue-500/20 hover:bg-blue-500/40 transition-colors"
+          disabled={isAnimating}
+        >
+          <div className="flex flex-col items-center">
+            <span className="text-2xl">⭐</span>
+            <span className="text-xs text-white mt-1">Super</span>
+          </div>
+        </button>
+      </div>
     </div>
   );
 };
