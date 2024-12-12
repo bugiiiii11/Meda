@@ -25,40 +25,60 @@ class MemeController {
   static async getNextMeme(req, res) {
     try {
       const { telegramId } = req.params;
-      // Get user's view history for today
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-      const viewedMemes = await ViewHistory.find({
-        user: telegramId,
-        lastViewed: { $gte: today }
-      }).select('memeId');
-
-      const viewedMemeIds = viewedMemes.map(vh => vh.memeId);
-
-      // Find memes not viewed today, prioritizing by weight
-      const meme = await Meme.findOne({
-        id: { $nin: viewedMemeIds },
-        status: 'active'
-      }).sort({ weight: -1 });
-
-      if (!meme) {
+      
+      // Get meme with engagement data
+      const meme = await Meme.aggregate([
+        {
+          $match: { status: 'active' }
+        },
+        {
+          $lookup: {
+            from: 'viewhistories',
+            let: { memeId: '$id' },
+            pipeline: [
+              {
+                $match: {
+                  $expr: {
+                    $and: [
+                      { $eq: ['$memeId', '$$memeId'] },
+                      { $eq: ['$user', telegramId] }
+                    ]
+                  }
+                }
+              }
+            ],
+            as: 'viewHistory'
+          }
+        },
+        {
+          $match: {
+            'viewHistory': { $size: 0 }
+          }
+        },
+        { $sample: { size: 1 } }
+      ]);
+  
+      if (!meme.length) {
         return res.json({
           success: true,
           message: 'No more memes available'
         });
       }
-
+  
       // Record the view
       await ViewHistory.create({
         user: telegramId,
-        memeId: meme.id,
-        projectName: meme.projectName,
-        interactions: [{ type: 'view' }]
+        memeId: meme[0].id,
+        projectName: meme[0].projectName,
+        interactions: [{ type: 'view', timestamp: new Date() }]
       });
-
+  
       res.json({
         success: true,
-        data: meme
+        data: {
+          ...meme[0],
+          engagement: meme[0].engagement || { likes: 0, superLikes: 0, dislikes: 0 }
+        }
       });
     } catch (error) {
       console.error('Get next meme error:', error);
@@ -67,7 +87,7 @@ class MemeController {
         error: error.message
       });
     }
-  }
+  }  
 }
 
 module.exports = MemeController;

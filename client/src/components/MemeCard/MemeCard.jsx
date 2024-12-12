@@ -21,11 +21,6 @@ const MemeCard = ({ meme, onSwipe, isTop, isMobile, userData, onDragStart, onDra
     [0, 0.5, 0.8, 1, 0.8, 0.5, 0]
   );
 
-  // Log engagement data for debugging
-  React.useEffect(() => {
-    console.log('Meme engagement data:', meme.engagement);
-  }, [meme]);
-
   return (
     <motion.div
       className="absolute w-full"
@@ -61,16 +56,6 @@ const MemeCard = ({ meme, onSwipe, isTop, isMobile, userData, onDragStart, onDra
           </div>
         </div>
       </div>
-
-      {/* Swipe Areas */}
-      {isTop && (
-        <>
-          <div className="absolute inset-x-0 bottom-0 h-1/3 flex items-end opacity-0">
-            <div className="flex-1 h-full" onClick={() => onSwipe('left')} />
-            <div className="flex-1 h-full" onClick={() => onSwipe('right')} />
-          </div>
-        </>
-      )}
     </motion.div>
   );
 };
