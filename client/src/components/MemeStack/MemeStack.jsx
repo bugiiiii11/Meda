@@ -1,4 +1,9 @@
 // MemeStack.jsx
+import React from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import MemeCard from '../MemeCard/MemeCard';
+import { ENDPOINTS } from '../../config/api';
+
 const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData }) => {
   const [currentMeme, setCurrentMeme] = React.useState(null);
   const [nextMeme, setNextMeme] = React.useState(null);
