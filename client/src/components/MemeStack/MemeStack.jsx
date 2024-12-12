@@ -66,19 +66,12 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
     setIsAnimating(true);
     setLastSwipe(direction);
 
-    console.log('Handling swipe:', {
-      direction,
-      currentMeme: currentMeme.id,
-      nextMeme: nextMeme?.id,
-      userData
-    });
-
     try {
       const action = direction === 'right' ? 'like' : 
                     direction === 'left' ? 'dislike' : 'superlike';
 
-      // Start transition after a brief delay to allow exit animation
-      setTimeout(transitionToNextMeme, 300);
+      // Transition faster now that we removed the sliding animation
+      setTimeout(transitionToNextMeme, 150);
 
       const response = await fetch(ENDPOINTS.interactions.update, {
         method: 'POST',
@@ -105,7 +98,7 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
       setTimeout(() => {
         setLastSwipe(null);
         setIsAnimating(false);
-      }, 500);
+      }, 300);
     }
   };
 
@@ -130,12 +123,18 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
             key={currentMeme.id}
             className="absolute inset-0 z-20"
             initial={false}
-            animate={{ x: 0, y: 0, opacity: isDragging ? 0.5 : 1 }}
+            animate={{ 
+              opacity: isDragging ? 0.5 : 1,
+              scale: 1,
+              x: 0,
+              y: 0
+            }}
             exit={{ 
-              x: lastSwipe === 'right' ? 1000 : lastSwipe === 'left' ? -1000 : 0,
-              y: lastSwipe === 'super' ? -1000 : 0,
               opacity: 0,
-              transition: { duration: 0.3 }
+              transition: { 
+                duration: 0.1,
+                ease: "linear"
+              }
             }}
           >
             <MemeCard
