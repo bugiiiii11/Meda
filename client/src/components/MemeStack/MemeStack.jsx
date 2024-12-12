@@ -1,4 +1,3 @@
-//MemeStack.jsx
 // MemeStack.jsx
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -13,7 +12,7 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
   const [isMobile, setIsMobile] = React.useState(false);
 
   // Function to select a random meme
-  const getWeightedRandomMeme = () => {
+  const getWeightedRandomMeme = React.useCallback(() => {
     const availableMemes = memes.filter(meme => meme.id !== currentMeme?.id);
     if (availableMemes.length === 0) return memes[0];
 
@@ -30,30 +29,48 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
       }
     }
     
-    return {
-      ...availableMemes[0],
-      engagement: availableMemes[0]?.engagement || { likes: 0, superLikes: 0 }
-    };
-  };
+    return availableMemes[0];
+  }, [memes, currentMeme]);
 
-
-
-     // Initialize memes
+  // Initialize memes
   React.useEffect(() => {
     if (memes.length > 0 && !currentMeme) {
       const firstMeme = propCurrentMeme || getWeightedRandomMeme();
       console.log('Initial meme:', firstMeme);
       setCurrentMeme(firstMeme);
+      onMemeChange(firstMeme);
       
       const secondMeme = getWeightedRandomMeme();
+      console.log('Preloading next meme:', secondMeme);
       setNextMeme(secondMeme);
     }
-  }, [memes, propCurrentMeme]);
+  }, [memes, propCurrentMeme, getWeightedRandomMeme, onMemeChange]);
 
   // Check if running in Telegram WebApp
   React.useEffect(() => {
     setIsMobile(!!window.Telegram?.WebApp);
   }, []);
+
+  // Preload next meme image
+  React.useEffect(() => {
+    if (nextMeme) {
+      const img = new Image();
+      img.src = nextMeme.content;
+    }
+  }, [nextMeme]);
+
+  const transitionToNextMeme = React.useCallback(() => {
+    if (!nextMeme) return;
+    
+    // Update current meme immediately
+    setCurrentMeme(nextMeme);
+    onMemeChange(nextMeme);
+    
+    // Prepare next meme in advance
+    const newNextMeme = getWeightedRandomMeme();
+    console.log('Preparing next meme:', newNextMeme);
+    setNextMeme(newNextMeme);
+  }, [nextMeme, getWeightedRandomMeme, onMemeChange]);
 
   const handleSwipe = async (direction) => {
     if (isAnimating || !currentMeme) return;
@@ -64,19 +81,11 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
     try {
       const action = direction === 'right' ? 'like' : 
                     direction === 'left' ? 'dislike' : 'superlike';
-      
-      console.log('Handling swipe:', {
-        direction,
-        action,
-        memeId: currentMeme.id,
-        userData
-      });
 
-      if (!userData?.telegramId) {
-        console.error('No user data available for interaction');
-        throw new Error('User data not available');
-      }
+      // Start meme transition immediately
+      setTimeout(transitionToNextMeme, 200);
 
+      // Send interaction to backend
       const response = await fetch(ENDPOINTS.interactions.update, {
         method: 'POST',
         headers: {
@@ -86,96 +95,67 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
         body: JSON.stringify({
           action,
           memeId: currentMeme.id,
-          telegramId: userData.telegramId
+          telegramId: userData?.telegramId
         })
       });
 
       const data = await response.json();
       console.log('Interaction response:', data);
 
-      if (data.success) {
-        // Update current meme with new engagement data
-        const updatedCurrentMeme = {
-          ...currentMeme,
-          engagement: data.data.meme.engagement
-        };
-        
-        // Trigger meme change after successful interaction
-        setTimeout(() => {
-          setCurrentMeme(nextMeme);
-          const newNextMeme = getWeightedRandomMeme();
-          setNextMeme(newNextMeme);
-          onMemeChange(nextMeme);
-        }, 500); // Wait for animation
-      } else {
+      if (!data.success) {
         throw new Error(data.error || 'Interaction failed');
       }
     } catch (error) {
       console.error('Interaction error:', error);
-      // Show error toast or feedback to user
     } finally {
-      // Reset animation state after delay
+      // Reset animation state after short delay
       setTimeout(() => {
         setLastSwipe(null);
         setIsAnimating(false);
-      }, 800);
-    }
-  };
-
-  const indicatorVariants = {
-    initial: {
-      opacity: 0,
-      scale: 0.5,
-      y: 20
-    },
-    animate: {
-      opacity: 1,
-      scale: 1,
-      y: 0,
-      transition: {
-        duration: 0.2,
-        ease: [0.4, 0, 0.2, 1]
-      }
-    },
-    exit: {
-      opacity: 0,
-      scale: 0.8,
-      y: -20,
-      transition: {
-        duration: 0.2,
-        ease: [0.4, 0, 1, 1]
-      }
+      }, 500);
     }
   };
 
   return (
     <div className="relative max-w-[calc(100vw-32px)] mx-auto aspect-square">
+      {/* Swipe Indicator */}
       <AnimatePresence>
         {lastSwipe && (
           <motion.div 
             className="absolute inset-0 flex items-center justify-center z-30 pointer-events-none"
-            initial={{ opacity: 0, scale: 0.5 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.8 }}
+            initial={{ opacity: 0, scale: 0.5, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.8, y: -20 }}
+            transition={{ duration: 0.2 }}
           >
-            <div className={`px-8 py-4 rounded-2xl border-4 border-white shadow-xl backdrop-blur-sm ${
-              lastSwipe === 'right' ? 'bg-green-500/90' :
-              lastSwipe === 'left' ? 'bg-red-500/90' :
-              'bg-blue-500/90'
-            }`}>
-              <div className="text-4xl font-bold text-white">
-                {lastSwipe === 'right' ? 'LIKE' : lastSwipe === 'left' ? 'NOPE' : 'SUPER'}
+            <motion.div 
+              className={`px-8 py-4 rounded-2xl border-4 border-white shadow-xl backdrop-blur-sm ${
+                lastSwipe === 'right' ? 'bg-green-500/90' :
+                lastSwipe === 'left' ? 'bg-red-500/90' :
+                'bg-blue-500/90'
+              }`}
+              animate={{
+                rotate: lastSwipe === 'right' ? 12 : lastSwipe === 'left' ? -12 : 0
+              }}
+            >
+              <div className="text-4xl font-bold text-white flex items-center gap-3">
+                <span>
+                  {lastSwipe === 'right' ? 'LIKE' : lastSwipe === 'left' ? 'NOPE' : 'SUPER'}
+                </span>
+                <span className="text-5xl">
+                  {lastSwipe === 'right' ? '👍' : lastSwipe === 'left' ? '👎' : '⭐'}
+                </span>
               </div>
-            </div>
+            </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* Current Meme */}
-      <AnimatePresence>
+      {/* Meme Cards */}
+      <AnimatePresence mode="wait">
         {currentMeme && (
           <motion.div
-            key={currentMeme.id + "-current"}
+            key={currentMeme.id}
             className="absolute inset-0 z-20"
             initial={{ scale: 0.95, y: 8, opacity: 0.8 }}
             animate={{ scale: 1, y: 0, opacity: 1 }}
@@ -196,43 +176,41 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
             />
           </motion.div>
         )}
-        
-        {/* Next Meme (Background) */}
-        {nextMeme && (
-          <motion.div
-            key={nextMeme.id + "-next"}
-            className="absolute inset-0 z-10"
-            initial={{ scale: 0.95, y: 8 }}
-            animate={{ scale: 0.95, y: 8 }}
-          >
-            <MemeCard
-              meme={nextMeme}
-              onSwipe={() => {}}
-              isTop={false}
-              userData={userData}
-            />
-          </motion.div>
-        )}
       </AnimatePresence>
 
-      {/* Browser Controls */}
+      {/* Next Meme (Preloaded) */}
+      {nextMeme && (
+        <div className="absolute inset-0 z-10">
+          <MemeCard
+            meme={nextMeme}
+            onSwipe={() => {}}
+            isTop={false}
+            userData={userData}
+          />
+        </div>
+      )}
+
+      {/* Desktop Controls */}
       {!isMobile && (
         <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 z-30 flex gap-4">
           <button
-            onClick={() => handleSwipe('left')}
+            onClick={() => !isAnimating && handleSwipe('left')}
             className="p-4 rounded-full bg-red-500/20 hover:bg-red-500/40 transition-colors"
+            disabled={isAnimating}
           >
             👎
           </button>
           <button
-            onClick={() => handleSwipe('right')}
+            onClick={() => !isAnimating && handleSwipe('right')}
             className="p-4 rounded-full bg-green-500/20 hover:bg-green-500/40 transition-colors"
+            disabled={isAnimating}
           >
             👍
           </button>
           <button
-            onClick={() => handleSwipe('super')}
+            onClick={() => !isAnimating && handleSwipe('super')}
             className="p-4 rounded-full bg-blue-500/20 hover:bg-blue-500/40 transition-colors"
+            disabled={isAnimating}
           >
             ⭐
           </button>
