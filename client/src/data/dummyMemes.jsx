@@ -1,5 +1,6 @@
 //dummyMemes.js
 
+/*
 // client/src/assets/memes/
 // ... import all your memes
 import meme1 from '../assets/memes/meme1.png';
@@ -34,15 +35,16 @@ import logo6 from '../assets/logos/logo6.png';
 import logo7 from '../assets/logos/logo7.png';
 import logo8 from '../assets/logos/logo8.png';
 import logo9 from '../assets/logos/logo9.png';
+*/
 
 
 const dummyMemes = [
   {
     id: 1,
     projectName: "Pepe",
-    content: meme1,
+    content: "/assets/memes/meme1.png",
     weight: 1, // Higher number = higher chance of being shown
-    logo: logo1,
+    logo: "/assets/logos/logo1.png",
     projectDetails: {
       network: "Ethereum",
       price: "0.000019",
@@ -58,9 +60,9 @@ const dummyMemes = [
   {
     id: 2,
     projectName: "Pepe",
-    content: meme2,
+    content: "/assets/memes/meme2.png",
     weight: 1,
-    logo: logo1,
+    logo: "/assets/logos/logo1.png",
     projectDetails: {
       network: "Ethereum",
       price: "0.000019",
@@ -76,9 +78,9 @@ const dummyMemes = [
   {
     id: 3,
     projectName: "Pnut",
-    content: meme3,
+    content: "/assets/memes/meme3.png",
     weight: 1,
-    logo: logo3,
+    logo: "/assets/logos/logo3.png",
     projectDetails: {
       network: "Solana",
       price: "1.25",
@@ -95,9 +97,9 @@ const dummyMemes = [
   {
     id: 4,
     projectName: "Pepe",
-    content: meme4,
+    content: "/assets/memes/meme4.png",
     weight: 1,
-    logo: logo1,
+    logo: "/assets/logos/logo1.png",
     projectDetails: {
       network: "Ethereum",
       price: "0.000019",
@@ -113,9 +115,9 @@ const dummyMemes = [
   {
     id: 5,
     projectName: "Pnut",
-    content: meme5,
+    content: "/assets/memes/meme5.png",
     weight: 1,
-    logo: logo3,
+    logo: "/assets/logos/logo3.png",
     projectDetails: {
       network: "Solana",
       price: "1.25",
@@ -132,9 +134,9 @@ const dummyMemes = [
   {
     id: 6,
     projectName: "Pnut",
-    content: meme6,
+    content: "/assets/memes/meme6.png",
     weight: 1,
-    logo: logo3,
+    logo: "/assets/logos/logo3.png",
     projectDetails: {
       network: "Solana",
       price: "1.25",
@@ -151,9 +153,9 @@ const dummyMemes = [
   {
     id: 7,
     projectName: "Pnut",
-    content: meme7,
+    content: "/assets/memes/meme7.png",
     weight: 1,
-    logo: logo3,
+    logo: "/assets/logos/logo3.png",
     projectDetails: {
       network: "Solana",
       price: "1.25",
@@ -170,9 +172,9 @@ const dummyMemes = [
   {
     id: 8,
     projectName: "Popcat",
-    content: meme8,
+    content: "/assets/memes/meme8.png",
     weight: 1,
-    logo: logo2,
+    logo: "/assets/logos/logo2.png",
     projectDetails: {
       network: "Solana",
       price: "1.42",
@@ -189,9 +191,9 @@ const dummyMemes = [
   {
     id: 9,
     projectName: "Pnut",
-    content: meme9,
+    content: "/assets/memes/meme9.png",
     weight: 1,
-    logo: logo3,
+    logo: "/assets/logos/logo3.png",
     projectDetails: {
       network: "Solana",
       price: "1.25",
@@ -208,9 +210,9 @@ const dummyMemes = [
   {
     id: 10,
     projectName: "Popcat",
-    content: meme10,
+    content: "/assets/memes/meme10.png",
     weight: 1,
-    logo: logo2,
+    logo: "/assets/logos/logo2.png",
     projectDetails: {
       network: "Solana",
       price: "1.42",
@@ -227,9 +229,9 @@ const dummyMemes = [
   {
     id: 11,
     projectName: "Popcat",
-    content: meme11,
+    content: "/assets/memes/meme11.png",
     weight: 1,
-    logo: logo2,
+    logo: "/assets/logos/logo2.png",
     projectDetails: {
       network: "Solana",
       price: "1.42",
@@ -246,9 +248,9 @@ const dummyMemes = [
   {
     id: 12,
     projectName: "Popcat",
-    content: meme12,
+    content: "/assets/memes/meme12.png",
     weight: 1,
-    logo: logo2,
+    logo: "/assets/logos/logo2.png",
     projectDetails: {
       network: "Solana",
       price: "1.42",
@@ -265,9 +267,9 @@ const dummyMemes = [
   {
     id: 13,
     projectName: "Popcat",
-    content: meme13,
+    content: "/assets/memes/meme13.png",
     weight: 1,
-    logo: logo2,
+    logo: "/assets/logos/logo2.png",
     projectDetails: {
       network: "Solana",
       price: "1.42",
@@ -284,9 +286,9 @@ const dummyMemes = [
   {
     id: 14,
     projectName: "Popcat",
-    content: meme14,
+    content: "/assets/memes/meme14.png",
     weight: 1,
-    logo: logo2,
+    logo: "/assets/logos/logo2.png",
     projectDetails: {
       network: "Solana",
       price: "1.42",
@@ -303,9 +305,9 @@ const dummyMemes = [
   {
     id: 15,
     projectName: "Shiba Inu",
-    content: meme15,
+    content: "/assets/memes/meme15.png",
     weight: 2,
-    logo: logo4,
+    logo: "/assets/logos/logo4.png",
     projectDetails: {
       network: "Ethereum",
       price: "0.00002423",
@@ -322,9 +324,9 @@ const dummyMemes = [
   {
     id: 16,
     projectName: "Bonk",
-    content: meme16,
+    content: "/assets/memes/meme16.png",
     weight: 2,
-    logo: logo5,
+    logo: "/assets/logos/logo5.png",
     projectDetails: {
       network: "Solana",
       price: "0.00004122",
@@ -340,9 +342,9 @@ const dummyMemes = [
   {
     id: 17,
     projectName: "DogWifHat",
-    content: meme17,
+    content: "/assets/memes/meme17.png",
     weight: 2,
-    logo: logo6,
+    logo: "/assets/logos/logo6.png",
     projectDetails: {
       network: "Solana",
       price: "3.08",
@@ -359,9 +361,9 @@ const dummyMemes = [
   {
     id: 18,
     projectName: "Floki",
-    content: meme18,
+    content: "/assets/memes/meme18.png",
     weight: 2,
-    logo: logo7,
+    logo: "/assets/logos/logo7.png",
     projectDetails: {
       network: "Ethereum",
       price: "0.000213",
@@ -378,9 +380,9 @@ const dummyMemes = [
   {
     id: 19,
     projectName: "Brett",
-    content: meme19,
+    content: "/assets/memes/meme19.png",
     weight: 2,
-    logo: logo8,
+    logo: "/assets/logos/logo8.png",
     projectDetails: {
       network: "Base",
       price: "0.1566",
@@ -397,9 +399,9 @@ const dummyMemes = [
   {
     id: 20,
     projectName: "Goatseus Maximus",
-    content: meme20,
+    content: "/assets/memes/meme20.png",
     weight: 2,
-    logo: logo9,
+    logo: "/assets/logos/logo9.png",
     projectDetails: {
       network: "Solana",
       price: "0.7226",
