@@ -98,7 +98,7 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
       setTimeout(() => {
         setLastSwipe(null);
         setIsAnimating(false);
-      }, 300);
+      }, 50);
     }
   };
 
