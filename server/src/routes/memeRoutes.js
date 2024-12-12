@@ -16,4 +16,6 @@ router.get('/next/:telegramId',
   MemeController.getNextMeme
 );
 
+router.get('/withEngagement', MemeController.getMemesWithEngagement);
+
 module.exports = router;

@@ -131,21 +131,15 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
 
       {/* Current Meme */}
       <AnimatePresence mode="wait">
-        {currentMeme && (
+        {currentMeme && !isAnimating && (
           <motion.div
             key={currentMeme.id}
             className="absolute inset-0 z-20"
             initial={false}
-            animate={{ 
-              opacity: isDragging ? 0.5 : 1,
-              scale: 1
-            }}
+            animate={{ x: 0, y: 0, opacity: isDragging ? 0.5 : 1 }}
             exit={{ 
               opacity: 0,
-              transition: { 
-                duration: 0.1,
-                ease: "linear"
-              }
+              transition: { duration: 0.1 }
             }}
           >
             <MemeCard
@@ -155,22 +149,7 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
               isMobile={isMobile}
               userData={userData}
               onDragStart={() => setIsDragging(true)}
-              onDragEnd={(e, info) => {
-                setIsDragging(false);
-                
-                const xVel = info.velocity.x;
-                const yVel = info.velocity.y;
-                const xOffset = info.offset.x;
-                const yOffset = info.offset.y;
-                
-                if (Math.abs(yVel) > Math.abs(xVel) && yOffset < -50) {
-                  handleSwipe('super');
-                } else if (xOffset > 50) {
-                  handleSwipe('right');
-                } else if (xOffset < -50) {
-                  handleSwipe('left');
-                }
-              }}
+              onDragEnd={() => setIsDragging(false)}
             />
           </motion.div>
         )}
@@ -193,7 +172,7 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
                 'bg-blue-500/90'
               }`}
             >
-              <div className="text-4xl font-bold text-white flex items-center gap-3">
+              <div className="text-4xl font-bold text-white">
                 {lastSwipe === 'right' ? 'LIKE' : lastSwipe === 'left' ? 'NOPE' : 'SUPER'}
               </div>
             </motion.div>

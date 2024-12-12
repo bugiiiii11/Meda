@@ -51,7 +51,25 @@ function App() {
   const [initError, setInitError] = useState(null);
   const [isTelegram, setIsTelegram] = useState(false);
   const [userData, setUserData] = useState(null);
+  const [memes, setMemes] = useState([]);
 
+  useEffect(() => {
+    const loadMemes = async () => {
+      try {
+        const response = await fetch(ENDPOINTS.memes.withEngagement);
+        const data = await response.json();
+        
+        if (data.success) {
+          setMemes(data.data);
+        }
+      } catch (error) {
+        console.error('Error loading memes:', error);
+      }
+    };
+    
+    loadMemes();
+  }, []);
+  
   const handleMemeChange = (meme) => {
     console.log('Changing meme to:', meme);
     setCurrentMeme(meme);

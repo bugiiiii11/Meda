@@ -39,6 +39,7 @@ export const ENDPOINTS = {
     debug: `${BASE_URL}/api/interactions/debug`
   },
   memes: {
+    withEngagement: `${API_URL}/api/memes/withEngagement`,
     create: `${BASE_URL}/api/memes/create`,
     next: `${BASE_URL}/api/memes/next`,
     interact: `${BASE_URL}/api/memes/interact`
