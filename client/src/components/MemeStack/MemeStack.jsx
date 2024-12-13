@@ -37,48 +37,58 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
 
 
   const getWeightedRandomMeme = React.useCallback(() => {
+    console.log('Getting weighted random meme from:', memes.length, 'memes');
+    console.log('Current meme:', currentMeme?.id);
+    
     const availableMemes = memes.filter(meme => meme.id !== currentMeme?.id);
+    console.log('Available memes:', availableMemes.length);
+    
     if (availableMemes.length === 0) return memes[0];
-
+  
     const totalWeight = availableMemes.reduce((sum, meme) => sum + (meme.weight || 1), 0);
     let random = Math.random() * totalWeight;
     
     for (const meme of availableMemes) {
       random -= (meme.weight || 1);
       if (random <= 0) {
-        // Make sure engagement exists
+        console.log('Selected next meme:', meme.id);
         return {
           ...meme,
-          engagement: {
-            likes: meme.engagement?.likes || 0,
-            superLikes: meme.engagement?.superLikes || 0,
-            dislikes: meme.engagement?.dislikes || 0
-          }
+          engagement: meme.engagement || { likes: 0, superLikes: 0, dislikes: 0 }
         };
       }
     }
     
+    console.log('Fallback to first available meme:', availableMemes[0].id);
     return {
       ...availableMemes[0],
-      engagement: {
-        likes: availableMemes[0].engagement?.likes || 0,
-        superLikes: availableMemes[0].engagement?.superLikes || 0,
-        dislikes: availableMemes[0].engagement?.dislikes || 0
-      }
+      engagement: availableMemes[0].engagement || { likes: 0, superLikes: 0, dislikes: 0 }
     };
   }, [memes, currentMeme]);
 
 
   React.useEffect(() => {
     if (memes.length > 0 && !currentMeme) {
-      const firstMeme = propCurrentMeme || getWeightedRandomMeme();
+      console.log('Initializing memes');
+      
+      // Ensure we're not starting with Pepe by default
+      const availableMemes = [...memes];
+      const randomIndex = Math.floor(Math.random() * availableMemes.length);
+      const firstMeme = propCurrentMeme || availableMemes[randomIndex];
+      
+      console.log('Selected first meme:', firstMeme);
       setCurrentMeme(firstMeme);
       onMemeChange(firstMeme);
       
-      const secondMeme = getWeightedRandomMeme();
+      // Get next meme, ensuring it's different
+      const remainingMemes = availableMemes.filter(m => m.id !== firstMeme.id);
+      const nextRandomIndex = Math.floor(Math.random() * remainingMemes.length);
+      const secondMeme = remainingMemes[nextRandomIndex];
+      
+      console.log('Selected next meme:', secondMeme);
       setNextMeme(secondMeme);
     }
-  }, [memes, propCurrentMeme, getWeightedRandomMeme, onMemeChange]);
+  }, [memes, propCurrentMeme, onMemeChange]);
 
   React.useEffect(() => {
     setIsMobile(!!window.Telegram?.WebApp);
@@ -89,17 +99,20 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
   const handleSwipe = async (direction) => {
     if (isAnimating || !currentMeme) return;
     
+    console.log('Handling swipe:', direction);
+    console.log('Current meme before swipe:', currentMeme?.id);
+    console.log('Next meme before swipe:', nextMeme?.id);
+    
     setIsAnimating(true);
     setLastSwipe(direction);
-
+  
+    // First transition to next meme
+    transitionToNextMeme();
+  
     try {
       const action = direction === 'right' ? 'like' : 
                     direction === 'left' ? 'dislike' : 'superlike';
-
-      // First transition to next meme
-      transitionToNextMeme();  // Move this before the API call
-
-      // Then update the interaction in the background
+  
       const response = await fetch(ENDPOINTS.interactions.update, {
         method: 'POST',
         headers: {
@@ -112,10 +125,10 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
           telegramId: userData?.telegramId
         })
       });
-
+  
       const data = await response.json();
       console.log('Interaction response:', data);
-
+  
       if (!data.success) {
         throw new Error(data.error || 'Interaction failed');
       }
@@ -125,6 +138,9 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
       setTimeout(() => {
         setLastSwipe(null);
         setIsAnimating(false);
+        
+        console.log('Current meme after swipe:', currentMeme?.id);
+        console.log('Next meme after swipe:', nextMeme?.id);
       }, 300);
     }
   };
