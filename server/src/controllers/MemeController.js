@@ -138,6 +138,9 @@ class MemeController {
 
   static async getMemesWithEngagement(req, res) {
     try {
+      const sampleMeme = await Meme.findOne().lean();
+      console.log('Sample meme data:', sampleMeme);
+      
       console.log('Getting memes with engagement data');
       const memes = await Meme.aggregate([
         {

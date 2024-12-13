@@ -13,6 +13,8 @@ const QuickStatIcon = ({ children, count, text }) => (
 );
 
 const MemeCard = ({ meme, onSwipe, isTop, isMobile, userData, onDragStart, onDragEnd }) => {
+  console.log('MemeCard received meme:', meme);
+
   const x = useMotionValue(0);
   const y = useMotionValue(0);
   const rotate = useTransform(x, [-100, 0, 100], [-15, 0, 15]);
@@ -40,21 +42,28 @@ const MemeCard = ({ meme, onSwipe, isTop, isMobile, userData, onDragStart, onDra
           alt={meme.projectName}
           className="w-full aspect-square object-cover"
         />
-        <div className="bg-gradient-to-b from-[#2c2d31] to-[#1a1b1e] border-t border-[#3c3d41]/30 p-4">
-          <div className="flex justify-between items-center">
-            <QuickStatIcon 
-              count={meme.engagement?.likes || 0} 
-              text="Likes"
-            >
-              👍
-            </QuickStatIcon>
-            <QuickStatIcon 
-              count={meme.engagement?.superLikes || 0} 
-              text="Super Likes"
-            >
-              ⭐
-            </QuickStatIcon>
+      <div className="bg-gradient-to-b from-[#2c2d31] to-[#1a1b1e] border-t border-[#3c3d41]/30 p-4">
+        <div className="flex justify-between items-center">
+          <div className="flex items-center gap-2">
+            <span>👍</span>
+            <div className="flex flex-col">
+              <span className="text-gray-200 font-medium">
+                {meme?.engagement?.likes || 0}
+              </span>
+              <span className="text-xs text-gray-400">Likes</span>
+            </div>
           </div>
+          
+          <div className="flex items-center gap-2">
+            <span>⭐</span>
+            <div className="flex flex-col">
+              <span className="text-gray-200 font-medium">
+                {meme?.engagement?.superLikes || 0}
+              </span>
+              <span className="text-xs text-gray-400">Super Likes</span>
+            </div>
+            </div>
+            </div>
         </div>
       </div>
     </motion.div>

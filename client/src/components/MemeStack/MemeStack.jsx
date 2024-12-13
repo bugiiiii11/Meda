@@ -5,6 +5,12 @@ import MemeCard from '../MemeCard/MemeCard';
 import { ENDPOINTS } from '../../config/api';
 
 const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData }) => {
+  
+  useEffect(() => {
+    console.log('Current meme data:', currentMeme);
+    console.log('Next meme data:', nextMeme);
+  }, [currentMeme, nextMeme]);
+
   const [currentMeme, setCurrentMeme] = React.useState(null);
   const [nextMeme, setNextMeme] = React.useState(null);
   const [lastSwipe, setLastSwipe] = React.useState(null);
