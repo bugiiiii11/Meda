@@ -5,7 +5,11 @@ import MemeCard from '../MemeCard/MemeCard';
 import { ENDPOINTS } from '../../config/api';
 
 const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData }) => {
-  console.log('MemeStack received memes:', memes);
+  console.log('MemeStack received memes:', memes.map(meme => ({
+    id: meme.id,
+    projectName: meme.projectName,
+    engagement: meme.engagement
+  })));
 
   const [currentMeme, setCurrentMeme] = React.useState(null);
   const [nextMeme, setNextMeme] = React.useState(null);
@@ -15,8 +19,20 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
   const [isDragging, setIsDragging] = React.useState(false);
 
   useEffect(() => {
-    console.log('Current meme data:', currentMeme);
-    console.log('Next meme data:', nextMeme);
+    if (currentMeme) {
+      console.log('Current meme full data:', {
+        id: currentMeme.id,
+        projectName: currentMeme.projectName,
+        engagement: currentMeme.engagement
+      });
+    }
+    if (nextMeme) {
+      console.log('Next meme full data:', {
+        id: nextMeme.id,
+        projectName: nextMeme.projectName,
+        engagement: nextMeme.engagement
+      });
+    }
   }, [currentMeme, nextMeme]);
 
   const getWeightedRandomMeme = React.useCallback(() => {
