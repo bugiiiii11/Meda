@@ -35,6 +35,7 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
     }
   }, [currentMeme, nextMeme]);
 
+
   const getWeightedRandomMeme = React.useCallback(() => {
     const availableMemes = memes.filter(meme => meme.id !== currentMeme?.id);
     if (availableMemes.length === 0) return memes[0];
@@ -45,15 +46,28 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
     for (const meme of availableMemes) {
       random -= (meme.weight || 1);
       if (random <= 0) {
+        // Make sure engagement exists
         return {
           ...meme,
-          engagement: meme.engagement || { likes: 0, superLikes: 0 }
+          engagement: {
+            likes: meme.engagement?.likes || 0,
+            superLikes: meme.engagement?.superLikes || 0,
+            dislikes: meme.engagement?.dislikes || 0
+          }
         };
       }
     }
     
-    return availableMemes[0];
+    return {
+      ...availableMemes[0],
+      engagement: {
+        likes: availableMemes[0].engagement?.likes || 0,
+        superLikes: availableMemes[0].engagement?.superLikes || 0,
+        dislikes: availableMemes[0].engagement?.dislikes || 0
+      }
+    };
   }, [memes, currentMeme]);
+
 
   React.useEffect(() => {
     if (memes.length > 0 && !currentMeme) {
@@ -93,9 +107,6 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
       const action = direction === 'right' ? 'like' : 
                     direction === 'left' ? 'dislike' : 'superlike';
 
-      // Transition faster now that we removed the sliding animation
-      setTimeout(transitionToNextMeme, 150);
-
       const response = await fetch(ENDPOINTS.interactions.update, {
         method: 'POST',
         headers: {
@@ -111,6 +122,14 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
 
       const data = await response.json();
       console.log('Interaction response:', data);
+
+      if (data.success && data.data?.meme) {
+        // Update current meme engagement
+        setCurrentMeme(prev => ({
+          ...prev,
+          engagement: data.data.meme.engagement
+        }));
+      }
 
       if (!data.success) {
         throw new Error(data.error || 'Interaction failed');

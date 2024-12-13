@@ -45,6 +45,11 @@ const dummyMemes = [
     content: "/assets/memes/meme1.png",
     weight: 1, // Higher number = higher chance of being shown
     logo: "/assets/logos/logo1.png",
+    engagement: {
+      likes: 0,
+      superLikes: 0,
+      dislikes: 0
+    },
     projectDetails: {
       network: "Ethereum",
       price: "0.000019",
@@ -63,6 +68,11 @@ const dummyMemes = [
     content: "/assets/memes/meme2.png",
     weight: 1,
     logo: "/assets/logos/logo1.png",
+    engagement: {
+      likes: 0,
+      superLikes: 0,
+      dislikes: 0
+    },
     projectDetails: {
       network: "Ethereum",
       price: "0.000019",
@@ -81,6 +91,11 @@ const dummyMemes = [
     content: "/assets/memes/meme3.png",
     weight: 1,
     logo: "/assets/logos/logo3.png",
+    engagement: {
+      likes: 0,
+      superLikes: 0,
+      dislikes: 0
+    },
     projectDetails: {
       network: "Solana",
       price: "1.25",
@@ -100,6 +115,11 @@ const dummyMemes = [
     content: "/assets/memes/meme4.png",
     weight: 1,
     logo: "/assets/logos/logo1.png",
+    engagement: {
+      likes: 0,
+      superLikes: 0,
+      dislikes: 0
+    },
     projectDetails: {
       network: "Ethereum",
       price: "0.000019",
@@ -118,6 +138,11 @@ const dummyMemes = [
     content: "/assets/memes/meme5.png",
     weight: 1,
     logo: "/assets/logos/logo3.png",
+    engagement: {
+      likes: 0,
+      superLikes: 0,
+      dislikes: 0
+    },
     projectDetails: {
       network: "Solana",
       price: "1.25",
@@ -137,6 +162,11 @@ const dummyMemes = [
     content: "/assets/memes/meme6.png",
     weight: 1,
     logo: "/assets/logos/logo3.png",
+    engagement: {
+      likes: 0,
+      superLikes: 0,
+      dislikes: 0
+    },
     projectDetails: {
       network: "Solana",
       price: "1.25",
@@ -156,6 +186,11 @@ const dummyMemes = [
     content: "/assets/memes/meme7.png",
     weight: 1,
     logo: "/assets/logos/logo3.png",
+    engagement: {
+      likes: 0,
+      superLikes: 0,
+      dislikes: 0
+    },
     projectDetails: {
       network: "Solana",
       price: "1.25",
@@ -175,6 +210,11 @@ const dummyMemes = [
     content: "/assets/memes/meme8.png",
     weight: 1,
     logo: "/assets/logos/logo2.png",
+    engagement: {
+      likes: 0,
+      superLikes: 0,
+      dislikes: 0
+    },
     projectDetails: {
       network: "Solana",
       price: "1.42",
@@ -194,6 +234,11 @@ const dummyMemes = [
     content: "/assets/memes/meme9.png",
     weight: 1,
     logo: "/assets/logos/logo3.png",
+    engagement: {
+      likes: 0,
+      superLikes: 0,
+      dislikes: 0
+    },
     projectDetails: {
       network: "Solana",
       price: "1.25",
@@ -213,6 +258,11 @@ const dummyMemes = [
     content: "/assets/memes/meme10.png",
     weight: 1,
     logo: "/assets/logos/logo2.png",
+    engagement: {
+      likes: 0,
+      superLikes: 0,
+      dislikes: 0
+    },
     projectDetails: {
       network: "Solana",
       price: "1.42",
@@ -232,6 +282,11 @@ const dummyMemes = [
     content: "/assets/memes/meme11.png",
     weight: 1,
     logo: "/assets/logos/logo2.png",
+    engagement: {
+      likes: 0,
+      superLikes: 0,
+      dislikes: 0
+    },
     projectDetails: {
       network: "Solana",
       price: "1.42",
@@ -251,6 +306,11 @@ const dummyMemes = [
     content: "/assets/memes/meme12.png",
     weight: 1,
     logo: "/assets/logos/logo2.png",
+    engagement: {
+      likes: 0,
+      superLikes: 0,
+      dislikes: 0
+    },
     projectDetails: {
       network: "Solana",
       price: "1.42",
@@ -270,6 +330,11 @@ const dummyMemes = [
     content: "/assets/memes/meme13.png",
     weight: 1,
     logo: "/assets/logos/logo2.png",
+    engagement: {
+      likes: 0,
+      superLikes: 0,
+      dislikes: 0
+    },
     projectDetails: {
       network: "Solana",
       price: "1.42",
@@ -289,6 +354,11 @@ const dummyMemes = [
     content: "/assets/memes/meme14.png",
     weight: 1,
     logo: "/assets/logos/logo2.png",
+    engagement: {
+      likes: 0,
+      superLikes: 0,
+      dislikes: 0
+    },
     projectDetails: {
       network: "Solana",
       price: "1.42",
@@ -308,6 +378,11 @@ const dummyMemes = [
     content: "/assets/memes/meme15.png",
     weight: 2,
     logo: "/assets/logos/logo4.png",
+    engagement: {
+      likes: 0,
+      superLikes: 0,
+      dislikes: 0
+    },
     projectDetails: {
       network: "Ethereum",
       price: "0.00002423",
@@ -327,6 +402,11 @@ const dummyMemes = [
     content: "/assets/memes/meme16.png",
     weight: 2,
     logo: "/assets/logos/logo5.png",
+    engagement: {
+      likes: 0,
+      superLikes: 0,
+      dislikes: 0
+    },
     projectDetails: {
       network: "Solana",
       price: "0.00004122",
@@ -345,6 +425,11 @@ const dummyMemes = [
     content: "/assets/memes/meme17.png",
     weight: 2,
     logo: "/assets/logos/logo6.png",
+    engagement: {
+      likes: 0,
+      superLikes: 0,
+      dislikes: 0
+    },
     projectDetails: {
       network: "Solana",
       price: "3.08",
@@ -364,6 +449,11 @@ const dummyMemes = [
     content: "/assets/memes/meme18.png",
     weight: 2,
     logo: "/assets/logos/logo7.png",
+    engagement: {
+      likes: 0,
+      superLikes: 0,
+      dislikes: 0
+    },
     projectDetails: {
       network: "Ethereum",
       price: "0.000213",
@@ -383,6 +473,11 @@ const dummyMemes = [
     content: "/assets/memes/meme19.png",
     weight: 2,
     logo: "/assets/logos/logo8.png",
+    engagement: {
+      likes: 0,
+      superLikes: 0,
+      dislikes: 0
+    },
     projectDetails: {
       network: "Base",
       price: "0.1566",
@@ -402,6 +497,11 @@ const dummyMemes = [
     content: "/assets/memes/meme20.png",
     weight: 2,
     logo: "/assets/logos/logo9.png",
+    engagement: {
+      likes: 0,
+      superLikes: 0,
+      dislikes: 0
+    },
     projectDetails: {
       network: "Solana",
       price: "0.7226",
