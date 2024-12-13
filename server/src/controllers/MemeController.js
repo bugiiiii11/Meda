@@ -97,22 +97,27 @@ class MemeController {
     try {
       console.log('Getting memes with engagement data');
       
-      // Get all active memes
       const memes = await Meme.find({ status: 'active' })
         .select('id projectName content logo weight engagement projectDetails')
         .lean();
-
-      // Get all relevant projects
+  
+      // Log a sample meme
+      console.log('Sample meme from database:', JSON.stringify(memes[0], null, 2));
+  
+      // Get project stats
       const projects = await Project.find({
         name: { $in: memes.map(m => m.projectName) }
       }).lean();
-
-      // Combine meme and project data
+  
+      // Log a sample project
+      console.log('Sample project from database:', JSON.stringify(projects[0], null, 2));
+  
+      // Combine data and log result
       const memesWithEngagement = memes.map(meme => {
         const project = projects.find(p => p.name === meme.projectName);
         const memeStats = project?.memeStats?.find(ms => ms.memeId === meme.id);
         
-        return {
+        const result = {
           ...meme,
           engagement: {
             likes: memeStats?.likes || 0,
@@ -120,10 +125,11 @@ class MemeController {
             dislikes: meme.engagement?.dislikes || 0
           }
         };
+        
+        console.log(`Engagement data for meme ${meme.id}:`, result.engagement);
+        return result;
       });
-
-      console.log('Sample meme with engagement:', memesWithEngagement[0]);
-      
+  
       res.json({
         success: true,
         data: memesWithEngagement
