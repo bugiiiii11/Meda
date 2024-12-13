@@ -138,28 +138,13 @@ class MemeController {
 
   static async getMemesWithEngagement(req, res) {
     try {
-      const sampleMeme = await Meme.findOne().lean();
-      console.log('Sample meme data:', sampleMeme);
-      
       console.log('Getting memes with engagement data');
-      const memes = await Meme.aggregate([
-        {
-          $match: { status: 'active' }
-        },
-        {
-          $project: {
-            id: 1,
-            projectName: 1,
-            content: 1,
-            logo: 1,
-            weight: 1,
-            engagement: 1,  // Make sure engagement is included
-            projectDetails: 1
-          }
-        }
-      ]);
+      const memes = await Meme.find({ status: 'active' })
+        .select('id projectName content logo weight engagement projectDetails')
+        .lean();
   
-      console.log(`Found ${memes.length} memes with engagement data`);
+      console.log('Sample meme data:', memes[0]);  // Add this log to check data
+      
       res.json({
         success: true,
         data: memes

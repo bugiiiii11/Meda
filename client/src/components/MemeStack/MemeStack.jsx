@@ -84,18 +84,7 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
     setIsMobile(!!window.Telegram?.WebApp);
   }, []);
 
-  const transitionToNextMeme = React.useCallback(() => {
-    if (!nextMeme) return;
-    
-    setCurrentMeme(nextMeme);
-    onMemeChange(nextMeme);
-    
-    // Generate next meme in background only after current transition is complete
-    setTimeout(() => {
-      const newNextMeme = getWeightedRandomMeme();
-      setNextMeme(newNextMeme);
-    }, 300);
-  }, [nextMeme, getWeightedRandomMeme, onMemeChange]);
+
 
   const handleSwipe = async (direction) => {
     if (isAnimating || !currentMeme) return;
@@ -107,6 +96,10 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
       const action = direction === 'right' ? 'like' : 
                     direction === 'left' ? 'dislike' : 'superlike';
 
+      // First transition to next meme
+      transitionToNextMeme();  // Move this before the API call
+
+      // Then update the interaction in the background
       const response = await fetch(ENDPOINTS.interactions.update, {
         method: 'POST',
         headers: {
@@ -123,14 +116,6 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
       const data = await response.json();
       console.log('Interaction response:', data);
 
-      if (data.success && data.data?.meme) {
-        // Update current meme engagement
-        setCurrentMeme(prev => ({
-          ...prev,
-          engagement: data.data.meme.engagement
-        }));
-      }
-
       if (!data.success) {
         throw new Error(data.error || 'Interaction failed');
       }
@@ -143,6 +128,18 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
       }, 300);
     }
   };
+
+
+  const transitionToNextMeme = React.useCallback(() => {
+    if (!nextMeme) return;
+    
+    setCurrentMeme(nextMeme);
+    onMemeChange(nextMeme);
+    
+    // Generate next meme immediately
+    const newNextMeme = getWeightedRandomMeme();
+    setNextMeme(newNextMeme);
+  }, [nextMeme, getWeightedRandomMeme, onMemeChange]);
 
   return (
     <div className="relative max-w-[calc(100vw-32px)] mx-auto aspect-square">
