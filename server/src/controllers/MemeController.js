@@ -97,58 +97,47 @@ class MemeController {
     try {
       console.log('Getting memes with engagement data');
       
+      // First get all memes
       const memes = await Meme.find({ status: 'active' })
         .select('id projectName content logo weight engagement projectDetails')
         .lean();
   
-      // Log a sample meme
-      console.log('Sample meme from database:', JSON.stringify(memes[0], null, 2));
-  
-      // Get project stats
+      // Then get all projects with their meme stats
       const projects = await Project.find({
-        name: { $in: memes.map(m => m.projectName) }
+        name: { $in: [...new Set(memes.map(m => m.projectName))] }
       }).lean();
   
-      // Log a sample project
-      console.log('Sample project from database:', JSON.stringify(projects[0], null, 2));
-  
-      // Combine data and log result
+      // Combine the data
       const memesWithEngagement = memes.map(meme => {
+        // Find corresponding project
         const project = projects.find(p => p.name === meme.projectName);
+        // Find meme stats in project
         const memeStats = project?.memeStats?.find(ms => ms.memeId === meme.id);
-        
-        const result = {
+  
+        return {
           ...meme,
           engagement: {
-            likes: memeStats?.likes || 0,
-            superLikes: memeStats?.superLikes || 0,
+            likes: memeStats?.likes || meme.engagement?.likes || 0,
+            superLikes: memeStats?.superLikes || meme.engagement?.superLikes || 0,
             dislikes: meme.engagement?.dislikes || 0
           }
         };
-        
-        console.log(`Engagement data for meme ${meme.id}:`, result.engagement);
-        return result;
       });
   
-    // Adding this log
-    console.log('Raw memes from database:', memes.map(m => ({
-      id: m.id,
-      projectName: m.projectName,
-      engagement: m.engagement
-    })));
-
-    res.json({
-      success: true,
-      data: memes
-    });
-  } catch (error) {
-    console.error('Get memes with engagement error:', error);
-    res.status(500).json({
-      success: false,
-      error: error.message
-    });
+      console.log('First meme engagement data:', memesWithEngagement[0]?.engagement);
+  
+      res.json({
+        success: true,
+        data: memesWithEngagement
+      });
+    } catch (error) {
+      console.error('Get memes with engagement error:', error);
+      res.status(500).json({
+        success: false,
+        error: error.message
+      });
+    }
   }
-}
 
   static async updateMemeStatus(req, res) {
     try {
