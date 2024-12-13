@@ -38,63 +38,75 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
 
 
   const getWeightedRandomMeme = React.useCallback(() => {
-    console.log('Getting random meme from pool:', memes.map(m => ({
-      id: m.id,
-      projectName: m.projectName,
-      engagement: m.engagement
-    })));
-    
-    console.log('Current meme:', currentMeme?.id);
-    
     const availableMemes = memes.filter(meme => meme.id !== currentMeme?.id);
-    console.log('Available memes:', availableMemes.length);
-    
     if (availableMemes.length === 0) return memes[0];
-  
+
+    console.log('Available memes with engagement:', 
+      availableMemes.map(m => ({
+        id: m.id,
+        engagement: m.engagement
+      }))
+    );
+
     const totalWeight = availableMemes.reduce((sum, meme) => sum + (meme.weight || 1), 0);
     let random = Math.random() * totalWeight;
     
     for (const meme of availableMemes) {
       random -= (meme.weight || 1);
       if (random <= 0) {
-        console.log('Selected next meme:', meme.id);
-        return {
+        // Make sure to preserve the engagement data
+        const selectedMeme = {
           ...meme,
-          engagement: meme.engagement || { likes: 0, superLikes: 0, dislikes: 0 }
+          engagement: {
+            likes: meme.engagement?.likes || 0,
+            superLikes: meme.engagement?.superLikes || 0,
+            dislikes: meme.engagement?.dislikes || 0
+          }
         };
+        console.log('Selected meme with engagement:', selectedMeme);
+        return selectedMeme;
       }
     }
     
-    console.log('Fallback to first available meme:', availableMemes[0].id);
+    // Preserve engagement data for fallback case too
     return {
       ...availableMemes[0],
-      engagement: availableMemes[0].engagement || { likes: 0, superLikes: 0, dislikes: 0 }
+      engagement: {
+        likes: availableMemes[0].engagement?.likes || 0,
+        superLikes: availableMemes[0].engagement?.superLikes || 0,
+        dislikes: availableMemes[0].engagement?.dislikes || 0
+      }
     };
   }, [memes, currentMeme]);
 
-
+  // When initializing memes
   React.useEffect(() => {
     if (memes.length > 0 && !currentMeme) {
-      console.log('Initializing memes');
+      console.log('Initializing first meme with engagement data');
+      const firstMeme = propCurrentMeme || getWeightedRandomMeme();
+      console.log('First meme:', firstMeme);
       
-      // Ensure we're not starting with Pepe by default
-      const availableMemes = [...memes];
-      const randomIndex = Math.floor(Math.random() * availableMemes.length);
-      const firstMeme = propCurrentMeme || availableMemes[randomIndex];
-      
-      console.log('Selected first meme:', firstMeme);
       setCurrentMeme(firstMeme);
       onMemeChange(firstMeme);
       
-      // Get next meme, ensuring it's different
-      const remainingMemes = availableMemes.filter(m => m.id !== firstMeme.id);
-      const nextRandomIndex = Math.floor(Math.random() * remainingMemes.length);
-      const secondMeme = remainingMemes[nextRandomIndex];
-      
-      console.log('Selected next meme:', secondMeme);
+      const secondMeme = getWeightedRandomMeme();
+      console.log('Next meme:', secondMeme);
       setNextMeme(secondMeme);
     }
-  }, [memes, propCurrentMeme, onMemeChange]);
+  }, [memes, propCurrentMeme, getWeightedRandomMeme, onMemeChange]);
+
+  const transitionToNextMeme = React.useCallback(() => {
+    if (!nextMeme) return;
+    
+    console.log('Transitioning to next meme with engagement:', nextMeme);
+    setCurrentMeme(nextMeme);
+    onMemeChange(nextMeme);
+    
+    const newNextMeme = getWeightedRandomMeme();
+    console.log('New next meme with engagement:', newNextMeme);
+    setNextMeme(newNextMeme);
+  }, [nextMeme, getWeightedRandomMeme, onMemeChange]);
+  
 
   React.useEffect(() => {
     setIsMobile(!!window.Telegram?.WebApp);
@@ -154,18 +166,6 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
       }, 300);
     }
   };
-
-
-  const transitionToNextMeme = React.useCallback(() => {
-    if (!nextMeme) return;
-    
-    setCurrentMeme(nextMeme);
-    onMemeChange(nextMeme);
-    
-    // Generate next meme immediately
-    const newNextMeme = getWeightedRandomMeme();
-    setNextMeme(newNextMeme);
-  }, [nextMeme, getWeightedRandomMeme, onMemeChange]);
 
   return (
     <div className="relative max-w-[calc(100vw-32px)] mx-auto aspect-square">
