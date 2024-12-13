@@ -13,10 +13,11 @@ const QuickStatIcon = ({ children, count, text }) => (
 );
 
 const MemeCard = ({ meme, onSwipe, isTop, isMobile, userData, onDragStart, onDragEnd }) => {
-  console.log('MemeCard full meme data:', {
+  console.log('MemeCard render:', {
     id: meme.id,
     projectName: meme.projectName,
-    engagement: meme.engagement
+    engagement: meme.engagement,
+    isTop
   });
 
   const x = useMotionValue(0);

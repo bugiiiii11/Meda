@@ -38,7 +38,12 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
 
 
   const getWeightedRandomMeme = React.useCallback(() => {
-    console.log('Getting weighted random meme from:', memes.length, 'memes');
+    console.log('Getting random meme from pool:', memes.map(m => ({
+      id: m.id,
+      projectName: m.projectName,
+      engagement: m.engagement
+    })));
+    
     console.log('Current meme:', currentMeme?.id);
     
     const availableMemes = memes.filter(meme => meme.id !== currentMeme?.id);

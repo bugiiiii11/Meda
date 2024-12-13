@@ -95,36 +95,31 @@ class MemeController {
 
   static async getMemesWithEngagement(req, res) {
     try {
-      console.log('Getting memes with engagement data');
-      
-      // First get all memes
-      const memes = await Meme.find({ status: 'active' })
-        .select('id projectName content logo weight engagement projectDetails')
-        .lean();
+      // Get memes and projects
+      const memes = await Meme.find({ status: 'active' }).lean();
+      console.log('Sample raw meme:', JSON.stringify(memes[0], null, 2));
   
-      // Then get all projects with their meme stats
-      const projects = await Project.find({
-        name: { $in: [...new Set(memes.map(m => m.projectName))] }
-      }).lean();
+      const projects = await Project.find().lean();
+      console.log('Sample project:', JSON.stringify(projects[0], null, 2));
   
-      // Combine the data
+      // Combine data
       const memesWithEngagement = memes.map(meme => {
-        // Find corresponding project
         const project = projects.find(p => p.name === meme.projectName);
-        // Find meme stats in project
         const memeStats = project?.memeStats?.find(ms => ms.memeId === meme.id);
+        
+        const combinedEngagement = {
+          likes: memeStats?.likes || meme.engagement?.likes || 0,
+          superLikes: memeStats?.superLikes || meme.engagement?.superLikes || 0,
+          dislikes: meme.engagement?.dislikes || 0
+        };
+  
+        console.log(`Engagement for meme ${meme.id}:`, combinedEngagement);
   
         return {
           ...meme,
-          engagement: {
-            likes: memeStats?.likes || meme.engagement?.likes || 0,
-            superLikes: memeStats?.superLikes || meme.engagement?.superLikes || 0,
-            dislikes: meme.engagement?.dislikes || 0
-          }
+          engagement: combinedEngagement
         };
       });
-  
-      console.log('First meme engagement data:', memesWithEngagement[0]?.engagement);
   
       res.json({
         success: true,
@@ -132,10 +127,7 @@ class MemeController {
       });
     } catch (error) {
       console.error('Get memes with engagement error:', error);
-      res.status(500).json({
-        success: false,
-        error: error.message
-      });
+      res.status(500).json({ success: false, error: error.message });
     }
   }
 
