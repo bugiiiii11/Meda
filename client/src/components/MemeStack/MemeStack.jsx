@@ -5,18 +5,19 @@ import MemeCard from '../MemeCard/MemeCard';
 import { ENDPOINTS } from '../../config/api';
 
 const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData }) => {
-  console.log('MemeStack received memes:', memes.map(meme => ({
-    id: meme.id,
-    projectName: meme.projectName,
-    engagement: meme.engagement
-  })));
-
   const [currentMeme, setCurrentMeme] = React.useState(null);
   const [nextMeme, setNextMeme] = React.useState(null);
   const [lastSwipe, setLastSwipe] = React.useState(null);
   const [isAnimating, setIsAnimating] = React.useState(false);
   const [isMobile, setIsMobile] = React.useState(false);
   const [isDragging, setIsDragging] = React.useState(false);
+
+  console.log('MemeStack initial memes:', memes.map(m => ({
+    id: m.id,
+    projectName: m.projectName,
+    engagement: m.engagement
+  })));
+
 
   useEffect(() => {
     if (currentMeme) {
@@ -97,6 +98,10 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
 
 
   const handleSwipe = async (direction) => {
+    console.log('Current meme before swipe:', {
+      id: currentMeme.id,
+      engagement: currentMeme.engagement
+    });
     if (isAnimating || !currentMeme) return;
     
     console.log('Handling swipe:', direction);

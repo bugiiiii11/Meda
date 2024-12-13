@@ -130,18 +130,25 @@ class MemeController {
         return result;
       });
   
-      res.json({
-        success: true,
-        data: memesWithEngagement
-      });
-    } catch (error) {
-      console.error('Get memes with engagement error:', error);
-      res.status(500).json({
-        success: false,
-        error: error.message
-      });
-    }
+    // Adding this log
+    console.log('Raw memes from database:', memes.map(m => ({
+      id: m.id,
+      projectName: m.projectName,
+      engagement: m.engagement
+    })));
+
+    res.json({
+      success: true,
+      data: memes
+    });
+  } catch (error) {
+    console.error('Get memes with engagement error:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
   }
+}
 
   static async updateMemeStatus(req, res) {
     try {
