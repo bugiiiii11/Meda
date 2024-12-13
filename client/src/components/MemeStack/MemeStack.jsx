@@ -1,15 +1,11 @@
 // MemeStack.jsx
-import React from 'react';
+import React, { useEffect } from 'react';  // Add useEffect to imports
 import { motion, AnimatePresence } from 'framer-motion';
 import MemeCard from '../MemeCard/MemeCard';
 import { ENDPOINTS } from '../../config/api';
 
 const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData }) => {
-  
-  useEffect(() => {
-    console.log('Current meme data:', currentMeme);
-    console.log('Next meme data:', nextMeme);
-  }, [currentMeme, nextMeme]);
+  console.log('MemeStack received memes:', memes);
 
   const [currentMeme, setCurrentMeme] = React.useState(null);
   const [nextMeme, setNextMeme] = React.useState(null);
@@ -17,6 +13,11 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
   const [isAnimating, setIsAnimating] = React.useState(false);
   const [isMobile, setIsMobile] = React.useState(false);
   const [isDragging, setIsDragging] = React.useState(false);
+
+  useEffect(() => {
+    console.log('Current meme data:', currentMeme);
+    console.log('Next meme data:', nextMeme);
+  }, [currentMeme, nextMeme]);
 
   const getWeightedRandomMeme = React.useCallback(() => {
     const availableMemes = memes.filter(meme => meme.id !== currentMeme?.id);
