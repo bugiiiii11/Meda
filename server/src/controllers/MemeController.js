@@ -139,76 +139,24 @@ class MemeController {
   static async getMemesWithEngagement(req, res) {
     try {
       console.log('Getting memes with engagement data');
-
       const memes = await Meme.aggregate([
         {
           $match: { status: 'active' }
         },
         {
-          $lookup: {
-            from: 'viewhistories',
-            let: { memeId: '$id' },
-            pipeline: [
-              {
-                $match: {
-                  $expr: { $eq: ['$memeId', '$$memeId'] }
-                }
-              },
-              {
-                $group: {
-                  _id: '$memeId',
-                  likes: {
-                    $sum: {
-                      $size: {
-                        $filter: {
-                          input: '$interactions',
-                          as: 'interaction',
-                          cond: { $eq: ['$$interaction.type', 'like'] }
-                        }
-                      }
-                    }
-                  },
-                  superLikes: {
-                    $sum: {
-                      $size: {
-                        $filter: {
-                          input: '$interactions',
-                          as: 'interaction',
-                          cond: { $eq: ['$$interaction.type', 'superlike'] }
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            ],
-            as: 'viewStats'
-          }
-        },
-        {
-          $addFields: {
-            engagement: {
-              $let: {
-                vars: {
-                  stats: { $arrayElemAt: ['$viewStats', 0] }
-                },
-                in: {
-                  likes: { $ifNull: ['$$stats.likes', 0] },
-                  superLikes: { $ifNull: ['$$stats.superLikes', 0] }
-                }
-              }
-            }
-          }
-        },
-        {
           $project: {
-            viewStats: 0
+            id: 1,
+            projectName: 1,
+            content: 1,
+            logo: 1,
+            weight: 1,
+            engagement: 1,  // Make sure engagement is included
+            projectDetails: 1
           }
         }
       ]);
-
+  
       console.log(`Found ${memes.length} memes with engagement data`);
-
       res.json({
         success: true,
         data: memes
@@ -255,7 +203,6 @@ class MemeController {
   static async getMemesByProject(req, res) {
     try {
       const { projectName } = req.params;
-      
       const memes = await Meme.aggregate([
         {
           $match: {
@@ -264,68 +211,18 @@ class MemeController {
           }
         },
         {
-          $lookup: {
-            from: 'viewhistories',
-            let: { memeId: '$id' },
-            pipeline: [
-              {
-                $match: {
-                  $expr: { $eq: ['$memeId', '$$memeId'] }
-                }
-              },
-              {
-                $group: {
-                  _id: '$memeId',
-                  likes: {
-                    $sum: {
-                      $size: {
-                        $filter: {
-                          input: '$interactions',
-                          as: 'interaction',
-                          cond: { $eq: ['$$interaction.type', 'like'] }
-                        }
-                      }
-                    }
-                  },
-                  superLikes: {
-                    $sum: {
-                      $size: {
-                        $filter: {
-                          input: '$interactions',
-                          as: 'interaction',
-                          cond: { $eq: ['$$interaction.type', 'superlike'] }
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            ],
-            as: 'viewStats'
-          }
-        },
-        {
-          $addFields: {
-            engagement: {
-              $let: {
-                vars: {
-                  stats: { $arrayElemAt: ['$viewStats', 0] }
-                },
-                in: {
-                  likes: { $ifNull: ['$$stats.likes', 0] },
-                  superLikes: { $ifNull: ['$$stats.superLikes', 0] }
-                }
-              }
-            }
-          }
-        },
-        {
           $project: {
-            viewStats: 0
+            id: 1,
+            projectName: 1,
+            content: 1,
+            logo: 1,
+            weight: 1,
+            engagement: 1,  // Make sure engagement is included
+            projectDetails: 1
           }
         }
       ]);
-
+  
       res.json({
         success: true,
         data: memes
