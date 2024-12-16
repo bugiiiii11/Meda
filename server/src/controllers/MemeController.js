@@ -1,7 +1,7 @@
 // server/src/controllers/MemeController.js
 const mongoose = require('mongoose');
 const Meme = require('../models/Meme');
-const Project = require('../models/Project'); // Add this import
+const Project = require('../models/Project');
 const ViewHistory = require('../models/ViewHistory');
 
 class MemeController {
@@ -10,7 +10,6 @@ class MemeController {
       console.log('Creating new meme:', req.body);
       const meme = new Meme(req.body);
       await meme.save();
-      
       res.status(201).json({
         success: true,
         data: meme
@@ -24,6 +23,70 @@ class MemeController {
     }
   }
 
+  static async getMemesWithEngagement(req, res) {
+    try {
+      console.log('Fetching memes with engagement...');
+      
+      // First get all active memes with their basic engagement data
+      const memes = await Meme.find({ status: 'active' })
+        .select('id projectName content logo weight engagement projectDetails')
+        .lean();
+
+      console.log(`Found ${memes.length} active memes`);
+
+      // Get all projects in one query for efficiency
+      const projects = await Project.find({})
+        .select('name memeStats')
+        .lean();
+
+      console.log(`Found ${projects.length} projects`);
+
+      // Create a map for faster project lookup
+      const projectMap = new Map(
+        projects.map(project => [project.name, project])
+      );
+
+      // Combine meme and project data
+      const memesWithEngagement = memes.map(meme => {
+        const project = projectMap.get(meme.projectName);
+        const memeStats = project?.memeStats?.find(ms => ms.memeId === meme.id);
+
+        // Initialize engagement with zeros if not present
+        const memeEngagement = meme.engagement || { likes: 0, superLikes: 0, dislikes: 0 };
+        const projectEngagement = memeStats || { likes: 0, superLikes: 0 };
+
+        // Combine engagement data, taking the maximum values
+        const combinedEngagement = {
+          likes: Math.max(memeEngagement.likes || 0, projectEngagement.likes || 0),
+          superLikes: Math.max(memeEngagement.superLikes || 0, projectEngagement.superLikes || 0),
+          dislikes: memeEngagement.dislikes || 0 // Dislikes only come from meme collection
+        };
+
+        console.log(`Meme ${meme.id} engagement:`, {
+          memeEngagement,
+          projectEngagement,
+          combined: combinedEngagement
+        });
+
+        return {
+          ...meme,
+          engagement: combinedEngagement
+        };
+      });
+
+      res.json({
+        success: true,
+        data: memesWithEngagement
+      });
+    } catch (error) {
+      console.error('Get memes with engagement error:', error);
+      res.status(500).json({ 
+        success: false, 
+        error: error.message 
+      });
+    }
+  }
+
   static async getNextMeme(req, res) {
     try {
       const { telegramId } = req.params;
@@ -32,7 +95,7 @@ class MemeController {
       // Get user's view history for today
       const today = new Date();
       today.setHours(0, 0, 0, 0);
-
+      
       const viewedMemes = await ViewHistory.find({
         user: telegramId,
         lastViewed: { $gte: today }
@@ -41,44 +104,50 @@ class MemeController {
       const viewedMemeIds = viewedMemes.map(vh => vh.memeId);
 
       // Find memes not viewed today
-      const memes = await Meme.find({
+      const meme = await Meme.findOne({
         id: { $nin: viewedMemeIds },
         status: 'active'
       }).lean();
 
-      if (memes.length === 0) {
+      if (!meme) {
         return res.json({
           success: true,
           message: 'No more memes available'
         });
       }
 
-      // Get a random meme
-      const randomMeme = memes[Math.floor(Math.random() * memes.length)];
+      // Get project stats
+      const project = await Project.findOne({ name: meme.projectName });
+      const memeStats = project?.memeStats?.find(ms => ms.memeId === meme.id);
 
-      // Get project stats for the meme
-      const project = await Project.findOne({ name: randomMeme.projectName });
-      const memeStats = project?.memeStats?.find(ms => ms.memeId === randomMeme.id);
+      // Initialize engagement with zeros if not present
+      const memeEngagement = meme.engagement || { likes: 0, superLikes: 0, dislikes: 0 };
+      const projectEngagement = memeStats || { likes: 0, superLikes: 0 };
 
-      // Combine meme and project stats
-      const memeWithEngagement = {
-        ...randomMeme,
-        engagement: {
-          likes: memeStats?.likes || 0,
-          superLikes: memeStats?.superLikes || 0,
-          dislikes: randomMeme.engagement?.dislikes || 0
-        }
+      // Combine engagement data
+      const combinedEngagement = {
+        likes: Math.max(memeEngagement.likes || 0, projectEngagement.likes || 0),
+        superLikes: Math.max(memeEngagement.superLikes || 0, projectEngagement.superLikes || 0),
+        dislikes: memeEngagement.dislikes || 0
       };
 
       // Record the view
       await ViewHistory.create({
         user: telegramId,
-        memeId: randomMeme.id,
-        projectName: randomMeme.projectName,
+        memeId: meme.id,
+        projectName: meme.projectName,
         interactions: [{ type: 'view', timestamp: new Date() }]
       });
 
-      console.log('Returning meme with engagement:', memeWithEngagement);
+      const memeWithEngagement = {
+        ...meme,
+        engagement: combinedEngagement
+      };
+
+      console.log('Returning meme with engagement:', {
+        id: meme.id,
+        engagement: combinedEngagement
+      });
 
       res.json({
         success: true,
@@ -86,127 +155,6 @@ class MemeController {
       });
     } catch (error) {
       console.error('Get next meme error:', error);
-      res.status(500).json({
-        success: false,
-        error: error.message
-      });
-    }
-  }
-
-  static async getMemesWithEngagement(req, res) {
-    try {
-      // First fetch memes with explicit field selection
-      const memes = await Meme.find({ status: 'active' })
-        .select('id projectName content logo weight engagement projectDetails')
-        .lean();
-      
-      console.log('Raw meme data from database:', 
-        memes.map(m => ({
-          id: m.id,
-          engagement: m.engagement
-        }))
-      );
-  
-      // Then get projects for cross-referencing
-      const projects = await Project.find()
-        .select('name memeStats')
-        .lean();
-  
-      // Combine meme and project data
-      const memesWithEngagement = memes.map(meme => {
-        const project = projects.find(p => p.name === meme.projectName);
-        const memeStats = project?.memeStats?.find(ms => ms.memeId === meme.id);
-  
-        // Combine engagement data from both sources
-        const engagement = {
-          likes: Math.max(memeStats?.likes || 0, meme.engagement?.likes || 0),
-          superLikes: Math.max(memeStats?.superLikes || 0, meme.engagement?.superLikes || 0),
-          dislikes: meme.engagement?.dislikes || 0
-        };
-  
-        console.log(`Engagement data for meme ${meme.id}:`, engagement);
-  
-        return {
-          ...meme,
-          engagement
-        };
-      });
-  
-      console.log('First meme complete data:', JSON.stringify(memesWithEngagement[0], null, 2));
-  
-      res.json({
-        success: true,
-        data: memesWithEngagement
-      });
-    } catch (error) {
-      console.error('Get memes with engagement error:', error);
-      res.status(500).json({ success: false, error: error.message });
-    }
-  }
-
-  static async updateMemeStatus(req, res) {
-    try {
-      const { memeId, status } = req.body;
-      
-      const meme = await Meme.findOneAndUpdate(
-        { id: memeId },
-        { status },
-        { new: true }
-      );
-
-      if (!meme) {
-        return res.status(404).json({
-          success: false,
-          error: 'Meme not found'
-        });
-      }
-
-      res.json({
-        success: true,
-        data: meme
-      });
-    } catch (error) {
-      console.error('Update meme status error:', error);
-      res.status(500).json({
-        success: false,
-        error: error.message
-      });
-    }
-  }
-
-  static async getMemesByProject(req, res) {
-    try {
-      const { projectName } = req.params;
-      
-      // Get project data
-      const project = await Project.findOne({ name: projectName }).lean();
-      
-      // Get memes for the project
-      const memes = await Meme.find({
-        projectName,
-        status: 'active'
-      }).lean();
-
-      // Combine meme and project data
-      const memesWithEngagement = memes.map(meme => {
-        const memeStats = project?.memeStats?.find(ms => ms.memeId === meme.id);
-        
-        return {
-          ...meme,
-          engagement: {
-            likes: memeStats?.likes || 0,
-            superLikes: memeStats?.superLikes || 0,
-            dislikes: meme.engagement?.dislikes || 0
-          }
-        };
-      });
-
-      res.json({
-        success: true,
-        data: memesWithEngagement
-      });
-    } catch (error) {
-      console.error('Get memes by project error:', error);
       res.status(500).json({
         success: false,
         error: error.message
