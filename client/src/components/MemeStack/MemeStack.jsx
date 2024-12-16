@@ -254,129 +254,220 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
       </AnimatePresence>
   
       {/* Swipe Indicator Overlay - Always on top */}
-      <AnimatePresence>
-  {lastSwipe && (
-    <motion.div 
-      className="absolute inset-0 flex items-center justify-center z-30 pointer-events-none"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-    >
-      {lastSwipe === 'right' && (
+          <AnimatePresence>
+      {lastSwipe && (
         <motion.div 
-          className="px-8 py-4 rounded-2xl border-4 border-green-500 shadow-xl backdrop-blur-sm bg-green-500/90"
-          initial={{ x: -100, rotate: -45, scale: 0 }}
-          animate={{ 
-            x: 0, 
-            rotate: 0, 
-            scale: 1,
-            transition: {
-              type: "spring",
-              stiffness: 300,
-              damping: 15
-            }
-          }}
-          exit={{ 
-            x: 100,
-            rotate: 45,
-            scale: 0,
-            transition: { duration: 0.2 }
-          }}
+          className="absolute inset-0 flex items-center justify-center z-30 pointer-events-none"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
         >
-          <div className="text-4xl font-bold text-white flex items-center gap-3">
-            <motion.span
-              initial={{ scale: 0 }}
-              animate={{ 
-                scale: [1, 1.2, 1],
-                transition: {
-                  duration: 0.3,
-                  times: [0, 0.5, 1]
-                }
-              }}
-            >
-              👍 LIKE
-            </motion.span>
-          </div>
-        </motion.div>
-      )}
+          {lastSwipe === 'right' && (
+            <>
+              {/* Background particles for LIKE */}
+              <motion.div className="absolute inset-0 overflow-hidden">
+                {[...Array(6)].map((_, i) => (
+                  <motion.div
+                    key={`like-particle-${i}`}
+                    className="absolute w-8 h-8 text-2xl"
+                    initial={{ 
+                      x: "50%", 
+                      y: "50%", 
+                      scale: 0 
+                    }}
+                    animate={{ 
+                      x: `${50 + (Math.random() * 60 - 30)}%`,
+                      y: `${50 + (Math.random() * 60 - 30)}%`,
+                      scale: [0, 1.5, 0],
+                      opacity: [0, 1, 0],
+                    }}
+                    transition={{
+                      duration: 0.8,
+                      delay: i * 0.1,
+                      ease: "easeOut"
+                    }}
+                  >
+                    {["👍", "💚", "✨"][i % 3]}
+                  </motion.div>
+                ))}
+              </motion.div>
+              
+              {/* Main LIKE indicator */}
+              <motion.div 
+                className="px-8 py-4 rounded-2xl border-4 border-green-500 shadow-xl backdrop-blur-sm bg-green-500/90"
+                initial={{ x: -100, rotate: -45, scale: 0 }}
+                animate={{ 
+                  x: 0, 
+                  rotate: 0, 
+                  scale: 1,
+                  transition: {
+                    type: "spring",
+                    stiffness: 300,
+                    damping: 15
+                  }
+                }}
+                exit={{ 
+                  x: 100,
+                  rotate: 45,
+                  scale: 0,
+                  transition: { duration: 0.2 }
+                }}
+              >
+                <div className="text-4xl font-bold text-white flex items-center gap-3">
+                  <motion.span
+                    initial={{ scale: 0 }}
+                    animate={{ 
+                      scale: [1, 1.2, 1],
+                      transition: {
+                        duration: 0.3,
+                        times: [0, 0.5, 1]
+                      }
+                    }}
+                  >
+                    👍 LIKE
+                  </motion.span>
+                </div>
+              </motion.div>
+            </>
+          )}
 
-      {lastSwipe === 'left' && (
-        <motion.div 
-          className="px-8 py-4 rounded-2xl border-4 border-red-500 shadow-xl backdrop-blur-sm bg-red-500/90"
-          initial={{ x: 100, rotate: 45, scale: 0 }}
-          animate={{ 
-            x: 0, 
-            rotate: 0, 
-            scale: 1,
-            transition: {
-              type: "spring",
-              stiffness: 300,
-              damping: 15
-            }
-          }}
-          exit={{ 
-            x: -100,
-            rotate: -45,
-            scale: 0,
-            transition: { duration: 0.2 }
-          }}
-        >
-          <div className="text-4xl font-bold text-white flex items-center gap-3">
-            <motion.span
-              initial={{ scale: 0 }}
-              animate={{ 
-                scale: [1, 1.2, 1],
-                transition: {
-                  duration: 0.3,
-                  times: [0, 0.5, 1]
-                }
-              }}
-            >
-              👎 NOPE
-            </motion.span>
-          </div>
-        </motion.div>
-      )}
+          {lastSwipe === 'left' && (
+            <>
+              {/* Background particles for NOPE */}
+              <motion.div className="absolute inset-0 overflow-hidden">
+                {[...Array(6)].map((_, i) => (
+                  <motion.div
+                    key={`nope-particle-${i}`}
+                    className="absolute w-8 h-8 text-2xl"
+                    initial={{ 
+                      x: "50%", 
+                      y: "50%", 
+                      scale: 0 
+                    }}
+                    animate={{ 
+                      x: `${50 + (Math.random() * 60 - 30)}%`,
+                      y: `${50 + (Math.random() * 60 - 30)}%`,
+                      scale: [0, 1.5, 0],
+                      opacity: [0, 1, 0],
+                    }}
+                    transition={{
+                      duration: 0.8,
+                      delay: i * 0.1,
+                      ease: "easeOut"
+                    }}
+                  >
+                    {["👎", "❌", "💢"][i % 3]}
+                  </motion.div>
+                ))}
+              </motion.div>
 
-      {lastSwipe === 'super' && (
-        <motion.div 
-          className="px-8 py-4 rounded-2xl border-4 border-blue-500 shadow-xl backdrop-blur-sm bg-blue-500/90"
-          initial={{ y: 100, scale: 0 }}
-          animate={{ 
-            y: 0, 
-            scale: 1,
-            transition: {
-              type: "spring",
-              stiffness: 300,
-              damping: 15
-            }
-          }}
-          exit={{ 
-            y: -100,
-            scale: 0,
-            transition: { duration: 0.2 }
-          }}
-        >
-          <div className="text-4xl font-bold text-white flex items-center gap-3">
-            <motion.div
-              initial={{ scale: 0 }}
-              animate={{ 
-                scale: [1, 1.5, 1],
-                rotate: [0, 180, 360],
-                transition: {
-                  duration: 0.5,
-                  ease: "easeInOut"
-                }
-              }}
-            >
-              ⭐ SUPER
-            </motion.div>
-          </div>
+              <motion.div 
+                className="px-8 py-4 rounded-2xl border-4 border-red-500 shadow-xl backdrop-blur-sm bg-red-500/90"
+                initial={{ x: 100, rotate: 45, scale: 0 }}
+                animate={{ 
+                  x: 0, 
+                  rotate: 0, 
+                  scale: 1,
+                  transition: {
+                    type: "spring",
+                    stiffness: 300,
+                    damping: 15
+                  }
+                }}
+                exit={{ 
+                  x: -100,
+                  rotate: -45,
+                  scale: 0,
+                  transition: { duration: 0.2 }
+                }}
+              >
+                <div className="text-4xl font-bold text-white flex items-center gap-3">
+                  <motion.span
+                    initial={{ scale: 0 }}
+                    animate={{ 
+                      scale: [1, 1.2, 1],
+                      transition: {
+                        duration: 0.3,
+                        times: [0, 0.5, 1]
+                      }
+                    }}
+                  >
+                    👎 NOPE
+                  </motion.span>
+                </div>
+              </motion.div>
+            </>
+          )}
+
+          {lastSwipe === 'super' && (
+            <>
+              {/* Background effects for SUPER */}
+              <motion.div className="absolute inset-0 overflow-hidden">
+                {[...Array(8)].map((_, i) => (
+                  <motion.div
+                    key={`super-particle-${i}`}
+                    className="absolute w-8 h-8 text-2xl"
+                    initial={{ 
+                      x: "50%", 
+                      y: "50%", 
+                      scale: 0 
+                    }}
+                    animate={{ 
+                      x: `${50 + (Math.random() * 60 - 30)}%`,
+                      y: `${50 + (Math.random() * 60 - 30)}%`,
+                      scale: [0, 1.5, 0],
+                      opacity: [0, 1, 0],
+                    }}
+                    transition={{
+                      duration: 1,
+                      delay: i * 0.1,
+                      ease: "easeOut"
+                    }}
+                  >
+                    {["⭐", "✨", "💫", "🌟"][i % 4]}
+                  </motion.div>
+                ))}
+              </motion.div>
+
+              <motion.div 
+                className="px-8 py-4 rounded-2xl border-4 border-blue-500 shadow-xl backdrop-blur-sm bg-blue-500/90"
+                initial={{ y: 100, scale: 0 }}
+                animate={{ 
+                  y: 0, 
+                  scale: 1,
+                  transition: {
+                    type: "spring",
+                    stiffness: 300,
+                    damping: 15
+                  }
+                }}
+                exit={{ 
+                  y: -100,
+                  scale: 0,
+                  transition: { duration: 0.2 }
+                }}
+              >
+                <div className="text-4xl font-bold text-white flex items-center gap-3">
+                  <motion.div
+                    initial={{ scale: 0 }}
+                    animate={{ 
+                      scale: [1, 1.5, 1],
+                      rotate: [0, 180, 360],
+                      transition: {
+                        duration: 0.5,
+                        ease: "easeInOut"
+                      }
+                    }}
+                  >
+                    ⭐ SUPER
+                  </motion.div>
+                </div>
+              </motion.div>
+            </>
+          )}
         </motion.div>
       )}
-    </motion.div>
-  )}
-</AnimatePresence>
+    </AnimatePresence>
     </div>
   );
 };
