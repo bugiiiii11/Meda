@@ -1,5 +1,5 @@
 // MemeStack.jsx
-import React, { useEffect } from 'react';  // Add useEffect to imports
+import React, { useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import MemeCard from '../MemeCard/MemeCard';
 import { ENDPOINTS } from '../../config/api';
@@ -16,34 +16,14 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
   console.log('Received memes:', memes.map(m => ({
     id: m.id,
     projectName: m.projectName,
-    engagement: m.engagement
+    engagement: m.engagement || { likes: 0, superLikes: 0, dislikes: 0 }
   })));
   console.log('================================');
-
-
-  useEffect(() => {
-    if (currentMeme) {
-      console.log('Current meme full data:', {
-        id: currentMeme.id,
-        projectName: currentMeme.projectName,
-        engagement: currentMeme.engagement
-      });
-    }
-    if (nextMeme) {
-      console.log('Next meme full data:', {
-        id: nextMeme.id,
-        projectName: nextMeme.projectName,
-        engagement: nextMeme.engagement
-      });
-    }
-  }, [currentMeme, nextMeme]);
-
 
   const getWeightedRandomMeme = React.useCallback(() => {
     console.log('===== Getting Random Meme =====');
     console.log('Total memes available:', memes.length);
     
-    // Filter and log current meme ID if exists
     const currentMemeId = currentMeme?.id;
     console.log('Current meme ID:', currentMemeId);
     
@@ -52,21 +32,17 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
       : [...memes];
     
     console.log('Filtered available memes:', availableMemes.length);
-  
-    // Debug log the first few memes' engagement
-    console.log('Sample memes with engagement:', 
-      availableMemes.slice(0, 3).map(m => ({
-        id: m.id,
-        projectName: m.projectName,
-        engagement: m.engagement
-      }))
-    );
-  
+
     if (availableMemes.length === 0) {
       console.log('No available memes, returning first meme');
-      return memes[0];
+      const firstMeme = {
+        ...memes[0],
+        engagement: memes[0].engagement || { likes: 0, superLikes: 0, dislikes: 0 }
+      };
+      return firstMeme;
     }
   
+    // Calculate total weight for weighted random selection
     const totalWeight = availableMemes.reduce((sum, meme) => sum + (meme.weight || 1), 0);
     let random = Math.random() * totalWeight;
     
@@ -75,7 +51,6 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
       if (random <= 0) {
         const selectedMeme = {
           ...meme,
-          // Ensure engagement data is preserved
           engagement: {
             likes: parseInt(meme.engagement?.likes || 0),
             superLikes: parseInt(meme.engagement?.superLikes || 0),
@@ -112,57 +87,62 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
     return fallbackMeme;
   }, [memes, currentMeme]);
 
-  // When initializing memes
+  // Initialize memes
   React.useEffect(() => {
     if (memes.length > 0 && !currentMeme) {
       console.log('Initializing first meme with engagement data');
       const firstMeme = propCurrentMeme || getWeightedRandomMeme();
-      console.log('First meme:', firstMeme);
+      console.log('First meme:', {
+        id: firstMeme.id,
+        engagement: firstMeme.engagement
+      });
       
       setCurrentMeme(firstMeme);
       onMemeChange(firstMeme);
       
       const secondMeme = getWeightedRandomMeme();
-      console.log('Next meme:', secondMeme);
+      console.log('Next meme:', {
+        id: secondMeme.id,
+        engagement: secondMeme.engagement
+      });
       setNextMeme(secondMeme);
     }
   }, [memes, propCurrentMeme, getWeightedRandomMeme, onMemeChange]);
 
-  const transitionToNextMeme = React.useCallback(() => {
+  const transitionToNextMeme = React.useCallback(async () => {
     if (!nextMeme) return;
     
-    console.log('Transitioning to next meme with engagement:', nextMeme);
+    console.log('Transitioning to next meme with engagement:', {
+      id: nextMeme.id,
+      engagement: nextMeme.engagement
+    });
+    
     setCurrentMeme(nextMeme);
     onMemeChange(nextMeme);
     
     const newNextMeme = getWeightedRandomMeme();
-    console.log('New next meme with engagement:', newNextMeme);
+    console.log('New next meme with engagement:', {
+      id: newNextMeme.id,
+      engagement: newNextMeme.engagement
+    });
     setNextMeme(newNextMeme);
   }, [nextMeme, getWeightedRandomMeme, onMemeChange]);
-  
 
   React.useEffect(() => {
     setIsMobile(!!window.Telegram?.WebApp);
   }, []);
 
-
-
   const handleSwipe = async (direction) => {
+    if (isAnimating || !currentMeme) return;
+    
+    console.log('Handling swipe:', direction);
     console.log('Current meme before swipe:', {
       id: currentMeme.id,
       engagement: currentMeme.engagement
     });
-    if (isAnimating || !currentMeme) return;
-    
-    console.log('Handling swipe:', direction);
-    console.log('Current meme before swipe:', currentMeme?.id);
-    console.log('Next meme before swipe:', nextMeme?.id);
     
     setIsAnimating(true);
     setLastSwipe(direction);
-  
-    // First transition to next meme
-    transitionToNextMeme();
   
     try {
       const action = direction === 'right' ? 'like' : 
@@ -187,22 +167,30 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
       if (!data.success) {
         throw new Error(data.error || 'Interaction failed');
       }
+
+      // Update current meme's engagement data with response
+      if (data.data?.meme?.engagement) {
+        setCurrentMeme(prev => ({
+          ...prev,
+          engagement: data.data.meme.engagement
+        }));
+      }
     } catch (error) {
       console.error('Interaction error:', error);
     } finally {
+      // Transition to next meme after updating engagement
+      transitionToNextMeme();
+      
       setTimeout(() => {
         setLastSwipe(null);
         setIsAnimating(false);
-        
-        console.log('Current meme after swipe:', currentMeme?.id);
-        console.log('Next meme after swipe:', nextMeme?.id);
       }, 300);
     }
   };
 
   return (
     <div className="relative max-w-[calc(100vw-32px)] mx-auto aspect-square">
-      {/* Next Meme (Background) - Always visible */}
+      {/* Next Meme (Background) */}
       <div className="absolute inset-0 z-10">
         {nextMeme && (
           <MemeCard
@@ -214,52 +202,51 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
         )}
       </div>
 
-        {/* Current Meme */}
-        <AnimatePresence mode="wait">
-      {currentMeme && (
-        <motion.div
-          key={currentMeme.id}
-          className="absolute inset-0 z-20"
-          initial={false}
-          animate={{ 
-            opacity: isDragging ? 0.5 : 1,
-            scale: 1
-          }}
-          exit={{ 
-            opacity: 0,
-            transition: { 
-              duration: 0.1,
-              ease: "linear"
-            }
-          }}
-        >
-          <MemeCard
-            meme={currentMeme}
-            onSwipe={handleSwipe}
-            isTop={true}
-            isMobile={isMobile}
-            userData={userData}
-            onDragStart={() => setIsDragging(true)}
-            onDragEnd={(e, info) => {
-              setIsDragging(false);
-              const xVel = info.velocity.x;
-              const yVel = info.velocity.y;
-              const xOffset = info.offset.x;
-              const yOffset = info.offset.y;
-              
-              if (Math.abs(yVel) > Math.abs(xVel) && yOffset < -50) {
-                handleSwipe('super');
-              } else if (xOffset > 50) {
-                handleSwipe('right');
-              } else if (xOffset < -50) {
-                handleSwipe('left');
+      {/* Current Meme */}
+      <AnimatePresence mode="wait">
+        {currentMeme && (
+          <motion.div
+            key={currentMeme.id}
+            className="absolute inset-0 z-20"
+            initial={false}
+            animate={{ 
+              opacity: isDragging ? 0.5 : 1,
+              scale: 1
+            }}
+            exit={{ 
+              opacity: 0,
+              transition: { 
+                duration: 0.1,
+                ease: "linear"
               }
             }}
-          />
-        </motion.div>
-      )}
-    </AnimatePresence>
-
+          >
+            <MemeCard
+              meme={currentMeme}
+              onSwipe={handleSwipe}
+              isTop={true}
+              isMobile={isMobile}
+              userData={userData}
+              onDragStart={() => setIsDragging(true)}
+              onDragEnd={(e, info) => {
+                setIsDragging(false);
+                const xVel = info.velocity.x;
+                const yVel = info.velocity.y;
+                const xOffset = info.offset.x;
+                const yOffset = info.offset.y;
+                
+                if (Math.abs(yVel) > Math.abs(xVel) && yOffset < -50) {
+                  handleSwipe('super');
+                } else if (xOffset > 50) {
+                  handleSwipe('right');
+                } else if (xOffset < -50) {
+                  handleSwipe('left');
+                }
+              }}
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Swipe Indicator */}
       <AnimatePresence>
@@ -285,8 +272,6 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
           </motion.div>
         )}
       </AnimatePresence>
-
-
     </div>
   );
 };

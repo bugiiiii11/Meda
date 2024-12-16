@@ -1,18 +1,7 @@
-//MemeCard.jsx
 import React from 'react';
 import { motion, useMotionValue, useTransform } from 'framer-motion';
 
-const QuickStatIcon = ({ children, count, text }) => (
-  <div className="flex items-center gap-2">
-    <span className="text-xl">{children}</span>
-    <div className="flex flex-col">
-      <span className="text-gray-200 font-medium">{count.toLocaleString()}</span>
-      <span className="text-xs text-gray-400">{text}</span>
-    </div>
-  </div>
-);
-
-const MemeCard = ({ meme, onSwipe, isTop, onDragStart, onDragEnd }) => {
+const MemeCard = ({ meme, onSwipe, isTop, isMobile, onDragStart, onDragEnd }) => {
   console.log('MemeCard render:', {
     id: meme.id,
     projectName: meme.projectName,
@@ -29,16 +18,21 @@ const MemeCard = ({ meme, onSwipe, isTop, onDragStart, onDragEnd }) => {
     [0, 0.5, 0.8, 1, 0.8, 0.5, 0]
   );
 
+  // Ensure engagement data is properly initialized
+  const engagementData = React.useMemo(() => ({
+    likes: parseInt(meme.engagement?.likes || 0),
+    superLikes: parseInt(meme.engagement?.superLikes || 0),
+    dislikes: parseInt(meme.engagement?.dislikes || 0)
+  }), [meme.engagement]);
+
   // Add keyboard handlers for web testing
   React.useEffect(() => {
     if (!isTop) return;
-
     const handleKeyPress = (e) => {
       if (e.key === 'ArrowLeft') onSwipe('left');
       if (e.key === 'ArrowRight') onSwipe('right');
       if (e.key === 'ArrowUp') onSwipe('super');
     };
-
     window.addEventListener('keydown', handleKeyPress);
     return () => window.removeEventListener('keydown', handleKeyPress);
   }, [isTop, onSwipe]);
@@ -67,7 +61,7 @@ const MemeCard = ({ meme, onSwipe, isTop, onDragStart, onDragEnd }) => {
               <span>👍</span>
               <div className="flex flex-col">
                 <span className="text-gray-200 font-medium">
-                  {meme?.engagement?.likes || 0}
+                  {engagementData.likes.toLocaleString()}
                 </span>
                 <span className="text-xs text-gray-400">Likes</span>
               </div>
@@ -76,7 +70,7 @@ const MemeCard = ({ meme, onSwipe, isTop, onDragStart, onDragEnd }) => {
               <span>⭐</span>
               <div className="flex flex-col">
                 <span className="text-gray-200 font-medium">
-                  {meme?.engagement?.superLikes || 0}
+                  {engagementData.superLikes.toLocaleString()}
                 </span>
                 <span className="text-xs text-gray-400">Super Likes</span>
               </div>
@@ -88,4 +82,4 @@ const MemeCard = ({ meme, onSwipe, isTop, onDragStart, onDragEnd }) => {
   );
 };
 
-export default MemeCard;
+export default React.memo(MemeCard);
