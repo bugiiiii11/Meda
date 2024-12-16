@@ -1,4 +1,4 @@
-//server/src/app.js
+// server/src/app.js
 process.env.NODE_ENV = process.env.NODE_ENV || 'production';
 
 const express = require('express');
@@ -8,18 +8,18 @@ const morgan = require('morgan');
 const path = require('path');
 const app = express();
 
-
 // CORS configuration
 app.use(cors({
   origin: function(origin, callback) {
     const allowedOrigins = [
-      'https://fynder-2h5q.vercel.app',
+      'https://fynder-2h5g.vercel.app',
       'https://fynder-production.up.railway.app',
       'http://localhost:3000',
-      'http://localhost:3001'
+      'http://localhost:3001',
+      'http://localhost:5173'  // Vite default port
     ];
     
-    // Allow requests with no origin (like mobile apps)
+    // Allow requests with no origin (like mobile apps or Telegram WebApp)
     if (!origin) {
       return callback(null, true);
     }
@@ -28,6 +28,8 @@ app.use(cors({
       callback(null, true);
     } else {
       console.log('Blocked origin:', origin);
+      // In production, you might want to change this to:
+      // callback(new Error('Not allowed by CORS'))
       callback(null, true); // Temporarily allow all origins for testing
     }
   },
@@ -45,48 +47,45 @@ app.use(cors({
   ]
 }));
 
-/*
-// Basic security headers
-app.use((req, res, next) => {
-  res.setHeader('Content-Security-Policy', "default-src 'self'; img-src 'self' data: https:; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline';");
-  next();
-});
-*/
-
 // Middleware
 app.use(morgan('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Add after CORS middleware
-app.use((req, res, next) => {
-  console.log('Request headers:', req.headers);
-  console.log('Telegram data:', req.headers['telegram-web-app-data']);
-  next();
-});
-
-// Static files
-app.use(express.static(path.join(__dirname, '../public')));
-
-// Request logging
+// Request logging middleware
 app.use((req, res, next) => {
   console.log(`${new Date().toISOString()} - ${req.method} ${req.url}`);
+  console.log('Request headers:', {
+    origin: req.headers.origin,
+    'telegram-data': req.headers['x-telegram-init-data']
+  });
   if (['POST', 'PUT'].includes(req.method)) {
     console.log('Request body:', req.body);
   }
   next();
 });
 
+// Static files
+app.use(express.static(path.join(__dirname, '../public')));
+
 // Basic routes
 app.get('/', (req, res) => {
-  res.json({ message: 'CryptoMeme API Server', status: 'online' });
+  res.json({ 
+    message: 'CryptoMeme API Server', 
+    status: 'online',
+    version: '1.0.0',
+    environment: process.env.NODE_ENV
+  });
 });
 
 app.get('/health', (req, res) => {
   res.json({ 
     status: 'healthy',
     timestamp: new Date().toISOString(),
-    environment: process.env.NODE_ENV
+    environment: process.env.NODE_ENV,
+    services: {
+      database: mongoose.connection.readyState === 1 ? 'connected' : 'disconnected'
+    }
   });
 });
 
@@ -102,24 +101,43 @@ const interactionRoutes = require('./routes/interactionRoutes');
 const referralRoutes = require('./routes/referralRoutes');
 const priceRoutes = require('./routes/priceRoutes');
 
-// API routes
-app.use('/api/memes', memeRoutes);
-app.use('/api/tasks', taskRoutes);
-app.use('/api/users', userRoutes);
-app.use('/api/interactions', interactionRoutes);
-app.use('/api/referrals', referralRoutes);
-app.use('/api/coingecko', priceRoutes);
+// API routes with versioning prefix
+const API_PREFIX = '/api';
 
+app.use(`${API_PREFIX}/memes`, memeRoutes);
+app.use(`${API_PREFIX}/tasks`, taskRoutes);
+app.use(`${API_PREFIX}/users`, userRoutes);
+app.use(`${API_PREFIX}/interactions`, interactionRoutes);
+app.use(`${API_PREFIX}/referrals`, referralRoutes);
+app.use(`${API_PREFIX}/coingecko`, priceRoutes);
+
+// Debug routes for non-production environments
 if (process.env.NODE_ENV !== 'production') {
   app.get('/debug/env', (req, res) => {
     res.json({
       nodeEnv: process.env.NODE_ENV,
       mongoUri: process.env.MONGODB_URI ? 'Set' : 'Not Set',
       telegramToken: process.env.TELEGRAM_BOT_TOKEN ? 'Set' : 'Not Set',
-      port: process.env.PORT || 3001
+      port: process.env.PORT || 3001,
+      dbStatus: mongoose.connection.readyState,
+      corsOrigins: app.get('corsOrigins')
     });
   });
+
+  // Task system debug endpoints
+  app.get('/debug/tasks', async (req, res) => {
+    try {
+      const Task = require('./models/Task');
+      const tasks = await Task.find({});
+      res.json({ success: true, count: tasks.length, tasks });
+    } catch (error) {
+      res.status(500).json({ success: false, error: error.message });
+    }
+  });
 }
+
+// Pre-flight OPTIONS handler
+app.options('*', cors());
 
 // Handle OPTIONS requests
 app.use((req, res, next) => {
@@ -134,30 +152,42 @@ app.use((req, res) => {
   res.status(404).json({
     success: false,
     message: 'Route not found',
-    path: req.originalUrl
+    path: req.originalUrl,
+    timestamp: new Date().toISOString()
   });
 });
 
 // Error handling
 app.use((err, req, res, next) => {
+  const errorResponse = {
+    success: false,
+    message: process.env.NODE_ENV === 'development' 
+      ? err.message 
+      : 'An unexpected error occurred',
+    path: req.path,
+    method: req.method,
+    timestamp: new Date().toISOString()
+  };
+
+  // Add stack trace and additional details in development
+  if (process.env.NODE_ENV === 'development') {
+    errorResponse.error = {
+      stack: err.stack,
+      details: err
+    };
+  }
+
+  // Log error details
   console.error('Error details:', {
     message: err.message,
     stack: process.env.NODE_ENV === 'development' ? err.stack : undefined,
     path: req.path,
     method: req.method,
-    body: req.body
+    body: req.body,
+    timestamp: new Date().toISOString()
   });
   
-  res.status(err.status || 500).json({
-    success: false,
-    message: process.env.NODE_ENV === 'development' 
-      ? err.message 
-      : 'An unexpected error occurred',
-    error: process.env.NODE_ENV === 'development' ? {
-      stack: err.stack,
-      ...err
-    } : undefined
-  });
+  res.status(err.status || 500).json(errorResponse);
 });
 
 module.exports = app;

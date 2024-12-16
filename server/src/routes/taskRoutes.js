@@ -18,10 +18,4 @@ router.get('/:telegramId/achievements',
   TaskController.checkAchievements
 );
 
-// Get all active tasks endpoint
-router.get('/active',
-  bypassAuthInDevelopment,
-  TaskController.getActiveTasks
-);
-
 module.exports = router;
