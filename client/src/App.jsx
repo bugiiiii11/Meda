@@ -1,4 +1,3 @@
-//App.jsx
 import React, { useState, useEffect } from 'react';
 import WebApp from '@twa-dev/sdk';
 import './App.css';
@@ -10,16 +9,8 @@ import DetailsPage from './components/DetailsPage/DetailsPage';
 import TasksPage from './components/TasksPage';
 import ProfilePage from './components/ProfilePage';
 import RanksPage from './components/RanksPage';
-import dummyMemes from './data/dummyMemes';
-import { priceService } from './services/priceService';
 import { ENDPOINTS, getHeaders } from './config/api';
-
-console.log('App Environment:', {
-  nodeEnv: process.env.NODE_ENV,
-  viteEnv: import.meta.env.VITE_ENV,
-  apiUrl: import.meta.env.VITE_API_URL,
-  botUsername: import.meta.env.VITE_BOT_USERNAME
-});
+import { priceService } from './services/priceService';
 
 const LoadingScreen = () => (
   <div className="fixed inset-0 bg-[#1a1b1e] flex flex-col items-center justify-between p-0 overflow-hidden">
@@ -47,7 +38,8 @@ function App() {
   const [isLoading, setIsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('memes');
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
-  const [currentMeme, setCurrentMeme] = useState(dummyMemes[0]);
+  const [currentMeme, setCurrentMeme] = useState(null);
+  const [memes, setMemes] = useState([]);
   const [initError, setInitError] = useState(null);
   const [isTelegram, setIsTelegram] = useState(false);
   const [userData, setUserData] = useState(null);
@@ -57,7 +49,45 @@ function App() {
     setCurrentMeme(meme);
   };
 
-  // In App.jsx, find the useEffect for initialization
+  const fetchMemes = async () => {
+    try {
+      console.log('Fetching memes with engagement data...');
+      const response = await fetch(ENDPOINTS.memes.withEngagement, {
+        headers: getHeaders()
+      });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      console.log('Received memes data:', data);
+      
+      if (data.success && Array.isArray(data.data)) {
+        const memesWithEngagement = data.data.map(meme => ({
+          ...meme,
+          engagement: {
+            likes: parseInt(meme.engagement?.likes || 0),
+            superLikes: parseInt(meme.engagement?.superLikes || 0),
+            dislikes: parseInt(meme.engagement?.dislikes || 0)
+          }
+        }));
+        
+        console.log('Processed memes with engagement:', memesWithEngagement);
+        setMemes(memesWithEngagement);
+        
+        if (!currentMeme && memesWithEngagement.length > 0) {
+          setCurrentMeme(memesWithEngagement[0]);
+        }
+      } else {
+        throw new Error('Invalid memes data received');
+      }
+    } catch (error) {
+      console.error('Error fetching memes:', error);
+      setInitError(`Failed to load memes: ${error.message}`);
+    }
+  };
+
   useEffect(() => {
     async function initializeApp() {
       console.log('App Environment:', {
@@ -66,50 +96,31 @@ function App() {
         apiUrl: import.meta.env.VITE_API_URL,
         botUsername: import.meta.env.VITE_BOT_USERNAME
       });
-  
+
       try {
-        // Initialize price service
-        const priceServiceResult = await priceService.initializeData();
-        console.log('Price service initialized:', priceServiceResult);
-  
-        // Check if running in Telegram WebApp
+        await priceService.initializeData();
+        
         if (window.Telegram?.WebApp) {
           console.log('Telegram WebApp detected');
-          
           WebApp.ready();
           WebApp.expand();
           
-          // Debug Telegram environment
-          console.log('Telegram WebApp Environment:', {
-            isTelegram: true,
-            initData: window.Telegram.WebApp.initData,
-            user: window.Telegram.WebApp.initDataUnsafe?.user,
-            version: window.Telegram.WebApp.version,
-            platform: window.Telegram.WebApp.platform,
-          });
-  
-          // Get Telegram user data
           const tgUser = window.Telegram.WebApp.initDataUnsafe?.user;
-        console.log('Telegram User Data:', tgUser);
+          console.log('Telegram User Data:', tgUser);
 
-        if (!tgUser) {
-          console.warn('No Telegram user data available');
-          if (import.meta.env.VITE_ENV === 'development') {
-            const mockUser = {
-              telegramId: 'test123',
-              username: 'testUser',
-              firstName: 'Test',
-              lastName: 'User'
-            };
-            setUserData(mockUser);
-            console.log('Using mock user:', mockUser);
+          if (!tgUser) {
+            if (import.meta.env.VITE_ENV === 'development') {
+              const mockUser = {
+                telegramId: 'test123',
+                username: 'testUser',
+                firstName: 'Test',
+                lastName: 'User'
+              };
+              setUserData(mockUser);
+            } else {
+              throw new Error('No Telegram user data in production');
+            }
           } else {
-            console.error('No Telegram user data in production!');
-            setInitError('Failed to get Telegram user data');
-            return;
-          }
-        } else {
-          try {
             const response = await fetch(ENDPOINTS.users.create, {
               method: 'POST',
               headers: {
@@ -123,87 +134,71 @@ function App() {
                 lastName: tgUser.last_name
               })
             });
-            
-            console.log('User creation response:', {
-              status: response.status,
-              statusText: response.statusText,
-              headers: Object.fromEntries(response.headers.entries())
-            });
-            
+
             if (!response.ok) {
-              const errorText = await response.text();
-              console.error('Error response:', errorText);
-              throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
+              throw new Error(`HTTP error! status: ${response.status}`);
             }
-          
+
             const userData = await response.json();
             if (userData.success) {
               setUserData(userData.data);
             } else {
               throw new Error(userData.error || 'Failed to initialize user');
             }
-          } catch (error) {
-            console.error('User initialization error:', error);
-            setInitError(`User initialization failed: ${error.message}`);
-            return;
+          }
+        } else {
+          if (import.meta.env.VITE_ENV !== 'production') {
+            setUserData({
+              telegramId: 'test123',
+              username: 'testUser',
+              firstName: 'Test',
+              lastName: 'User'
+            });
+          } else {
+            throw new Error('This app must be run within Telegram');
           }
         }
-      } else {
-        console.log('Not running in Telegram WebApp');
-        if (import.meta.env.VITE_ENV !== 'production') {
-          // Use mock data in development
-          setUserData({
-            telegramId: 'test123',
-            username: 'testUser',
-            firstName: 'Test',
-            lastName: 'User'
-          });
-        } else {
-          setInitError('This app must be run within Telegram');
-          return;
-        }
-      }
 
-      // Test backend connectivity
-      try {
-        const response = await fetch(ENDPOINTS.interactions.debug);
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        await response.json();
+        await fetchMemes();
+
       } catch (error) {
-        console.error('Backend connectivity test failed:', error);
-        setInitError('Failed to connect to backend');
-        return;
+        console.error('Initialization error:', error);
+        setInitError(error.message);
+      } finally {
+        setTimeout(() => {
+          setIsLoading(false);
+        }, 1500);
       }
-
-    } catch (error) {
-      console.error('Initialization error:', error);
-      setInitError(error.message);
-    } finally {
-      setTimeout(() => {
-        setIsLoading(false);
-      }, 1500);
     }
+
+    initializeApp();
+  }, []);
+
+  useEffect(() => {
+    const refreshInterval = setInterval(() => {
+      if (!isLoading && !initError) {
+        fetchMemes();
+      }
+    }, 30000); // Refresh every 30 seconds
+
+    return () => clearInterval(refreshInterval);
+  }, [isLoading, initError]);
+
+  if (initError) {
+    return (
+      <div className="fixed inset-0 bg-[#1a1b1e] flex items-center justify-center">
+        <div className="text-red-500 text-center">
+          <h2 className="text-xl mb-2">Failed to initialize app</h2>
+          <p>{initError}</p>
+        </div>
+      </div>
+    );
   }
 
-  initializeApp();
-}, []);
+  if (isLoading) {
+    return <LoadingScreen />;
+  }
 
-if (initError) {
-  return (
-    <div className="fixed inset-0 bg-[#1a1b1e] flex items-center justify-center">
-      <div className="text-red-500 text-center">
-        <h2 className="text-xl mb-2">Failed to initialize app</h2>
-        <p>{initError}</p>
-      </div>
-    </div>
-  );
-}
-
-if (isLoading) {
-  return <LoadingScreen error={initError} />;
-}
   return (
     <div className="fixed inset-0 bg-[#1a1b1e] overflow-hidden">
       {activeTab === 'memes' ? (
@@ -226,7 +221,7 @@ if (isLoading) {
             <div className="h-full flex items-start justify-center">
               <div className="w-full px-4">
                 <MemeStack
-                  memes={dummyMemes}
+                  memes={memes}
                   onMemeChange={handleMemeChange}
                   currentMeme={currentMeme}
                   userData={userData}
