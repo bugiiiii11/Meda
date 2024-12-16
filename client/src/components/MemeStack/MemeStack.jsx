@@ -263,54 +263,55 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
           exit={{ opacity: 0 }}
         >
           {lastSwipe === 'right' && (
-            <>
-              {/* Background particles for LIKE */}
-              <motion.div className="absolute inset-0 overflow-hidden">
-                {[...Array(6)].map((_, i) => (
-                  <motion.div
-                    key={`like-particle-${i}`}
-                    className="absolute w-8 h-8 text-2xl"
-                    initial={{ 
-                      x: "50%", 
-                      y: "50%", 
-                      scale: 0 
-                    }}
-                    animate={{ 
-                      x: `${50 + (Math.random() * 60 - 30)}%`,
-                      y: `${50 + (Math.random() * 60 - 30)}%`,
-                      scale: [0, 1.5, 0],
-                      opacity: [0, 1, 0],
-                    }}
-                    transition={{
-                      duration: 0.8,
-                      delay: i * 0.1,
-                      ease: "easeOut"
-                    }}
-                  >
-                    {["👍", "💚", "✨"][i % 3]}
-                  </motion.div>
-                ))}
-              </motion.div>
-              
-              {/* Main LIKE indicator */}
-              <motion.div 
-                className="px-8 py-4 rounded-2xl border-4 border-green-500 shadow-xl backdrop-blur-sm bg-green-500/90"
-                initial={{ x: -100, rotate: -45, scale: 0 }}
-                animate={{ 
-                  x: 0, 
-                  rotate: 0, 
-                  scale: 1,
-                  transition: {
-                    type: "spring",
-                    stiffness: 300,
-                    damping: 15
-                  }
-                }}
-                exit={{ 
-                  x: 100,
-                  rotate: 45,
-                  scale: 0,
-                  transition: { duration: 0.2 }
+          <>
+            {/* Background particles for LIKE */}
+            <motion.div className="absolute inset-0 overflow-hidden">
+              {[...Array(8)].map((_, i) => (
+                <motion.div
+                  key={`like-particle-${i}`}
+                  className="absolute w-8 h-8 text-2xl"
+                  initial={{ 
+                    x: "50%",
+                    y: "50%",
+                    scale: 0,
+                    opacity: 0
+                  }}
+                  animate={{ 
+                    x: `${50 + (Math.random() * 80 - 40)}%`,
+                    y: `${50 + (Math.random() * 80 - 40)}%`,
+                    scale: [0, 2, 0],
+                    opacity: [0, 1, 0],
+                  }}
+                  transition={{
+                    duration: 1,
+                    delay: i * 0.1,
+                    ease: "easeOut"
+                  }}
+                >
+                  {["👍", "💖", "✨", "💚"][i % 4]}
+                </motion.div>
+              ))}
+            </motion.div>
+            
+            {/* Main LIKE indicator - keep your existing code */}
+            <motion.div 
+              className="px-8 py-4 rounded-2xl border-4 border-green-500 shadow-xl backdrop-blur-sm bg-green-500/90"
+              initial={{ x: -100, rotate: -45, scale: 0 }}
+              animate={{ 
+                x: 0, 
+                rotate: 0, 
+                scale: 1,
+                transition: {
+                  type: "spring",
+                  stiffness: 300,
+                  damping: 15
+                }
+              }}
+              exit={{ 
+                x: 100,
+                rotate: 45,
+                scale: 0,
+                transition: { duration: 0.2 }
                 }}
               >
                 <div className="text-4xl font-bold text-white flex items-center gap-3">
