@@ -24,25 +24,36 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
     console.log('===== Getting Random Meme =====');
     console.log('Total memes available:', memes.length);
     
+    // Filter out both current and next meme IDs
     const currentMemeId = currentMeme?.id;
-    console.log('Current meme ID:', currentMemeId);
+    const nextMemeId = nextMeme?.id;
+    console.log('Filtering out memes:', { currentMemeId, nextMemeId });
     
-    const availableMemes = currentMemeId 
-      ? memes.filter(meme => meme.id !== currentMemeId)
-      : [...memes];
+    const availableMemes = memes.filter(meme => 
+      meme.id !== currentMemeId && meme.id !== nextMemeId
+    );
     
     console.log('Filtered available memes:', availableMemes.length);
-
+  
     if (availableMemes.length === 0) {
-      console.log('No available memes, returning first meme');
-      const firstMeme = {
-        ...memes[0],
-        engagement: memes[0].engagement || { likes: 0, superLikes: 0, dislikes: 0 }
-      };
-      return firstMeme;
+      console.log('No available unique memes, using all memes except current');
+      // If no other memes available, at least avoid the current meme
+      const fallbackMemes = memes.filter(meme => meme.id !== currentMemeId);
+      if (fallbackMemes.length === 0) {
+        console.log('Using first meme as last resort');
+        return {
+          ...memes[0],
+          engagement: {
+            likes: parseInt(memes[0].engagement?.likes || 0),
+            superLikes: parseInt(memes[0].engagement?.superLikes || 0),
+            dislikes: parseInt(memes[0].engagement?.dislikes || 0)
+          }
+        };
+      }
+      availableMemes.push(...fallbackMemes);
     }
   
-    // Calculate total weight for weighted random selection
+    // Calculate total weight for available memes
     const totalWeight = availableMemes.reduce((sum, meme) => sum + (meme.weight || 1), 0);
     let random = Math.random() * totalWeight;
     
@@ -68,7 +79,7 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
       }
     }
     
-    // Fallback case
+    // Fallback to first available meme if needed
     const fallbackMeme = {
       ...availableMemes[0],
       engagement: {
@@ -85,7 +96,7 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
     });
     
     return fallbackMeme;
-  }, [memes, currentMeme]);
+  }, [memes, currentMeme, nextMeme]);
 
   // Initialize memes
   React.useEffect(() => {
