@@ -120,23 +120,22 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
     }
   }, [memes, propCurrentMeme, getWeightedRandomMeme, onMemeChange]);
 
-  const transitionToNextMeme = React.useCallback(async () => {
+  const transitionToNextMeme = React.useCallback(() => {
     if (!nextMeme) return;
     
-    console.log('Transitioning to next meme with engagement:', {
-      id: nextMeme.id,
-      engagement: nextMeme.engagement
-    });
+    console.log('Transitioning to next meme with engagement:', nextMeme);
     
+    // Set current meme to next meme
     setCurrentMeme(nextMeme);
     onMemeChange(nextMeme);
     
-    const newNextMeme = getWeightedRandomMeme();
-    console.log('New next meme with engagement:', {
-      id: newNextMeme.id,
-      engagement: newNextMeme.engagement
-    });
-    setNextMeme(newNextMeme);
+    // Slight delay before setting next meme to prevent blinking
+    setTimeout(() => {
+      const newNextMeme = getWeightedRandomMeme();
+      console.log('New next meme with engagement:', newNextMeme);
+      setNextMeme(newNextMeme);
+    }, 200); // Delay matches the exit animation duration
+    
   }, [nextMeme, getWeightedRandomMeme, onMemeChange]);
 
   React.useEffect(() => {

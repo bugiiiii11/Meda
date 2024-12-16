@@ -55,25 +55,19 @@ const MemeCard = ({ meme, onSwipe, isTop, isMobile, onDragStart, onDragEnd }) =>
           alt={meme.projectName}
           className="w-full aspect-square object-cover"
         />
-        <div className="bg-gradient-to-b from-[#2c2d31] to-[#1a1b1e] border-t border-[#3c3d41]/30 p-4">
-          <div className="flex justify-between items-center">
-            <div className="flex items-center gap-2">
-              <span>👍</span>
-              <div className="flex flex-col">
+          <div className="bg-gradient-to-b from-[#2c2d31] to-[#1a1b1e] border-t border-[#3c3d41]/30 p-4">
+            <div className="flex justify-between items-center">
+              <div className="flex items-center gap-2">
+                <span>👍</span>
                 <span className="text-gray-200 font-medium">
                   {engagementData.likes.toLocaleString()}
                 </span>
-                <span className="text-xs text-gray-400">Likes</span>
               </div>
-            </div>
-            <div className="flex items-center gap-2">
-              <span>⭐</span>
-              <div className="flex flex-col">
+              <div className="flex items-center gap-2">
+                <span>⭐</span>
                 <span className="text-gray-200 font-medium">
                   {engagementData.superLikes.toLocaleString()}
                 </span>
-                <span className="text-xs text-gray-400">Super Likes</span>
-              </div>
             </div>
           </div>
         </div>
