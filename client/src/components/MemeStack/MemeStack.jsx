@@ -144,6 +144,10 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
     setIsAnimating(true);
     setLastSwipe(direction);
   
+    // Transition to next meme immediately
+    transitionToNextMeme();
+    
+    // Handle interaction in the background
     try {
       const action = direction === 'right' ? 'like' : 
                     direction === 'left' ? 'dislike' : 'superlike';
@@ -167,24 +171,13 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
       if (!data.success) {
         throw new Error(data.error || 'Interaction failed');
       }
-
-      // Update current meme's engagement data with response
-      if (data.data?.meme?.engagement) {
-        setCurrentMeme(prev => ({
-          ...prev,
-          engagement: data.data.meme.engagement
-        }));
-      }
     } catch (error) {
       console.error('Interaction error:', error);
     } finally {
-      // Transition to next meme after updating engagement
-      transitionToNextMeme();
-      
       setTimeout(() => {
         setLastSwipe(null);
         setIsAnimating(false);
-      }, 300);
+      }, 300); // Reduced from default timing
     }
   };
 
