@@ -11,6 +11,7 @@ import ProfilePage from './components/ProfilePage';
 import RanksPage from './components/RanksPage';
 import { ENDPOINTS, getHeaders } from './config/api';
 import { priceService } from './services/priceService';
+import dummyMemes from './data/dummyMemes';
 
 const LoadingScreen = () => (
   <div className="fixed inset-0 bg-[#1a1b1e] flex flex-col items-center justify-between p-0 overflow-hidden">
@@ -61,21 +62,32 @@ function App() {
       }
       
       const data = await response.json();
-      console.log('Received memes data:', data);
+      console.log('Received engagement data:', data);
       
       if (data.success && Array.isArray(data.data)) {
-        const memesWithEngagement = data.data.map(meme => ({
-          ...meme,
-          engagement: {
-            likes: parseInt(meme.engagement?.likes || 0),
-            superLikes: parseInt(meme.engagement?.superLikes || 0),
-            dislikes: parseInt(meme.engagement?.dislikes || 0)
-          }
-        }));
+        // Merge backend engagement data with frontend meme data
+        const memesWithEngagement = dummyMemes.map(frontendMeme => {
+          // Find matching backend meme data
+          const backendMeme = data.data.find(m => m.id === frontendMeme.id);
+          
+          return {
+            ...frontendMeme,
+            engagement: backendMeme ? {
+              likes: parseInt(backendMeme.engagement?.likes || 0),
+              superLikes: parseInt(backendMeme.engagement?.superLikes || 0),
+              dislikes: parseInt(backendMeme.engagement?.dislikes || 0)
+            } : {
+              likes: 0,
+              superLikes: 0,
+              dislikes: 0
+            }
+          };
+        });
         
         console.log('Processed memes with engagement:', memesWithEngagement);
         setMemes(memesWithEngagement);
         
+        // Set initial current meme if none selected
         if (!currentMeme && memesWithEngagement.length > 0) {
           setCurrentMeme(memesWithEngagement[0]);
         }
@@ -84,7 +96,15 @@ function App() {
       }
     } catch (error) {
       console.error('Error fetching memes:', error);
-      setInitError(`Failed to load memes: ${error.message}`);
+      // On error, use dummyMemes with zero engagement as fallback
+      const fallbackMemes = dummyMemes.map(meme => ({
+        ...meme,
+        engagement: { likes: 0, superLikes: 0, dislikes: 0 }
+      }));
+      setMemes(fallbackMemes);
+      if (!currentMeme && fallbackMemes.length > 0) {
+        setCurrentMeme(fallbackMemes[0]);
+      }
     }
   };
 
@@ -98,6 +118,12 @@ function App() {
       });
 
       try {
+        setMemes(dummyMemes.map(meme => ({
+          ...meme,
+          engagement: { likes: 0, superLikes: 0, dislikes: 0 }
+        })));
+    
+          // Initialize price service
         await priceService.initializeData();
         
         if (window.Telegram?.WebApp) {
