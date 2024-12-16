@@ -194,7 +194,7 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
 
   return (
     <div className="relative max-w-[calc(100vw-32px)] mx-auto aspect-square">
-      {/* Next Meme (Background) */}
+      {/* Background Layer (Next Meme) - Always below */}
       <div className="absolute inset-0 z-10">
         {nextMeme && (
           <MemeCard
@@ -205,9 +205,9 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
           />
         )}
       </div>
-
-      {/* Current Meme */}
-      <AnimatePresence mode="wait">
+  
+      {/* Top Layer (Current Meme) - With animation */}
+      <AnimatePresence mode="sync">
         {currentMeme && (
           <motion.div
             key={currentMeme.id}
@@ -215,13 +215,15 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
             initial={false}
             animate={{ 
               opacity: isDragging ? 0.5 : 1,
-              scale: 1
+              scale: 1,
+              zIndex: 20
             }}
             exit={{ 
               opacity: 0,
+              scale: 0.95,
               transition: { 
-                duration: 0.1,
-                ease: "linear"
+                duration: 0.2,
+                ease: "easeOut"
               }
             }}
           >
@@ -251,8 +253,8 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
           </motion.div>
         )}
       </AnimatePresence>
-
-      {/* Swipe Indicator */}
+  
+      {/* Swipe Indicator Overlay - Always on top */}
       <AnimatePresence>
         {lastSwipe && (
           <motion.div 
