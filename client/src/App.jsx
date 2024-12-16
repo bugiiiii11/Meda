@@ -45,6 +45,15 @@ function App() {
   const [isTelegram, setIsTelegram] = useState(false);
   const [userData, setUserData] = useState(null);
 
+  const handleUserDataUpdate = (newUserData) => {
+    setUserData(prevData => ({
+      ...prevData,
+      totalPoints: newUserData.totalPoints,
+      pointsBreakdown: newUserData.pointsBreakdown,
+      completedTasks: newUserData.completedTasks
+    }));
+  };
+
   const handleMemeChange = (meme) => {
     console.log('Changing meme to:', meme);
     setCurrentMeme(meme);
@@ -258,7 +267,10 @@ function App() {
           <DetailsPage isOpen={isDetailsOpen} meme={currentMeme} />
         </>
       ) : activeTab === 'tasks' ? (
-        <TasksPage userData={userData} />
+        <TasksPage 
+          userData={userData} 
+          onUserDataUpdate={handleUserDataUpdate} 
+        />
       ) : activeTab === 'ranks' ? (
         <RanksPage userData={userData} />
       ) : (

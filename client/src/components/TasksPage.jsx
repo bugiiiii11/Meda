@@ -64,7 +64,7 @@ const AchievementTask = ({ label, current, target, points, completed, onClick })
   </div>
 );
 
-const TasksPage = ({ userData }) => {
+const TasksPage = ({ userData, onUserDataUpdate }) => {
   const [completedTasks, setCompletedTasks] = useState(new Set());
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -157,7 +157,7 @@ const TasksPage = ({ userData }) => {
                 <span className="text-2xl">🚀</span>
               </div>
               <h1 className="text-2xl font-bold text-white">
-                Fynder's Challenges
+                Challenges
               </h1>
             </div>
           </div>
