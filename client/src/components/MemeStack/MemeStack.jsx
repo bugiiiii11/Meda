@@ -255,28 +255,128 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
   
       {/* Swipe Indicator Overlay - Always on top */}
       <AnimatePresence>
-        {lastSwipe && (
-          <motion.div 
-            className="absolute inset-0 flex items-center justify-center z-30 pointer-events-none"
-            initial={{ opacity: 0, scale: 0.5 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.8 }}
-            transition={{ duration: 0.2 }}
-          >
-            <motion.div 
-              className={`px-8 py-4 rounded-2xl border-4 border-white shadow-xl backdrop-blur-sm ${
-                lastSwipe === 'right' ? 'bg-green-500/90' :
-                lastSwipe === 'left' ? 'bg-red-500/90' :
-                'bg-blue-500/90'
-              }`}
+  {lastSwipe && (
+    <motion.div 
+      className="absolute inset-0 flex items-center justify-center z-30 pointer-events-none"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+    >
+      {lastSwipe === 'right' && (
+        <motion.div 
+          className="px-8 py-4 rounded-2xl border-4 border-green-500 shadow-xl backdrop-blur-sm bg-green-500/90"
+          initial={{ x: -100, rotate: -45, scale: 0 }}
+          animate={{ 
+            x: 0, 
+            rotate: 0, 
+            scale: 1,
+            transition: {
+              type: "spring",
+              stiffness: 300,
+              damping: 15
+            }
+          }}
+          exit={{ 
+            x: 100,
+            rotate: 45,
+            scale: 0,
+            transition: { duration: 0.2 }
+          }}
+        >
+          <div className="text-4xl font-bold text-white flex items-center gap-3">
+            <motion.span
+              initial={{ scale: 0 }}
+              animate={{ 
+                scale: [1, 1.2, 1],
+                transition: {
+                  duration: 0.3,
+                  times: [0, 0.5, 1]
+                }
+              }}
             >
-              <div className="text-4xl font-bold text-white flex items-center gap-3">
-                {lastSwipe === 'right' ? 'LIKE' : lastSwipe === 'left' ? 'NOPE' : 'SUPER'}
-              </div>
+              👍 LIKE
+            </motion.span>
+          </div>
+        </motion.div>
+      )}
+
+      {lastSwipe === 'left' && (
+        <motion.div 
+          className="px-8 py-4 rounded-2xl border-4 border-red-500 shadow-xl backdrop-blur-sm bg-red-500/90"
+          initial={{ x: 100, rotate: 45, scale: 0 }}
+          animate={{ 
+            x: 0, 
+            rotate: 0, 
+            scale: 1,
+            transition: {
+              type: "spring",
+              stiffness: 300,
+              damping: 15
+            }
+          }}
+          exit={{ 
+            x: -100,
+            rotate: -45,
+            scale: 0,
+            transition: { duration: 0.2 }
+          }}
+        >
+          <div className="text-4xl font-bold text-white flex items-center gap-3">
+            <motion.span
+              initial={{ scale: 0 }}
+              animate={{ 
+                scale: [1, 1.2, 1],
+                transition: {
+                  duration: 0.3,
+                  times: [0, 0.5, 1]
+                }
+              }}
+            >
+              👎 NOPE
+            </motion.span>
+          </div>
+        </motion.div>
+      )}
+
+      {lastSwipe === 'super' && (
+        <motion.div 
+          className="px-8 py-4 rounded-2xl border-4 border-blue-500 shadow-xl backdrop-blur-sm bg-blue-500/90"
+          initial={{ y: 100, scale: 0 }}
+          animate={{ 
+            y: 0, 
+            scale: 1,
+            transition: {
+              type: "spring",
+              stiffness: 300,
+              damping: 15
+            }
+          }}
+          exit={{ 
+            y: -100,
+            scale: 0,
+            transition: { duration: 0.2 }
+          }}
+        >
+          <div className="text-4xl font-bold text-white flex items-center gap-3">
+            <motion.div
+              initial={{ scale: 0 }}
+              animate={{ 
+                scale: [1, 1.5, 1],
+                rotate: [0, 180, 360],
+                transition: {
+                  duration: 0.5,
+                  ease: "easeInOut"
+                }
+              }}
+            >
+              ⭐ SUPER
             </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+          </div>
+        </motion.div>
+      )}
+    </motion.div>
+  )}
+</AnimatePresence>
     </div>
   );
 };
