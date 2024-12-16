@@ -95,33 +95,44 @@ class MemeController {
 
   static async getMemesWithEngagement(req, res) {
     try {
-      const memes = await Meme.find({ status: 'active' }).lean();
-      const projects = await Project.find().lean();
+      // First fetch memes with explicit field selection
+      const memes = await Meme.find({ status: 'active' })
+        .select('id projectName content logo weight engagement projectDetails')
+        .lean();
+      
+      console.log('Raw meme data from database:', 
+        memes.map(m => ({
+          id: m.id,
+          engagement: m.engagement
+        }))
+      );
   
-      console.log('===== DEBUG: MemeController =====');
-      console.log('Found memes count:', memes.length);
-      console.log('Found projects count:', projects.length);
+      // Then get projects for cross-referencing
+      const projects = await Project.find()
+        .select('name memeStats')
+        .lean();
   
+      // Combine meme and project data
       const memesWithEngagement = memes.map(meme => {
         const project = projects.find(p => p.name === meme.projectName);
         const memeStats = project?.memeStats?.find(ms => ms.memeId === meme.id);
-        
-        const combinedEngagement = {
-          likes: memeStats?.likes || meme.engagement?.likes || 0,
-          superLikes: memeStats?.superLikes || meme.engagement?.superLikes || 0,
+  
+        // Combine engagement data from both sources
+        const engagement = {
+          likes: Math.max(memeStats?.likes || 0, meme.engagement?.likes || 0),
+          superLikes: Math.max(memeStats?.superLikes || 0, meme.engagement?.superLikes || 0),
           dislikes: meme.engagement?.dislikes || 0
         };
   
-        console.log(`Meme ${meme.id} (${meme.projectName}) engagement:`, combinedEngagement);
+        console.log(`Engagement data for meme ${meme.id}:`, engagement);
   
         return {
           ...meme,
-          engagement: combinedEngagement
+          engagement
         };
       });
   
-      console.log('Sample processed meme:', JSON.stringify(memesWithEngagement[0], null, 2));
-      console.log('================================');
+      console.log('First meme complete data:', JSON.stringify(memesWithEngagement[0], null, 2));
   
       res.json({
         success: true,
