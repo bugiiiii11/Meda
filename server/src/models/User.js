@@ -1,6 +1,32 @@
 // server/src/models/User.js
 const mongoose = require('mongoose');
 
+const completedTaskSchema = new mongoose.Schema({
+  taskId: {
+    type: String,
+    required: true
+  },
+  type: {
+    type: String,
+    enum: ['quick', 'achievement', 'news'],
+    required: true
+  },
+  completedAt: {
+    type: Date,
+    default: Date.now
+  },
+  pointsAwarded: {
+    type: Number,
+    required: true
+  },
+  achievementTier: {
+    type: Number,
+    required: function() {
+      return this.type === 'achievement';
+    }
+  }
+});
+
 const userSchema = new mongoose.Schema({
   telegramId: {
     type: String,
@@ -32,13 +58,7 @@ const userSchema = new mongoose.Schema({
     referredUsers: [String],
     totalReferralPoints: { type: Number, default: 0 }
   },
-  completedTasks: [{
-    taskId: String,
-    type: String,
-    completedAt: Date,
-    pointsAwarded: Number,
-    achievementTier: Number
-  }],
+  completedTasks: [completedTaskSchema],
   status: {
     type: String,
     enum: ['active', 'inactive', 'banned'],
@@ -48,13 +68,7 @@ const userSchema = new mongoose.Schema({
   timestamps: true
 });
 
-
-// Indexes
-userSchema.index({ telegramId: 1 }, { unique: true });
-userSchema.index({ totalPoints: -1 });
-userSchema.index({ 'referralStats.referralCode': 1 });
-
-// a method to get display name
+// Method to get display name
 userSchema.methods.getDisplayName = function() {
   return this.username || `user${this.telegramId.slice(-4)}`;
 };
@@ -62,11 +76,11 @@ userSchema.methods.getDisplayName = function() {
 // Method to calculate total points
 userSchema.methods.calculateTotalPoints = function() {
   this.totalPoints = (
-    this.pointsBreakdown.likes +           // 1 point each
-    this.pointsBreakdown.dislikes +        // 1 point each
-    (this.pointsBreakdown.superLikes * 3) + // 3 points each
-    this.pointsBreakdown.tasks +           // From completed tasks (10 each)
-    this.pointsBreakdown.referrals         // From referrals (20 each)
+    this.pointsBreakdown.likes +
+    this.pointsBreakdown.dislikes +
+    (this.pointsBreakdown.superLikes * 3) +
+    this.pointsBreakdown.tasks +
+    this.pointsBreakdown.referrals
   );
   return this.totalPoints;
 };
@@ -80,6 +94,24 @@ userSchema.methods.addPoints = async function(type, amount) {
   }
 };
 
+// Method to complete a task
+userSchema.methods.completeTask = async function(taskId, type, points, achievementTier = null) {
+  const taskData = {
+    taskId,
+    type,
+    completedAt: new Date(),
+    pointsAwarded: points
+  };
+
+  if (type === 'achievement' && achievementTier) {
+    taskData.achievementTier = achievementTier;
+  }
+
+  this.completedTasks.push(taskData);
+  this.pointsBreakdown.tasks += points;
+  this.calculateTotalPoints();
+};
+
 // Generate referral code if not exists
 userSchema.methods.generateReferralCode = function() {
   if (!this.referralStats.referralCode) {
@@ -87,6 +119,11 @@ userSchema.methods.generateReferralCode = function() {
   }
   return this.referralStats.referralCode;
 };
+
+// Indexes
+userSchema.index({ telegramId: 1 }, { unique: true });
+userSchema.index({ totalPoints: -1 });
+userSchema.index({ 'referralStats.referralCode': 1 });
 
 const User = mongoose.model('User', userSchema);
 

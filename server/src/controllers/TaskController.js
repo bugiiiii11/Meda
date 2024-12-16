@@ -34,17 +34,10 @@ class TaskController {
           if (user.completedTasks.some(t => t.taskId === taskId)) {
             throw new Error('Task already completed');
           }
-
-          // Award points
-          user.totalPoints += task.points;
-          user.pointsBreakdown.tasks += task.points;
-          user.completedTasks.push({
-            taskId,
-            type: 'quick',
-            completedAt: new Date(),
-            pointsAwarded: task.points
-          });
-
+        
+          // Award points using the new method
+          await user.completeTask(taskId, 'quick', task.points);
+        
           // Create points transaction
           await new PointsTransaction({
             user: telegramId,
@@ -57,26 +50,19 @@ class TaskController {
             },
             description: `Completed task: ${task.label}`
           }).save({ session });
-
+        
           break;
         }
-
+        
         case 'news': {
           // For news tasks, check if this specific news task was completed
           if (user.completedTasks.some(t => t.taskId === taskId)) {
             throw new Error('This news item already read');
           }
-
-          // Award points
-          user.totalPoints += task.points;
-          user.pointsBreakdown.tasks += task.points;
-          user.completedTasks.push({
-            taskId,
-            type: 'news',
-            completedAt: new Date(),
-            pointsAwarded: task.points
-          });
-
+        
+          // Award points using the new method
+          await user.completeTask(taskId, 'news', task.points);
+        
           // Create points transaction
           await new PointsTransaction({
             user: telegramId,
@@ -89,7 +75,7 @@ class TaskController {
             },
             description: `Read news: ${task.label}`
           }).save({ session });
-
+        
           break;
         }
 
