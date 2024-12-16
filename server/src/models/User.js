@@ -1,65 +1,44 @@
-// User.js
+// server/src/models/User.js
 const mongoose = require('mongoose');
 
 const userSchema = new mongoose.Schema({
   telegramId: {
     type: String,
     required: true,
-    unique: true,
-    index: true
+    unique: true
   },
   username: String,
   firstName: String,
   lastName: String,
   totalPoints: {
     type: Number,
-    default: 0,
-    index: -1 // For leaderboard sorting
+    default: 0
   },
   pointsBreakdown: {
-    likes: { type: Number, default: 0 },         // +1 per like
-    dislikes: { type: Number, default: 0 },      // +1 per dislike
-    superLikes: { type: Number, default: 0 },    // +3 per super like
-    tasks: { type: Number, default: 0 },         // +10 per task
-    referrals: { type: Number, default: 0 }      // +20 per referral
+    likes: { type: Number, default: 0 },
+    dislikes: { type: Number, default: 0 },
+    superLikes: { type: Number, default: 0 },
+    tasks: { type: Number, default: 0 },
+    referrals: { type: Number, default: 0 }
+  },
+  achievements: {
+    likes: { type: Number, default: 0 },
+    dislikes: { type: Number, default: 0 },
+    superLikes: { type: Number, default: 0 },
+    referrals: { type: Number, default: 0 }
   },
   referralStats: {
-    referralCode: {
-      type: String,
-      unique: true,
-      sparse: true
-    },
-    referredBy: {
-      type: String,
-      ref: 'User',
-      index: true
-    },
-    referredUsers: [{
-      type: String,
-      ref: 'User'
-    }],
+    referralCode: String,
+    referredUsers: [String],
     totalReferralPoints: { type: Number, default: 0 }
   },
   completedTasks: [{
-    taskId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Task'
-    },
-    projectId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Project'
-    },
-    completedAt: {
-      type: Date,
-      default: Date.now
-    },
-    pointsEarned: { type: Number, default: 0 },
-    verified: { type: Boolean, default: false }
+    taskId: String,
+    type: String,
+    completedAt: Date,
+    pointsAwarded: Number,
+    achievementTier: Number
   }],
-  lastActive: {
-    type: Date,
-    default: Date.now
-  },
   status: {
     type: String,
     enum: ['active', 'inactive', 'banned'],
@@ -69,11 +48,11 @@ const userSchema = new mongoose.Schema({
   timestamps: true
 });
 
-// Indexes for efficient querying
+
+// Indexes
+userSchema.index({ telegramId: 1 }, { unique: true });
 userSchema.index({ totalPoints: -1 });
-userSchema.index({ 'referralStats.referralCode': 1 }, { sparse: true });
-userSchema.index({ 'completedTasks.taskId': 1, 'completedTasks.projectId': 1 });
-userSchema.index({ lastActive: -1 });
+userSchema.index({ 'referralStats.referralCode': 1 });
 
 // a method to get display name
 userSchema.methods.getDisplayName = function() {
@@ -110,4 +89,5 @@ userSchema.methods.generateReferralCode = function() {
 };
 
 const User = mongoose.model('User', userSchema);
+
 module.exports = User;

@@ -1,20 +1,27 @@
-// taskRoutes.js
+// server/src/routes/taskRoutes.js
 const express = require('express');
 const router = express.Router();
 const TaskController = require('../controllers/TaskController');
 const { validateRequest } = require('../middleware/validation');
 const { bypassAuthInDevelopment } = require('../middleware/auth');
 
-router.post('/create',
-  bypassAuthInDevelopment,
-  validateRequest('createTask'),
-  TaskController.createTask
-);
-
+// Complete a task endpoint
 router.post('/complete',
   bypassAuthInDevelopment,
   validateRequest('completeTask'),
   TaskController.completeTask
+);
+
+// Check achievement progress endpoint
+router.get('/:telegramId/achievements',
+  bypassAuthInDevelopment,
+  TaskController.checkAchievements
+);
+
+// Get all active tasks endpoint
+router.get('/active',
+  bypassAuthInDevelopment,
+  TaskController.getActiveTasks
 );
 
 module.exports = router;

@@ -1,23 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { ENDPOINTS, getHeaders } from '../config/api';
 
-const CopyIcon = () => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    width="16"
-    height="16"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-  </svg>
-);
-
 const CheckIcon = () => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
@@ -33,6 +16,7 @@ const CheckIcon = () => (
     <polyline points="20 6 9 17 4 12"></polyline>
   </svg>
 );
+
 
 const TaskButton = ({ onClick, completed, children, link }) => {
   const handleClick = async () => {
@@ -60,16 +44,167 @@ const TaskButton = ({ onClick, completed, children, link }) => {
   );
 };
 
+const AchievementTask = ({ label, current, tiers, type }) => {
+  // Find the current applicable tier
+  const currentTier = tiers.find((tier, index) => {
+    const previousTier = tiers[index - 1];
+    const minValue = previousTier ? previousTier.target : 0;
+    return current >= minValue && current < tier.target;
+  }) || tiers[tiers.length - 1];
+
+  // Find the previous completed tier
+  const previousTier = tiers.find((tier, index) => {
+    const nextTier = tiers[index + 1];
+    return nextTier && current >= tier.target && current < nextTier.target;
+  });
+
+  const startValue = previousTier ? previousTier.target : 0;
+  const progress = ((current - startValue) / (currentTier.target - startValue)) * 100;
+  const isCompleted = current >= currentTier.target;
+
+  return (
+    <div className={`w-full p-4 rounded-lg ${
+      isCompleted ? 'bg-green-600/20' : 'bg-[#2c2d31]'
+    }`}>
+      <div className="flex justify-between items-center mb-2">
+        <span className="text-gray-200">
+          {label} (Tier {currentTier.level})
+        </span>
+        {!isCompleted && <span className="text-green-400">+{currentTier.points}</span>}
+        {isCompleted && <CheckIcon />}
+      </div>
+      <div className="w-full bg-[#1a1b1e] rounded-full h-2">
+        <div 
+          className="bg-green-500 h-2 rounded-full transition-all duration-300"
+          style={{ width: `${Math.min(progress, 100)}%` }}
+        />
+      </div>
+      <div className="flex justify-between items-center mt-1">
+        <span className="text-sm text-gray-400">{current.toLocaleString()}</span>
+        <span className="text-sm text-gray-400">{currentTier.target.toLocaleString()}</span>
+      </div>
+    </div>
+  );
+};
+
 const TasksPage = ({ userData }) => {
   const [completedTasks, setCompletedTasks] = useState(new Set());
   const [isLoading, setIsLoading] = useState(false);
+  const [latestNewsId, setLatestNewsId] = useState(null);
 
-  const tasks = [
-    { id: 'website', label: 'Website', link: 'https://cryptomeme.me', points: 10 },
-    { id: 'telegram', label: 'Join Telegram Chat', link: 'https://t.me/cryptomemebot', points: 10 },
-    { id: 'twitter', label: 'Follow X', link: 'https://x.com/cryptomemebot', points: 10 },
-    { id: 'instagram', label: 'Follow Instagram', link: 'https://instagram.com/cryptomemebot', points: 10 }
+  // Define achievement tiers
+  const achievementConfigs = {
+    likes: {
+      label: 'Give Likes',
+      tiers: [
+        { level: 1, target: 1000, points: 1000 },
+        { level: 2, target: 5000, points: 5000 },
+        { level: 3, target: 25000, points: 25000 },
+        { level: 4, target: 125000, points: 125000 }
+      ]
+    },
+    dislikes: {
+      label: 'Give Dislikes',
+      tiers: [
+        { level: 1, target: 1000, points: 1000 },
+        { level: 2, target: 5000, points: 5000 },
+        { level: 3, target: 25000, points: 25000 },
+        { level: 4, target: 125000, points: 125000 }
+      ]
+    },
+    superLikes: {
+      label: 'Give Super Likes',
+      tiers: [
+        { level: 1, target: 100, points: 1000 },
+        { level: 2, target: 500, points: 5000 },
+        { level: 3, target: 2500, points: 25000 },
+        { level: 4, target: 12500, points: 125000 }
+      ]
+    },
+    referrals: {
+      label: 'Invite Friends',
+      tiers: [
+        { level: 1, target: 20, points: 1000 },
+        { level: 2, target: 100, points: 5000 },
+        { level: 3, target: 500, points: 25000 },
+        { level: 4, target: 2500, points: 125000 }
+      ]
+    }
+  };
+
+  const linkTasks = [
+    { 
+      id: 'website', 
+      label: 'Browse Our Web', 
+      link: 'https://cryptomeme.me', 
+      points: 10,
+      type: 'single'
+    },
+    { 
+      id: 'telegram', 
+      label: 'Join Telegram Chat', 
+      link: 'https://t.me/pumpme_me', 
+      points: 10,
+      type: 'single'
+    },
+    { 
+      id: 'twitter', 
+      label: 'Follow X', 
+      link: 'https://x.com/pumpme_me', 
+      points: 10,
+      type: 'single'
+    },
+    { 
+      id: 'instagram', 
+      label: 'Follow Instagram', 
+      link: 'https://instagram.com/pumpme_me', 
+      points: 10,
+      type: 'single'
+    },
+    { 
+      id: `news-${latestNewsId}`, 
+      label: 'Read the Latest News', 
+      link: 'https://x.com/bitcoinlfgo/status/1868172844129235110', 
+      points: 10,
+      type: 'repeatable'
+    }
   ];
+/*
+  const achievementTasks = [
+    {
+      id: 'likes-1000',
+      label: 'Give 1000 Likes',
+      current: userData?.pointsBreakdown?.likes || 0,
+      target: 1000,
+      points: 1000,
+      type: 'achievement'
+    },
+    {
+      id: 'dislikes-1000',
+      label: 'Give 1000 Dislikes',
+      current: userData?.pointsBreakdown?.dislikes || 0,
+      target: 1000,
+      points: 1000,
+      type: 'achievement'
+    },
+    {
+      id: 'superlikes-100',
+      label: 'Give 100 Super Likes',
+      current: userData?.pointsBreakdown?.superLikes || 0,
+      target: 100,
+      points: 1000,
+      type: 'achievement'
+    },
+    {
+      id: 'referrals-20',
+      label: 'Invite 20 Friends',
+      current: userData?.referralStats?.referredUsers?.length || 0,
+      target: 20,
+      points: 1000,
+      type: 'achievement'
+    }
+  ];
+*/
 
   useEffect(() => {
     if (userData?.completedTasks) {
@@ -77,8 +212,8 @@ const TasksPage = ({ userData }) => {
     }
   }, [userData]);
 
-  const handleTaskCompletion = async (taskId) => {
-    if (completedTasks.has(taskId) || isLoading) return;
+  const handleTaskCompletion = async (taskId, type) => {
+    if ((type === 'single' && completedTasks.has(taskId)) || isLoading) return;
 
     setIsLoading(true);
     try {
@@ -87,7 +222,8 @@ const TasksPage = ({ userData }) => {
         headers: getHeaders(),
         body: JSON.stringify({
           taskId,
-          telegramId: userData.telegramId
+          telegramId: userData.telegramId,
+          taskType: type
         })
       });
 
@@ -119,37 +255,58 @@ const TasksPage = ({ userData }) => {
         </div>
       </div>
 
-      <div className="pt-[72px] px-4">
+      <div className="pt-[72px] pb-20 px-4">
         <div className="max-w-md mx-auto">
-          <div className="flex flex-col gap-4">
-            <div className="bg-[#2c2d31] rounded-lg p-4">
-              <div className="text-gray-400 text-sm mb-2 text-center">Invite Friends</div>
-              <div className="flex items-center gap-2 bg-[#1a1b1e] rounded px-3 py-2">
-                <div className="text-gray-200 text-sm truncate flex-1">
-                  https://t.me/cryptomememe_bot
-                </div>
-                <button
-                  onClick={() => {
-                    navigator.clipboard.writeText('https://t.me/cryptomememe_bot');
-                  }}
-                  className="text-gray-400 hover:text-white transition-colors p-1"
-                  title="Copy invite link"
-                >
-                  <CopyIcon />
-                </button>
+          <div className="flex flex-col gap-6">
+            {/* Quick Tasks Section */}
+            <div>
+              <h2 className="text-lg font-semibold text-white mb-3">Quick Tasks</h2>
+              <div className="flex flex-col gap-4">
+                {linkTasks.map((task) => (
+                  <TaskButton
+                    key={task.id}
+                    completed={task.type === 'single' ? completedTasks.has(task.id) : completedTasks.has(`news-${latestNewsId}`)}
+                    onClick={() => handleTaskCompletion(task.id, task.type)}
+                    link={task.link}
+                  >
+                    {task.label} {(!completedTasks.has(task.id) || task.type === 'repeatable') && 
+                      <span className="text-green-400">+{task.points}</span>
+                    }
+                  </TaskButton>
+                ))}
               </div>
             </div>
 
-            {tasks.map((task) => (
-              <TaskButton
-                key={task.id}
-                completed={completedTasks.has(task.id)}
-                onClick={() => handleTaskCompletion(task.id)}
-                link={task.link}
-              >
-                {task.label} {!completedTasks.has(task.id) && <span className="text-green-400">+{task.points}</span>}
-              </TaskButton>
-            ))}
+            {/* Achievement Tasks Section */}
+            <div>
+              <h2 className="text-lg font-semibold text-white mb-3">Achievements</h2>
+              <div className="flex flex-col gap-4">
+                <AchievementTask
+                  label={achievementConfigs.likes.label}
+                  current={userData?.pointsBreakdown?.likes || 0}
+                  tiers={achievementConfigs.likes.tiers}
+                  type="likes"
+                />
+                <AchievementTask
+                  label={achievementConfigs.dislikes.label}
+                  current={userData?.pointsBreakdown?.dislikes || 0}
+                  tiers={achievementConfigs.dislikes.tiers}
+                  type="dislikes"
+                />
+                <AchievementTask
+                  label={achievementConfigs.superLikes.label}
+                  current={userData?.pointsBreakdown?.superLikes || 0}
+                  tiers={achievementConfigs.superLikes.tiers}
+                  type="superLikes"
+                />
+                <AchievementTask
+                  label={achievementConfigs.referrals.label}
+                  current={userData?.referralStats?.referredUsers?.length || 0}
+                  tiers={achievementConfigs.referrals.tiers}
+                  type="referrals"
+                />
+              </div>
+            </div>
           </div>
         </div>
       </div>

@@ -1,60 +1,94 @@
-//Task.js
+// server/src/models/Task.js
 const mongoose = require('mongoose');
 
-const taskSchema = new mongoose.Schema({
-  projectId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Project',
-    required: true,
-    index: true
+const taskTierSchema = new mongoose.Schema({
+  level: {
+    type: Number,
+    required: true
   },
-  type: {
-    type: String,
-    enum: ['social', 'sponsored', 'daily'],
-    required: true,
-    index: true
-  },
-  action: {
-    type: String,
-    enum: ['visit', 'join', 'follow', 'share'],
+  target: {
+    type: Number,
     required: true
   },
   points: {
     type: Number,
+    required: true
+  }
+});
+
+const taskSchema = new mongoose.Schema({
+  taskId: {
+    type: String,
     required: true,
-    min: 0
+    unique: true
   },
-  requirements: {
-    link: String,
-    platform: {
-      type: String,
-      enum: ['telegram', 'twitter', 'website', 'other']
-    },
-    verificationMethod: {
-      type: String,
-      enum: ['click', 'manual', 'api'],
-      default: 'click'
+  type: {
+    type: String,
+    enum: ['quick', 'achievement', 'news'],
+    required: true
+  },
+  category: {
+    type: String,
+    enum: ['link', 'likes', 'dislikes', 'superLikes', 'referrals'],
+    required: true
+  },
+  label: {
+    type: String,
+    required: true
+  },
+  points: {
+    type: Number,
+    required: function() {
+      return this.type === 'quick' || this.type === 'news';
     }
-  },
-  analytics: {
-    completions: { type: Number, default: 0 },
-    lastCompletedAt: Date,
-    uniqueUsers: { type: Number, default: 0 }
   },
   status: {
     type: String,
-    enum: ['active', 'inactive', 'completed'],
+    enum: ['active', 'inactive'],
     default: 'active'
   },
-  expiresAt: Date
+  link: {
+    type: String,
+    required: function() {
+      return this.type === 'quick' || this.type === 'news';
+    }
+  },
+  isRepeatable: {
+    type: Boolean,
+    default: false
+  },
+  tiers: {
+    type: [taskTierSchema],
+    required: function() {
+      return this.type === 'achievement';
+    },
+    default: function() {
+      return this.type === 'achievement' ? undefined : [];
+    }
+  },
+  expiryDate: {
+    type: Date,
+    required: function() {
+      return this.type === 'news';
+    }
+  }
 }, {
   timestamps: true
 });
 
-// Indexes for efficient querying
+// Remove points field from achievement tasks before saving
+taskSchema.pre('save', function(next) {
+  if (this.type === 'achievement') {
+    this.points = undefined;
+  }
+  next();
+});
+
+// Indexes
+taskSchema.index({ taskId: 1 }, { unique: true });
 taskSchema.index({ type: 1, status: 1 });
-taskSchema.index({ expiresAt: 1 }, { expireAfterSeconds: 0 }); // TTL index
-taskSchema.index({ 'requirements.platform': 1 });
+taskSchema.index({ category: 1 });
+taskSchema.index({ 'tiers.level': 1 });
 
 const Task = mongoose.model('Task', taskSchema);
 

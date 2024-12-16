@@ -1,4 +1,4 @@
-//validation.js
+// validation.js
 const Joi = require('joi');
 
 const schemas = {
@@ -37,18 +37,41 @@ const schemas = {
     })
   }),
 
-  // Task validations
+  // Updated Task validations
   createTask: Joi.object({
-    projectId: Joi.string().required(),
-    type: Joi.string().valid('social', 'sponsored', 'daily').required(),
-    action: Joi.string().valid('visit', 'join', 'follow', 'share').required(),
-    points: Joi.number().min(0).required(),
-    requirements: Joi.object({
-      link: Joi.string().uri().optional(),
-      platform: Joi.string().valid('telegram', 'twitter', 'website', 'other').required(),
-      verificationMethod: Joi.string().valid('click', 'manual', 'api').default('click')
+    taskId: Joi.string().required(),
+    type: Joi.string().valid('quick', 'achievement', 'news').required(),
+    category: Joi.string().valid('link', 'likes', 'dislikes', 'superLikes', 'referrals').required(),
+    label: Joi.string().required(),
+    status: Joi.string().valid('active', 'inactive').default('active'),
+    // Conditional fields based on type
+    points: Joi.when('type', {
+      is: Joi.string().valid('quick', 'news'),
+      then: Joi.number().required(),
+      otherwise: Joi.forbidden()
     }),
-    status: Joi.string().valid('active', 'inactive', 'completed').default('active')
+    link: Joi.when('type', {
+      is: Joi.string().valid('quick', 'news'),
+      then: Joi.string().uri().required(),
+      otherwise: Joi.forbidden()
+    }),
+    isRepeatable: Joi.boolean().default(false),
+    tiers: Joi.when('type', {
+      is: 'achievement',
+      then: Joi.array().items(
+        Joi.object({
+          level: Joi.number().required(),
+          target: Joi.number().required(),
+          points: Joi.number().required()
+        })
+      ).required(),
+      otherwise: Joi.forbidden()
+    }),
+    expiryDate: Joi.when('type', {
+      is: 'news',
+      then: Joi.date().required(),
+      otherwise: Joi.forbidden()
+    })
   }),
 
   completeTask: Joi.object({
@@ -67,7 +90,7 @@ const schemas = {
     username: Joi.string().optional()
   }),
 
-  // Leaderboard validations (for query params)
+  // Leaderboard validations
   getLeaderboard: Joi.object({
     type: Joi.string().valid('all', 'users', 'projects').default('all'),
     limit: Joi.number().min(1).max(100).default(50)
@@ -91,8 +114,8 @@ const validateRequest = (schemaName) => {
     }
 
     const { error } = schema.validate(validationTarget, {
-      abortEarly: false,  // Return all errors, not just the first one
-      stripUnknown: true  // Remove unknown fields
+      abortEarly: false, // Return all errors, not just the first one
+      stripUnknown: true // Remove unknown fields
     });
 
     if (error) {
@@ -101,11 +124,12 @@ const validateRequest = (schemaName) => {
         error: error.details.map(detail => detail.message).join(', ')
       });
     }
+
     next();
   };
 };
 
 module.exports = {
   validateRequest,
-  schemas  // Export schemas for testing purposes
+  schemas // Export schemas for testing purposes
 };
