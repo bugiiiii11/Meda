@@ -115,40 +115,37 @@ const TasksPage = ({ userData }) => {
     setError(null);
 
     try {
-      console.log('Attempting to complete task:', {
-        taskId,
-        telegramId: userData?.telegramId,
-        endpoint: `${ENDPOINTS.base}/api/tasks/complete`
-      });
+        const response = await fetch(`${ENDPOINTS.base}/api/tasks/complete`, {
+            method: 'POST',
+            headers: getHeaders(),
+            body: JSON.stringify({
+                taskId,
+                telegramId: userData?.telegramId
+            })
+        });
 
-      const response = await fetch(`${ENDPOINTS.base}/api/tasks/complete`, {
-        method: 'POST',
-        headers: getHeaders(),
-        body: JSON.stringify({
-          taskId,
-          telegramId: userData?.telegramId
-        })
-      });
+        const data = await response.json();
+        console.log('Task completion response:', data);
 
-      const data = await response.json();
-      console.log('Task completion response:', data);
+        if (!response.ok) {
+            throw new Error(data.error || 'Failed to complete task');
+        }
 
-      if (!response.ok) {
-        throw new Error(data.error || 'Failed to complete task');
-      }
-
-      if (data.success) {
-        setCompletedTasks(prev => new Set([...prev, taskId]));
-        // Refresh the page to update user data
-        window.location.reload();
-      }
+        if (data.success) {
+            setCompletedTasks(prev => new Set([...prev, taskId]));
+            
+            // Update the parent component's userData
+            if (typeof onUserDataUpdate === 'function') {
+                onUserDataUpdate(data.data.user);
+            }
+        }
     } catch (error) {
-      console.error('Task completion error:', error);
-      setError(error.message);
+        console.error('Task completion error:', error);
+        setError(error.message);
     } finally {
-      setIsLoading(false);
+        setIsLoading(false);
     }
-  };
+};
 
   return (
     <div className="w-full">
