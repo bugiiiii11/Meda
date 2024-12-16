@@ -12,7 +12,7 @@ const QuickStatIcon = ({ children, count, text }) => (
   </div>
 );
 
-const MemeCard = ({ meme, onSwipe, isTop, isMobile, userData, onDragStart, onDragEnd }) => {
+const MemeCard = ({ meme, onSwipe, isTop, onDragStart, onDragEnd }) => {
   console.log('MemeCard render:', {
     id: meme.id,
     projectName: meme.projectName,
@@ -30,30 +30,30 @@ const MemeCard = ({ meme, onSwipe, isTop, isMobile, userData, onDragStart, onDra
   );
 
   // Add keyboard handlers for web testing
-React.useEffect(() => {
-  if (!isTop) return;
+  React.useEffect(() => {
+    if (!isTop) return;
 
-  const handleKeyPress = (e) => {
-    if (e.key === 'ArrowLeft') onSwipe('left');
-    if (e.key === 'ArrowRight') onSwipe('right');
-    if (e.key === 'ArrowUp') onSwipe('super');
-  };
+    const handleKeyPress = (e) => {
+      if (e.key === 'ArrowLeft') onSwipe('left');
+      if (e.key === 'ArrowRight') onSwipe('right');
+      if (e.key === 'ArrowUp') onSwipe('super');
+    };
 
-  window.addEventListener('keydown', handleKeyPress);
-  return () => window.removeEventListener('keydown', handleKeyPress);
-}, [isTop, onSwipe]);
+    window.addEventListener('keydown', handleKeyPress);
+    return () => window.removeEventListener('keydown', handleKeyPress);
+  }, [isTop, onSwipe]);
 
-return (
-  <motion.div
-    className="absolute w-full"
-    style={{ x, y, rotate, opacity }}
-    drag={isTop}
-    dragConstraints={{ left: 0, right: 0, top: 0, bottom: 0 }}
-    dragElastic={1}
-    onDragStart={onDragStart}
-    onDragEnd={onDragEnd}
-    dragTransition={{ bounceStiffness: 600, bounceDamping: 20 }}
-    initial={false}
+  return (
+    <motion.div
+      className="absolute w-full"
+      style={{ x, y, rotate, opacity }}
+      drag={isTop}
+      dragConstraints={{ left: 0, right: 0, top: 0, bottom: 0 }}
+      dragElastic={1}
+      onDragStart={onDragStart}
+      onDragEnd={onDragEnd}
+      dragTransition={{ bounceStiffness: 600, bounceDamping: 20 }}
+      initial={false}
     >
       <div className="card rounded-xl overflow-hidden shadow-xl">
         <img
@@ -61,28 +61,27 @@ return (
           alt={meme.projectName}
           className="w-full aspect-square object-cover"
         />
-      <div className="bg-gradient-to-b from-[#2c2d31] to-[#1a1b1e] border-t border-[#3c3d41]/30 p-4">
-        <div className="flex justify-between items-center">
-          <div className="flex items-center gap-2">
-            <span>👍</span>
-            <div className="flex flex-col">
-              <span className="text-gray-200 font-medium">
-                {meme?.engagement?.likes || 0}
-              </span>
-              <span className="text-xs text-gray-400">Likes</span>
+        <div className="bg-gradient-to-b from-[#2c2d31] to-[#1a1b1e] border-t border-[#3c3d41]/30 p-4">
+          <div className="flex justify-between items-center">
+            <div className="flex items-center gap-2">
+              <span>👍</span>
+              <div className="flex flex-col">
+                <span className="text-gray-200 font-medium">
+                  {meme?.engagement?.likes || 0}
+                </span>
+                <span className="text-xs text-gray-400">Likes</span>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <span>⭐</span>
+              <div className="flex flex-col">
+                <span className="text-gray-200 font-medium">
+                  {meme?.engagement?.superLikes || 0}
+                </span>
+                <span className="text-xs text-gray-400">Super Likes</span>
+              </div>
             </div>
           </div>
-          
-          <div className="flex items-center gap-2">
-            <span>⭐</span>
-            <div className="flex flex-col">
-              <span className="text-gray-200 font-medium">
-                {meme?.engagement?.superLikes || 0}
-              </span>
-              <span className="text-xs text-gray-400">Super Likes</span>
-            </div>
-            </div>
-            </div>
         </div>
       </div>
     </motion.div>

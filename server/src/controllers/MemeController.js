@@ -95,14 +95,13 @@ class MemeController {
 
   static async getMemesWithEngagement(req, res) {
     try {
-      // Get memes and projects
       const memes = await Meme.find({ status: 'active' }).lean();
-      console.log('Sample raw meme:', JSON.stringify(memes[0], null, 2));
-  
       const projects = await Project.find().lean();
-      console.log('Sample project:', JSON.stringify(projects[0], null, 2));
   
-      // Combine data
+      console.log('===== DEBUG: MemeController =====');
+      console.log('Found memes count:', memes.length);
+      console.log('Found projects count:', projects.length);
+  
       const memesWithEngagement = memes.map(meme => {
         const project = projects.find(p => p.name === meme.projectName);
         const memeStats = project?.memeStats?.find(ms => ms.memeId === meme.id);
@@ -113,13 +112,16 @@ class MemeController {
           dislikes: meme.engagement?.dislikes || 0
         };
   
-        console.log(`Engagement for meme ${meme.id}:`, combinedEngagement);
+        console.log(`Meme ${meme.id} (${meme.projectName}) engagement:`, combinedEngagement);
   
         return {
           ...meme,
           engagement: combinedEngagement
         };
       });
+  
+      console.log('Sample processed meme:', JSON.stringify(memesWithEngagement[0], null, 2));
+      console.log('================================');
   
       res.json({
         success: true,

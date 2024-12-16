@@ -12,11 +12,13 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
   const [isMobile, setIsMobile] = React.useState(false);
   const [isDragging, setIsDragging] = React.useState(false);
 
-  console.log('MemeStack initial memes:', memes.map(m => ({
+  console.log('===== DEBUG: MemeStack Props =====');
+  console.log('Received memes:', memes.map(m => ({
     id: m.id,
     projectName: m.projectName,
     engagement: m.engagement
   })));
+  console.log('================================');
 
 
   useEffect(() => {
@@ -38,23 +40,32 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
 
 
   const getWeightedRandomMeme = React.useCallback(() => {
+    console.log('===== Getting Random Meme =====');
+    console.log('Total memes available:', memes.length);
+    console.log('Current meme ID:', currentMeme?.id);
+  
     const availableMemes = memes.filter(meme => meme.id !== currentMeme?.id);
-    if (availableMemes.length === 0) return memes[0];
-
-    console.log('Available memes with engagement:', 
-      availableMemes.map(m => ({
-        id: m.id,
-        engagement: m.engagement
-      }))
-    );
-
+    console.log('Filtered available memes:', availableMemes.length);
+  
+    if (availableMemes.length === 0) {
+      console.log('No available memes, returning first meme');
+      const firstMeme = {
+        ...memes[0],
+        engagement: {
+          likes: memes[0].engagement?.likes || 0,
+          superLikes: memes[0].engagement?.superLikes || 0,
+          dislikes: memes[0].engagement?.dislikes || 0
+        }
+      };
+      return firstMeme;
+    }
+  
     const totalWeight = availableMemes.reduce((sum, meme) => sum + (meme.weight || 1), 0);
     let random = Math.random() * totalWeight;
     
     for (const meme of availableMemes) {
       random -= (meme.weight || 1);
       if (random <= 0) {
-        // Make sure to preserve the engagement data
         const selectedMeme = {
           ...meme,
           engagement: {
@@ -63,13 +74,17 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
             dislikes: meme.engagement?.dislikes || 0
           }
         };
-        console.log('Selected meme with engagement:', selectedMeme);
+        console.log('Selected meme:', {
+          id: selectedMeme.id,
+          projectName: selectedMeme.projectName,
+          engagement: selectedMeme.engagement
+        });
         return selectedMeme;
       }
     }
     
-    // Preserve engagement data for fallback case too
-    return {
+    // Fallback to first available meme
+    const fallbackMeme = {
       ...availableMemes[0],
       engagement: {
         likes: availableMemes[0].engagement?.likes || 0,
@@ -77,6 +92,7 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
         dislikes: availableMemes[0].engagement?.dislikes || 0
       }
     };
+    return fallbackMeme;
   }, [memes, currentMeme]);
 
   // When initializing memes
