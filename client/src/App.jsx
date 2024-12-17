@@ -46,9 +46,11 @@ function App() {
   const [userData, setUserData] = useState(null);
 
   const handleUserDataUpdate = async (telegramId) => {
+    if (!telegramId) return;
+    
     try {
       const response = await fetch(
-        `${ENDPOINTS.users.get(telegramId || userData?.telegramId)}`,
+        `${ENDPOINTS.users.get(telegramId)}`,
         { headers: getHeaders() }
       );
       
@@ -58,8 +60,10 @@ function App() {
 
       const data = await response.json();
       if (data.success) {
-        console.log('Updated user data:', data.data);
-        setUserData(data.data);
+        // Only update if we have new data and it's different from current
+        if (data.data && JSON.stringify(data.data) !== JSON.stringify(userData)) {
+          setUserData(data.data);
+        }
       }
     } catch (error) {
       console.error('Error updating user data:', error);

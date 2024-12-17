@@ -3,19 +3,22 @@ import { ENDPOINTS, getHeaders } from '../config/api';
 
 const ProfilePage = ({ userData, onUserDataUpdate }) => {
   const [shareStatus, setShareStatus] = useState('');
-  
-  // Add useEffect to generate referral code if not exists
+  const [isGenerating, setIsGenerating] = useState(false);
+
   useEffect(() => {
-    if (userData && !userData.referralStats?.referralCode) {
+    // Only generate if no referral code exists and not currently generating
+    if (userData?.telegramId && 
+        !userData.referralStats?.referralCode && 
+        !isGenerating) {
       generateReferralCode();
     }
-  }, [userData]);
+  }, [userData?.telegramId]); // Only depend on telegramId
 
   const generateReferralCode = async () => {
-    if (!userData?.telegramId) return;
+    if (isGenerating || !userData?.telegramId) return;
     
     try {
-      console.log('Generating referral code for:', userData.telegramId);
+      setIsGenerating(true);
       const response = await fetch(`${ENDPOINTS.base}/api/referrals/create`, {
         method: 'POST',
         headers: {
@@ -26,21 +29,18 @@ const ProfilePage = ({ userData, onUserDataUpdate }) => {
       });
       
       const data = await response.json();
-      console.log('Referral code response:', data);
-      
       if (data.success && onUserDataUpdate) {
-        onUserDataUpdate(data.data);
+        onUserDataUpdate(userData.telegramId);
       }
     } catch (error) {
       console.error('Error generating referral code:', error);
+    } finally {
+      setIsGenerating(false);
     }
   };
 
   const handleShare = async () => {
-    if (!userData?.referralStats?.referralCode) {
-      console.log('No referral code available');
-      return;
-    }
+    if (!userData?.referralStats?.referralCode) return;
 
     const referralLink = `https://t.me/fynderapp_bot?start=${userData.referralStats.referralCode}`;
     const welcomeMessage = `Hello my friend, Join Fynder and find your crypto crush! ${referralLink}`;
@@ -51,9 +51,7 @@ const ProfilePage = ({ userData, onUserDataUpdate }) => {
 
       // Open Telegram share interface
       if (window.Telegram?.WebApp) {
-        console.log('Opening Telegram share interface');
-        // Use WebApp.openTelegramLink for direct messaging
-        window.Telegram.WebApp.openTelegramLink(`tg://msg`);
+        window.Telegram.WebApp.openTelegramLink('tg://share');
       }
 
       setTimeout(() => setShareStatus(''), 2000);
