@@ -105,7 +105,6 @@ const TopBar = ({ meme, onDetailsClick, isDetailsOpen }) => {
               </p>
             </div>
           </div>
-          </div>
 
           <button
             onClick={handleBuyClick}
@@ -171,6 +170,7 @@ const TopBar = ({ meme, onDetailsClick, isDetailsOpen }) => {
           {isDetailsOpen ? 'Close Details' : 'View Details'}
         </button>
       </div>
+    </div>
     </div>
   );
 };
