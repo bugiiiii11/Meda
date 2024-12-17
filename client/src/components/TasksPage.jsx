@@ -100,63 +100,57 @@ const TasksPage = ({ userData, onUserDataUpdate }) => {
     }
   };
 
-  const TaskButton = ({ onClick, completed, children, link }) => {
+  const TaskButton = ({ task, completed }) => {
     const handleClick = async () => {
-      if (link) {
-        window.open(link, '_blank');
+      if (task.link) {
+        window.open(task.link, '_blank');
       }
       if (!completed) {
-        onClick();
+        await handleTaskCompletion(task.id);
       }
     };
-  
+
     return (
       <button
         onClick={handleClick}
         className={`w-full p-4 rounded-xl border transition-all ${
           completed
-            ? 'bg-[#1E1E22] border-[#FFD700]/20 text-white'
+            ? 'bg-[#1E1E22] border-[#FFD700]/20 text-[#FFD700]'
             : 'bg-[#1E1E22] border-[#FFD700]/10 text-gray-300 hover:border-[#FFD700]/30'
         }`}
       >
         <div className="flex items-center justify-between">
-          <span className="font-medium">{children}</span>
-          {completed ? (
-            <CheckIcon />
-          ) : (
-            <span className="text-[#FFD700] font-serif">+10</span>
-          )}
+          <span className="font-medium">{task.label}</span>
+          <div className="flex items-center gap-2">
+            {!completed && (
+              <span className="text-[#FFD700] font-serif">+{task.points}</span>
+            )}
+            {completed && <CheckIcon />}
+          </div>
         </div>
       </button>
     );
   };
-  
-  const AchievementTask = ({ label, current, target, points, completed }) => (
+
+  const AchievementTask = ({ label, current, target, points, completed, taskId }) => (
     <div className={`w-full p-4 rounded-xl border ${
       completed ? 'border-[#FFD700]/20' : 'border-[#FFD700]/10'
     } bg-[#1E1E22]`}>
       <div className="flex justify-between items-center mb-3">
         <div className="flex items-center gap-2">
-          <span className="text-white font-medium">{label}</span>
+          <span className="text-gray-300 font-medium">{label}</span>
         </div>
-        {completed ? (
-          <CheckIcon />
-        ) : (
-          <span className="text-[#FFD700] font-serif">+{points}</span>
-        )}
+        {!completed && <span className="text-[#FFD700] font-serif">+{points}</span>}
+        {completed && <CheckIcon className="text-[#FFD700]" />}
       </div>
       <div className="w-full bg-[#2A2A2E] rounded-full h-2 overflow-hidden">
         <div 
-          className={`h-full transition-all duration-500 ${
-            completed ? 'bg-[#FFD700]' : 'bg-[#FFD700]/60'
-          }`}
+          className="h-full bg-[#FFD700] transition-all duration-500"
           style={{ width: `${Math.min((current / target) * 100, 100)}%` }}
         />
       </div>
       <div className="flex justify-between mt-2 text-sm">
-        <span className={`${completed ? 'text-[#FFD700]' : 'text-gray-400'}`}>
-          {current.toLocaleString()}
-        </span>
+        <span className="text-[#FFD700] font-serif">{current.toLocaleString()}</span>
         <span className="text-gray-400">{target.toLocaleString()}</span>
       </div>
     </div>
