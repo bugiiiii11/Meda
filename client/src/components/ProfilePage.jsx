@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { ENDPOINTS } from '../config/api';
+import { ENDPOINTS, getHeaders } from '../config/api';
 
 const ProfilePage = () => {
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [copied, setCopied] = useState(false);
+  const [shareStatus, setShareStatus] = useState('');
   const telegramUser = window.Telegram?.WebApp?.initDataUnsafe?.user;
 
   useEffect(() => {
@@ -14,10 +14,18 @@ const ProfilePage = () => {
   const fetchUserData = async () => {
     try {
       const response = await fetch(
-        ENDPOINTS.users.get(telegramUser?.id || 'test123')
+        ENDPOINTS.users.get(telegramUser?.id || 'test123'),
+        {
+          headers: getHeaders()
+        }
       );
       const data = await response.json();
-      setUserData(data.data);
+      
+      if (data.success && !data.data.referralStats?.referralCode) {
+        await generateReferralCode(data.data.telegramId);
+      } else {
+        setUserData(data.data);
+      }
     } catch (error) {
       console.error('Error fetching user data:', error);
     } finally {
@@ -25,11 +33,46 @@ const ProfilePage = () => {
     }
   };
 
-  const handleCopyReferralCode = () => {
-    if (userData?.referralStats?.referralCode) {
-      navigator.clipboard.writeText(userData.referralStats.referralCode);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
+  const generateReferralCode = async (telegramId) => {
+    try {
+      const response = await fetch(`${ENDPOINTS.base}/api/referrals/create`, {
+        method: 'POST',
+        headers: {
+          ...getHeaders(),
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ telegramId })
+      });
+      
+      const data = await response.json();
+      if (data.success) {
+        await fetchUserData(); // Refresh user data
+      }
+    } catch (error) {
+      console.error('Error generating referral code:', error);
+    }
+  };
+
+  const handleShare = async () => {
+    if (!userData?.referralStats?.referralCode) return;
+
+    const referralLink = `https://t.me/fynderapp_bot?start=${userData.referralStats.referralCode}`;
+    const welcomeMessage = `Hello my friend, Join Fynder and find your crypto crush! ${referralLink}`;
+
+    try {
+      await navigator.clipboard.writeText(welcomeMessage);
+      setShareStatus('Copied!');
+
+      // Open Telegram sharing if available
+      if (window.Telegram?.WebApp?.openTelegramLink) {
+        window.Telegram.WebApp.openTelegramLink('tg://msg_contacts');
+      }
+
+      setTimeout(() => setShareStatus(''), 2000);
+    } catch (error) {
+      console.error('Share error:', error);
+      setShareStatus('Error');
+      setTimeout(() => setShareStatus(''), 2000);
     }
   };
 
@@ -43,7 +86,7 @@ const ProfilePage = () => {
 
   return (
     <div className="flex flex-col h-screen bg-[#121214]">
-      {/* Fixed Header - Modified without icon */}
+      {/* Fixed Header */}
       <div className="fixed top-0 left-0 right-0 z-50 bg-[#121214]">
         <div className="w-full py-6 border-b border-[#FFD700]/10">
           <div className="text-center">
@@ -53,7 +96,7 @@ const ProfilePage = () => {
         </div>
       </div>
 
-      {/* Scrollable Content - Adjusted padding-top */}
+      {/* Scrollable Content */}
       <div className="flex-1 overflow-auto pt-[100px] pb-20 px-4">
         <div className="max-w-md mx-auto space-y-6">
           {/* Total Points Card */}
@@ -97,19 +140,42 @@ const ProfilePage = () => {
             <p className="text-gray-400 text-sm mb-4">
               Invite friends and earn 20 points for each referral!
             </p>
-            <div className="bg-[#2A2A2E] p-4 rounded-lg flex items-center justify-between gap-4">
-              <code className="text-[#FFD700] font-mono overflow-auto">
-                {userData?.referralStats?.referralCode || 'Generate Code'}
-              </code>
+            
+            {/* Referral Stats */}
+            <div className="mb-4 grid grid-cols-2 gap-4">
+              <div className="bg-[#2A2A2E] p-4 rounded-lg text-center">
+                <p className="text-[#FFD700] text-xl font-serif">
+                  {userData?.referralStats?.referredUsers?.length || 0}
+                </p>
+                <p className="text-gray-400 text-sm">Referrals</p>
+              </div>
+              <div className="bg-[#2A2A2E] p-4 rounded-lg text-center">
+                <p className="text-[#FFD700] text-xl font-serif">
+                  {userData?.pointsBreakdown?.referrals || 0}
+                </p>
+                <p className="text-gray-400 text-sm">Points Earned</p>
+              </div>
+            </div>
+
+            {/* Referral Link and Share Button */}
+            <div className="bg-[#2A2A2E] p-4 rounded-lg space-y-3">
+              <div className="flex items-center justify-between gap-4">
+                <code className="text-[#FFD700] font-mono text-sm overflow-hidden overflow-ellipsis whitespace-nowrap">
+                  {userData?.referralStats?.referralCode ? 
+                    `https://t.me/fynderapp_bot?start=${userData.referralStats.referralCode}` : 
+                    'Generating...'}
+                </code>
+              </div>
               <button
-                onClick={handleCopyReferralCode}
-                className={`px-4 py-2 rounded-lg font-medium transition-all ${
-                  copied
-                    ? 'bg-[#FFD700]/20 text-[#FFD700]'
-                    : 'bg-[#FFD700] text-black hover:bg-[#FFD700]/90'
-                }`}
+                onClick={handleShare}
+                disabled={!userData?.referralStats?.referralCode}
+                className={`w-full px-4 py-3 rounded-lg font-medium transition-all ${
+                  shareStatus ? 
+                  'bg-[#FFD700]/20 text-[#FFD700]' : 
+                  'bg-[#FFD700] text-black hover:bg-[#FFD700]/90'
+                } disabled:opacity-50 disabled:cursor-not-allowed`}
               >
-                {copied ? 'Copied!' : 'Copy'}
+                {shareStatus || 'Share'}
               </button>
             </div>
           </div>

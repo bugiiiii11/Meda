@@ -6,7 +6,7 @@ const setupHandlers = (bot) => {
 
         try {
             await bot.sendMessage(chatId, 
-                `Welcome to CryptoMeme, ${firstName}! 🚀\n\nDiscover and rate the best crypto memes.`,
+                `Welcome to Fynder, ${firstName}! 🚀\n\nDiscover and rate the best crypto projects.`,
                 {
                     reply_markup: {
                         inline_keyboard: [
