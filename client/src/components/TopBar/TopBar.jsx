@@ -75,7 +75,7 @@ const TopBar = ({ meme, onDetailsClick, isDetailsOpen }) => {
   };
 
   return (
-    <div className="w-full bg-[#121214] border-y border-[#FFD700]/10">
+    <div className="w-full bg-[#1E1E22] border border-[#FFD700]/10 rounded-xl overflow-hidden">
       {process.env.NODE_ENV === 'development' && (
         <div className="text-xs text-gray-500 p-2 border-b border-gray-800 max-w-md mx-auto">
           Debug: MemeID: {meme?.id} | Loading: {loading.toString()} | 
@@ -85,18 +85,18 @@ const TopBar = ({ meme, onDetailsClick, isDetailsOpen }) => {
       )}
 
       <div className="max-w-md mx-auto p-4">
-        {/* Project Info and Buy Button */}
-        <div className="flex justify-between items-start mb-4">
+        {/* Top Section: Project Info and Buy Button */}
+        <div className="flex justify-between items-center mb-4">
           <div className="flex items-center gap-3">
             {meme?.logo && (
               <img
                 src={meme.logo}
                 alt={meme.projectName || ''}
-                className="w-10 h-10 rounded-full bg-[#1E1E22] object-cover border border-[#FFD700]/10"
+                className="w-10 h-10 rounded-full bg-[#2A2A2E] object-cover"
               />
             )}
             <div>
-              <h1 className="text-lg font-medium text-white">
+              <h1 className="text-xl font-medium text-white">
                 {meme?.projectName || ''}
               </h1>
               <p className="text-sm text-gray-400">
@@ -118,58 +118,55 @@ const TopBar = ({ meme, onDetailsClick, isDetailsOpen }) => {
           </button>
         </div>
 
-        {/* Price Information */}
-        <div className="flex justify-between items-center mb-4">
-          <div className="flex gap-4">
-            <div>
-              <div className="text-sm text-gray-400">Price</div>
-              {loading ? (
-                <div className="h-5 w-24 bg-[#1E1E22] animate-pulse rounded" />
-              ) : (
-                <div className="font-medium text-white">
-                  {formatPrice(priceData?.price || meme?.projectDetails?.price)}
-                </div>
-              )}
-            </div>
-            <div>
-              <div className="text-sm text-gray-400">24h</div>
-              {loading ? (
-                <div className="h-5 w-20 bg-[#1E1E22] animate-pulse rounded" />
-              ) : (
-                <div className={`font-medium ${
-                  Number(priceData?.priceChange24h || meme?.projectDetails?.priceChange24h || 0) >= 0 
-                    ? 'text-[#00DC82]' 
-                    : 'text-red-400'
-                }`}>
-                  {Number(priceData?.priceChange24h || meme?.projectDetails?.priceChange24h || 0) >= 0 ? '+' : ''}
-                  {Number(priceData?.priceChange24h || meme?.projectDetails?.priceChange24h || 0).toFixed(2)}%
-                </div>
-              )}
-            </div>
-          </div>
-          
+        {/* Middle Section: Price Information */}
+        <div className="grid grid-cols-3 gap-4 mb-4">
           <div>
-            <div className="text-sm text-gray-400">Market Cap</div>
+            <div className="text-sm text-gray-400">Price</div>
             {loading ? (
-              <div className="h-5 w-24 bg-[#1E1E22] animate-pulse rounded" />
+              <div className="h-6 w-24 bg-[#2A2A2E] animate-pulse rounded" />
             ) : (
               <div className="font-medium text-white">
-                ${priceData?.marketCap || meme?.projectDetails?.marketCap || 'N/A'}
+                {formatPrice(priceData?.price || meme?.projectDetails?.price)}
+              </div>
+            )}
+          </div>
+          <div>
+            <div className="text-sm text-gray-400">24h</div>
+            {loading ? (
+              <div className="h-6 w-20 bg-[#2A2A2E] animate-pulse rounded" />
+            ) : (
+              <div className={`font-medium ${
+                Number(priceData?.priceChange24h || meme?.projectDetails?.priceChange24h || 0) >= 0 
+                  ? 'text-[#00DC82]' 
+                  : 'text-red-400'
+              }`}>
+                {Number(priceData?.priceChange24h || meme?.projectDetails?.priceChange24h || 0) >= 0 ? '+' : ''}
+                {Number(priceData?.priceChange24h || meme?.projectDetails?.priceChange24h || 0).toFixed(2)}%
+              </div>
+            )}
+          </div>
+          <div className="text-right">
+            <div className="text-sm text-gray-400">Market Cap</div>
+            {loading ? (
+              <div className="h-6 w-24 ml-auto bg-[#2A2A2E] animate-pulse rounded" />
+            ) : (
+              <div className="font-medium text-white">
+                {formatPrice(priceData?.marketCap || meme?.projectDetails?.marketCap)}
               </div>
             )}
           </div>
         </div>
 
-        {/* Details Button */}
+        {/* Bottom Section: Details Button */}
         <button
           onClick={onDetailsClick}
-          className={`w-full py-3 px-4 rounded-lg font-medium transition-all border ${
+          className={`w-full py-3 px-4 rounded-lg font-medium transition-all ${
             isDetailsOpen
-              ? 'bg-[#1E1E22] border-[#FFD700]/20 text-[#FFD700]'
-              : 'bg-[#1E1E22] border-[#FFD700]/10 text-gray-300 hover:border-[#FFD700]/30'
+              ? 'bg-[#2A2A2E] text-[#FFD700] border border-[#FFD700]/20'
+              : 'bg-[#2A2A2E] text-gray-300 hover:text-white hover:bg-[#363639]'
           }`}
         >
-          {isDetailsOpen ? '✕ Close Details' : 'View Details'}
+          {isDetailsOpen ? 'Close Details' : 'View Details'}
         </button>
       </div>
     </div>
