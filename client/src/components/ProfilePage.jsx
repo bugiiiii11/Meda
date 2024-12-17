@@ -42,7 +42,7 @@ const ProfilePage = () => {
   }
 
   return (
-    <div className="flex flex-col min-h-screen bg-[#121214]">
+    <div className="flex flex-col h-screen bg-[#121214]">
       {/* Fixed Header */}
       <div className="fixed top-0 left-0 right-0 z-50 bg-[#121214]">
         <div className="w-full py-6 border-b border-[#FFD700]/10">
@@ -58,9 +58,9 @@ const ProfilePage = () => {
         </div>
       </div>
 
-      {/* Scrollable Content */}
-      <div className="flex-1 overflow-auto pt-[100px] pb-20 px-4">
-        <div className="max-w-md mx-auto space-y-4">
+      {/* Scrollable Content - Adjusted padding-top */}
+      <div className="flex-1 overflow-auto pt-[120px] pb-20 px-4">
+        <div className="max-w-md mx-auto space-y-6">
           {/* Total Points Card */}
           <div className="bg-[#1E1E22] rounded-xl p-6 border border-[#FFD700]/10">
             <div className="text-center">
@@ -82,7 +82,10 @@ const ProfilePage = () => {
                 { label: 'Tasks Completed', icon: '✅', points: userData?.pointsBreakdown?.tasks || 0 },
                 { label: 'Referral Bonus', icon: '🎁', points: userData?.pointsBreakdown?.referrals || 0 }
               ].map((item, index) => (
-                <div key={index} className="flex items-center justify-between p-3 bg-[#2A2A2E] rounded-lg">
+                <div 
+                  key={index} 
+                  className="flex items-center justify-between p-3 bg-[#2A2A2E] rounded-lg hover:bg-[#2F2F33] transition-colors"
+                >
                   <span className="text-gray-300 flex items-center gap-2">
                     <span className="text-lg">{item.icon}</span>
                     {item.label}
@@ -100,7 +103,7 @@ const ProfilePage = () => {
               Invite friends and earn 20 points for each referral!
             </p>
             <div className="bg-[#2A2A2E] p-4 rounded-lg flex items-center justify-between gap-4">
-              <code className="text-[#FFD700] font-mono">
+              <code className="text-[#FFD700] font-mono overflow-auto">
                 {userData?.referralStats?.referralCode || 'Generate Code'}
               </code>
               <button
