@@ -246,7 +246,8 @@ function App() {
                   />
                 </div>
               </div>
-              <div className="absolute inset-0 pt-[180px] pb-[60px]">
+              {/* Adjusted padding top from pt-[180px] to pt-[200px] */}
+              <div className="absolute inset-0 pt-[200px] pb-[80px]">
                 <div className="h-full flex items-start justify-center">
                   <div className="w-full px-4">
                     <MemeStack
