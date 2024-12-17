@@ -3,22 +3,15 @@ import { ENDPOINTS, getHeaders } from '../config/api';
 
 const ProfilePage = ({ userData, onUserDataUpdate }) => {
   const [shareStatus, setShareStatus] = useState('');
-  const [isGenerating, setIsGenerating] = useState(false);
-
-  useEffect(() => {
-    // Only generate if no referral code exists and not currently generating
-    if (userData?.telegramId && 
-        !userData.referralStats?.referralCode && 
-        !isGenerating) {
-      generateReferralCode();
-    }
-  }, [userData?.telegramId]); // Only depend on telegramId
+  const [isGeneratingCode, setIsGeneratingCode] = useState(false);
 
   const generateReferralCode = async () => {
-    if (isGenerating || !userData?.telegramId) return;
-    
+    if (!userData?.telegramId || isGeneratingCode || userData?.referralStats?.referralCode) {
+      return;
+    }
+
     try {
-      setIsGenerating(true);
+      setIsGeneratingCode(true);
       const response = await fetch(`${ENDPOINTS.base}/api/referrals/create`, {
         method: 'POST',
         headers: {
@@ -27,17 +20,25 @@ const ProfilePage = ({ userData, onUserDataUpdate }) => {
         },
         body: JSON.stringify({ telegramId: userData.telegramId })
       });
-      
+
       const data = await response.json();
-      if (data.success && onUserDataUpdate) {
-        onUserDataUpdate(userData.telegramId);
+      
+      if (data.success) {
+        await onUserDataUpdate(userData.telegramId);
       }
     } catch (error) {
       console.error('Error generating referral code:', error);
     } finally {
-      setIsGenerating(false);
+      setIsGeneratingCode(false);
     }
   };
+
+  // Generate code on initial load if needed
+  useEffect(() => {
+    if (userData?.telegramId && !userData?.referralStats?.referralCode && !isGeneratingCode) {
+      generateReferralCode();
+    }
+  }, [userData?.telegramId, userData?.referralStats?.referralCode]);
 
   const handleShare = async () => {
     if (!userData?.referralStats?.referralCode) return;
@@ -49,9 +50,9 @@ const ProfilePage = ({ userData, onUserDataUpdate }) => {
       await navigator.clipboard.writeText(welcomeMessage);
       setShareStatus('Copied!');
 
-      // Open Telegram share interface
+      // Open Telegram sharing
       if (window.Telegram?.WebApp) {
-        window.Telegram.WebApp.openTelegramLink('tg://share');
+        window.Telegram.WebApp.openTelegramLink('tg://msg');
       }
 
       setTimeout(() => setShareStatus(''), 2000);
@@ -147,21 +148,22 @@ const ProfilePage = ({ userData, onUserDataUpdate }) => {
             <div className="bg-[#2A2A2E] p-4 rounded-lg space-y-3">
               <div className="flex items-center justify-between gap-4">
                 <code className="text-[#FFD700] font-mono text-sm overflow-hidden overflow-ellipsis whitespace-nowrap">
-                  {userData?.referralStats?.referralCode ? 
+                  {isGeneratingCode ? 'Generating...' : 
+                    userData?.referralStats?.referralCode ? 
                     `https://t.me/fynderapp_bot?start=${userData.referralStats.referralCode}` : 
-                    'Generating...'}
+                    'Loading...'}
                 </code>
               </div>
               <button
                 onClick={handleShare}
-                disabled={!userData?.referralStats?.referralCode}
+                disabled={!userData?.referralStats?.referralCode || isGeneratingCode}
                 className={`w-full px-4 py-3 rounded-lg font-medium transition-all ${
                   shareStatus ? 
                   'bg-[#FFD700]/20 text-[#FFD700]' : 
                   'bg-[#FFD700] text-black hover:bg-[#FFD700]/90'
                 } disabled:opacity-50 disabled:cursor-not-allowed`}
               >
-                {shareStatus || 'Share'}
+                {shareStatus || (isGeneratingCode ? 'Generating...' : 'Share')}
               </button>
             </div>
           </div>
