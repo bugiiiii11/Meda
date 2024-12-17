@@ -69,8 +69,8 @@ const RanksPage = () => {
           </div>
         </div>
 
-        {/* Tabs Section with increased bottom margin */}
-        <div className="px-4 py-4 border-b border-[#FFD700]/10">
+        {/* Tabs Section with increased bottom padding */}
+        <div className="px-4 py-4 pb-6 border-b border-[#FFD700]/10">
           <div className="flex gap-2 max-w-md mx-auto">
             <button
               onClick={() => setActiveTab('users')}
@@ -96,8 +96,8 @@ const RanksPage = () => {
         </div>
       </div>
 
-      {/* Scrollable Content with proper padding */}
-      <div className="flex-1 overflow-auto pt-[160px] pb-20 px-4">
+      {/* Scrollable Content with increased top padding */}
+      <div className="flex-1 overflow-auto pt-[180px] pb-20 px-4">
         <div className="max-w-md mx-auto">
           {loading ? (
             <div className="flex justify-center items-center h-48">
@@ -105,6 +105,7 @@ const RanksPage = () => {
             </div>
           ) : (
             <div className="space-y-3">
+              {/* Rest of the content remains the same */}
               {activeTab === 'users' ? (
                 leaderboardData.users.map((user, index) => (
                   <div
@@ -112,19 +113,14 @@ const RanksPage = () => {
                     className="bg-[#1E1E22] rounded-xl p-4 border border-[#FFD700]/10 hover:border-[#FFD700]/20 transition-all"
                   >
                     <div className="flex items-center gap-4">
-                      {/* Rank */}
                       <div className="w-12 flex items-center justify-center">
                         {getRankIcon(index)}
                       </div>
-                      
-                      {/* Username */}
                       <div className="flex-1">
                         <h3 className="text-white font-medium">
                           {user.username}
                         </h3>
                       </div>
-                      
-                      {/* Points */}
                       <div className="flex items-center gap-2">
                         <span className="text-[#FFD700] font-serif">
                           {formatNumber(user.totalPoints)}
@@ -135,25 +131,21 @@ const RanksPage = () => {
                   </div>
                 ))
               ) : (
+                // Projects tab content remains the same
                 leaderboardData.projects.map((project, index) => (
                   <div
                     key={project.name}
                     className="bg-[#1E1E22] rounded-xl p-4 border border-[#FFD700]/10 hover:border-[#FFD700]/20 transition-all"
                   >
                     <div className="flex items-center gap-4">
-                      {/* Rank */}
                       <div className="w-12 flex items-center justify-center">
                         {getRankIcon(index)}
                       </div>
-                      
-                      {/* Project Name */}
                       <div className="flex-1">
                         <h3 className="text-white font-medium">
                           {project.name}
                         </h3>
                       </div>
-                      
-                      {/* Points */}
                       <div className="flex items-center gap-2">
                         <span className="text-[#FFD700] font-serif">
                           {formatNumber(project.totalPoints)}
