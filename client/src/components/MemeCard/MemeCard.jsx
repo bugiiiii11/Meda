@@ -2,13 +2,6 @@ import React from 'react';
 import { motion, useMotionValue, useTransform } from 'framer-motion';
 
 const MemeCard = ({ meme, onSwipe, isTop, isMobile, onDragStart, onDragEnd }) => {
-  console.log('MemeCard render:', {
-    id: meme.id,
-    projectName: meme.projectName,
-    engagement: meme.engagement,
-    isTop
-  });
-
   const x = useMotionValue(0);
   const y = useMotionValue(0);
   const rotate = useTransform(x, [-100, 0, 100], [-15, 0, 15]);
@@ -55,19 +48,21 @@ const MemeCard = ({ meme, onSwipe, isTop, isMobile, onDragStart, onDragEnd }) =>
           alt={meme.projectName}
           className="w-full aspect-square object-cover"
         />
-        <div className="bg-gradient-to-b from-[#2c2d31] to-[#1a1b1e] border-t border-[#3c3d41]/30 p-4">
-          <div className="flex justify-between items-center px-4">
-            <div className="flex flex-col items-center gap-1">
-              <span className="text-3xl">👍</span>
-              <span className="text-gray-200 font-medium text-xl">
-                {engagementData.likes.toLocaleString()}
-              </span>
-            </div>
-            <div className="flex flex-col items-center gap-1">
-              <span className="text-3xl">⭐</span>
-              <span className="text-gray-200 font-medium text-xl">
-                {engagementData.superLikes.toLocaleString()}
-              </span>
+        <div className="bg-[#1E1E22] border-t border-[#FFD700]/10 px-4 py-2">
+          <div className="flex justify-between items-center">
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-1.5">
+                <span className="text-lg">👍</span>
+                <span className="text-white font-medium">
+                  {engagementData.likes.toLocaleString()}
+                </span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <span className="text-lg">⭐</span>
+                <span className="text-white font-medium">
+                  {engagementData.superLikes.toLocaleString()}
+                </span>
+              </div>
             </div>
           </div>
         </div>
