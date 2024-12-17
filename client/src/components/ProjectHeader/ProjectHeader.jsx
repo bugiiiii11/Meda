@@ -73,6 +73,26 @@ const ProjectHeader = ({ meme }) => {
     return `$${numPrice.toFixed(2)}`;
   };
 
+  const formatMarketCap = (marketCap) => {
+    if (!marketCap) return 'N/A';
+    
+    // Convert string to number and handle scientific notation
+    const num = Number(marketCap);
+    if (isNaN(num)) return 'N/A';
+
+    // Format in billions
+    if (num >= 1e9) {
+      return `$${(num / 1e9).toFixed(1)}B`;
+    }
+    // Format in millions
+    if (num >= 1e6) {
+      return `$${(num / 1e6).toFixed(1)}M`;
+    }
+    // Format regular numbers
+    return `$${num.toLocaleString()}`;
+  };
+
+  
   return (
     <div className="w-full px-4 pb-4">
       <div className="max-w-md mx-auto bg-[#1E1E22] rounded-xl border border-[#FFD700]/10">
@@ -98,15 +118,10 @@ const ProjectHeader = ({ meme }) => {
 
           {/* Buy Button */}
           <button
-            onClick={handleBuyClick}
-            disabled={loading || isButtonLoading}
-            className="px-4 py-2 bg-[#00DC82] hover:bg-[#00DC82]/90 text-black font-medium rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+            onClick={() => window.open(meme?.projectDetails?.buyLink, '_blank')}
+            className="px-4 py-2 bg-[#00DC82] hover:bg-[#00DC82]/90 text-black font-medium rounded-lg transition-colors"
           >
-            {isButtonLoading ? (
-              <div className="h-4 w-4 border-2 border-black border-t-transparent rounded-full animate-spin" />
-            ) : (
-              'Buy Here ↗'
-            )}
+            Buy Here ↗
           </button>
         </div>
 
@@ -115,51 +130,28 @@ const ProjectHeader = ({ meme }) => {
           <div className="flex items-center gap-3">
             <div>
               <div className="text-sm text-gray-400">Price</div>
-              {loading ? (
-                <div className="h-6 w-24 bg-gray-700 animate-pulse rounded" />
-              ) : (
-                <div className="font-medium text-white">
-                  {formatPrice(priceData?.price || meme?.projectDetails?.price)}
-                </div>
-              )}
+              <div className="font-medium text-white">
+                {formatPrice(meme?.projectDetails?.price)}
+              </div>
             </div>
-            {loading ? (
-              <div className="h-6 w-20 bg-gray-700 animate-pulse rounded" />
-            ) : (
-              priceData?.priceChange24h && (
-                <div className={`px-2 py-1 rounded-lg text-sm font-medium ${
-                  Number(priceData.priceChange24h) >= 0 
-                    ? 'bg-[#00DC82]/10 text-[#00DC82]' 
-                    : 'bg-red-500/10 text-red-400'
-                }`}>
-                  {Number(priceData.priceChange24h) >= 0 ? '+' : ''}
-                  {Number(priceData.priceChange24h).toFixed(2)}%
-                </div>
-              )
+            {meme?.projectDetails?.priceChange24h && (
+              <div className={`px-2 py-1 rounded-lg text-sm font-medium ${
+                Number(meme.projectDetails.priceChange24h) >= 0 
+                  ? 'bg-[#00DC82]/10 text-[#00DC82]' 
+                  : 'bg-red-500/10 text-red-400'
+              }`}>
+                {Number(meme.projectDetails.priceChange24h) >= 0 ? '+' : ''}
+                {meme.projectDetails.priceChange24h}%
+              </div>
             )}
           </div>
           <div>
             <div className="text-sm text-gray-400">Market Cap</div>
-            {loading ? (
-              <div className="h-6 w-24 bg-gray-700 animate-pulse rounded" />
-            ) : (
-              <div className="font-medium text-white">
-                {priceData?.marketCap 
-                  ? `$${Number(priceData.marketCap).toLocaleString()}`
-                  : 'N/A'
-                }
-              </div>
-            )}
-          </div>
-        </div>
-
-        {error && (
-          <div className="px-4 pb-4">
-            <div className="text-red-400 text-sm bg-red-500/10 rounded-lg p-2">
-              {error}
+            <div className="font-medium text-white">
+              {formatMarketCap(meme?.projectDetails?.marketCap)}
             </div>
           </div>
-        )}
+        </div>
       </div>
     </div>
   );
