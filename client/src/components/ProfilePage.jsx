@@ -13,9 +13,15 @@ const ProfilePage = ({ userData }) => {
       await navigator.clipboard.writeText(welcomeMessage);
       setShareStatus('Copied!');
 
-      // Open Telegram
+      // Open Telegram share interface using correct method
       if (window.Telegram?.WebApp) {
-        window.Telegram.WebApp.openTelegramLink('tg://msg');
+        try {
+          window.Telegram.WebApp.switchInlineQuery(welcomeMessage);
+        } catch (telegramError) {
+          console.log('Telegram share fallback');
+          // Fallback to basic link if switchInlineQuery fails
+          window.location.href = 'tg://msg';
+        }
       }
 
       setTimeout(() => setShareStatus(''), 2000);
