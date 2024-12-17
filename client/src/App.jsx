@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import WebApp from '@twa-dev/sdk';
 import './App.css';
 import TopBar from './components/TopBar/TopBar';
-import ProjectHeader from './components/ProjectHeader/ProjectHeader';
 import MemeStack from './components/MemeStack/MemeStack';
 import Navigation from './components/Navigation/Navigation';
 import DetailsPage from './components/DetailsPage/DetailsPage';
@@ -240,7 +239,6 @@ function App() {
         <>
           <div className="fixed top-0 left-0 right-0 z-[70]">
             <div className="w-full bg-[#1a1b1e] py-4">
-              <ProjectHeader meme={currentMeme} />
             </div>
           </div>
           <div className="fixed top-[72px] left-0 right-0 z-[60]">
