@@ -2,19 +2,22 @@ import React, { useState, useEffect } from 'react';
 import { ENDPOINTS, getHeaders } from '../config/api';
 
 const CheckIcon = () => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    width="16"
-    height="16"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <polyline points="20 6 9 17 4 12"></polyline>
-  </svg>
+  <div className="bg-[#FFD700] rounded-full p-1.5 flex items-center justify-center">
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="14"
+      height="14"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="black"
+      strokeWidth="3"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className="text-black"
+    >
+      <polyline points="20 6 9 17 4 12"></polyline>
+    </svg>
+  </div>
 );
 
 const TasksPage = ({ userData, onUserDataUpdate }) => {
@@ -97,57 +100,63 @@ const TasksPage = ({ userData, onUserDataUpdate }) => {
     }
   };
 
-  const TaskButton = ({ task, completed }) => {
+  const TaskButton = ({ onClick, completed, children, link }) => {
     const handleClick = async () => {
-      if (task.link) {
-        window.open(task.link, '_blank');
+      if (link) {
+        window.open(link, '_blank');
       }
       if (!completed) {
-        await handleTaskCompletion(task.id);
+        onClick();
       }
     };
-
+  
     return (
       <button
         onClick={handleClick}
         className={`w-full p-4 rounded-xl border transition-all ${
           completed
-            ? 'bg-[#1E1E22] border-[#FFD700]/20 text-[#FFD700]'
+            ? 'bg-[#1E1E22] border-[#FFD700]/20 text-white'
             : 'bg-[#1E1E22] border-[#FFD700]/10 text-gray-300 hover:border-[#FFD700]/30'
         }`}
       >
         <div className="flex items-center justify-between">
-          <span className="font-medium">{task.label}</span>
-          <div className="flex items-center gap-2">
-            {!completed && (
-              <span className="text-[#FFD700] font-serif">+{task.points}</span>
-            )}
-            {completed && <CheckIcon />}
-          </div>
+          <span className="font-medium">{children}</span>
+          {completed ? (
+            <CheckIcon />
+          ) : (
+            <span className="text-[#FFD700] font-serif">+10</span>
+          )}
         </div>
       </button>
     );
   };
-
-  const AchievementTask = ({ label, current, target, points, completed, taskId }) => (
+  
+  const AchievementTask = ({ label, current, target, points, completed }) => (
     <div className={`w-full p-4 rounded-xl border ${
       completed ? 'border-[#FFD700]/20' : 'border-[#FFD700]/10'
     } bg-[#1E1E22]`}>
       <div className="flex justify-between items-center mb-3">
         <div className="flex items-center gap-2">
-          <span className="text-gray-300 font-medium">{label}</span>
+          <span className="text-white font-medium">{label}</span>
         </div>
-        {!completed && <span className="text-[#FFD700] font-serif">+{points}</span>}
-        {completed && <CheckIcon className="text-[#FFD700]" />}
+        {completed ? (
+          <CheckIcon />
+        ) : (
+          <span className="text-[#FFD700] font-serif">+{points}</span>
+        )}
       </div>
       <div className="w-full bg-[#2A2A2E] rounded-full h-2 overflow-hidden">
         <div 
-          className="h-full bg-[#FFD700] transition-all duration-500"
+          className={`h-full transition-all duration-500 ${
+            completed ? 'bg-[#FFD700]' : 'bg-[#FFD700]/60'
+          }`}
           style={{ width: `${Math.min((current / target) * 100, 100)}%` }}
         />
       </div>
       <div className="flex justify-between mt-2 text-sm">
-        <span className="text-[#FFD700] font-serif">{current.toLocaleString()}</span>
+        <span className={`${completed ? 'text-[#FFD700]' : 'text-gray-400'}`}>
+          {current.toLocaleString()}
+        </span>
         <span className="text-gray-400">{target.toLocaleString()}</span>
       </div>
     </div>
