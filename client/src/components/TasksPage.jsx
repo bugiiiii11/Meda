@@ -17,53 +17,6 @@ const CheckIcon = () => (
   </svg>
 );
 
-const TaskButton = ({ onClick, completed, children, link }) => {
-  const handleClick = async () => {
-    if (link) {
-      window.open(link, '_blank');
-    }
-    if (!completed) {
-      onClick();
-    }
-  };
-
-  return (
-    <button
-      onClick={handleClick}
-      className={`w-full px-4 py-3 rounded-lg text-base font-medium transition-all flex items-center justify-between ${
-        completed
-          ? 'bg-green-600/20 text-green-400 hover:bg-green-600/30'
-          : 'bg-[#2c2d31] text-gray-200 hover:bg-[#3c3d41]'
-      }`}
-    >
-      <span>{children}</span>
-      {completed && <CheckIcon />}
-    </button>
-  );
-};
-
-const AchievementTask = ({ label, current, target, points, completed, onClick }) => (
-  <div className={`w-full p-4 rounded-lg ${
-    completed ? 'bg-green-600/20' : 'bg-[#2c2d31]'
-  }`}>
-    <div className="flex justify-between items-center mb-2">
-      <span className="text-gray-200">{label}</span>
-      {!completed && <span className="text-green-400">+{points}</span>}
-      {completed && <CheckIcon />}
-    </div>
-    <div className="w-full bg-[#1a1b1e] rounded-full h-2">
-      <div 
-        className="bg-green-500 h-2 rounded-full transition-all duration-300"
-        style={{ width: `${Math.min((current / target) * 100, 100)}%` }}
-      />
-    </div>
-    <div className="flex justify-between items-center mt-1">
-      <span className="text-sm text-gray-400">{current.toLocaleString()}</span>
-      <span className="text-sm text-gray-400">{target.toLocaleString()}</span>
-    </div>
-  </div>
-);
-
 const TasksPage = ({ userData, onUserDataUpdate }) => {
   const [completedTasks, setCompletedTasks] = useState(new Set());
   const [isLoading, setIsLoading] = useState(false);
@@ -115,129 +68,175 @@ const TasksPage = ({ userData, onUserDataUpdate }) => {
     setError(null);
 
     try {
-        const response = await fetch(`${ENDPOINTS.base}/api/tasks/complete`, {
-            method: 'POST',
-            headers: getHeaders(),
-            body: JSON.stringify({
-                taskId,
-                telegramId: userData?.telegramId
-            })
-        });
+      const response = await fetch(`${ENDPOINTS.base}/api/tasks/complete`, {
+        method: 'POST',
+        headers: getHeaders(),
+        body: JSON.stringify({
+          taskId,
+          telegramId: userData?.telegramId
+        })
+      });
 
-        const data = await response.json();
-        console.log('Task completion response:', data);
+      const data = await response.json();
 
-        if (!response.ok) {
-            throw new Error(data.error || 'Failed to complete task');
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to complete task');
+      }
+
+      if (data.success) {
+        setCompletedTasks(prev => new Set([...prev, taskId]));
+        if (typeof onUserDataUpdate === 'function') {
+          onUserDataUpdate(data.data.user);
         }
-
-        if (data.success) {
-            setCompletedTasks(prev => new Set([...prev, taskId]));
-            
-            // Update the parent component's userData
-            if (typeof onUserDataUpdate === 'function') {
-                onUserDataUpdate(data.data.user);
-            }
-        }
+      }
     } catch (error) {
-        console.error('Task completion error:', error);
-        setError(error.message);
+      console.error('Task completion error:', error);
+      setError(error.message);
     } finally {
-        setIsLoading(false);
+      setIsLoading(false);
     }
-};
+  };
+
+  const TaskButton = ({ task, completed }) => {
+    const handleClick = async () => {
+      if (task.link) {
+        window.open(task.link, '_blank');
+      }
+      if (!completed) {
+        await handleTaskCompletion(task.id);
+      }
+    };
+
+    return (
+      <button
+        onClick={handleClick}
+        className={`w-full p-4 rounded-xl border transition-all ${
+          completed
+            ? 'bg-[#1E1E22] border-[#FFD700]/20 text-[#FFD700]'
+            : 'bg-[#1E1E22] border-[#FFD700]/10 text-gray-300 hover:border-[#FFD700]/30'
+        }`}
+      >
+        <div className="flex items-center justify-between">
+          <span className="font-medium">{task.label}</span>
+          <div className="flex items-center gap-2">
+            {!completed && (
+              <span className="text-[#FFD700] font-serif">+{task.points}</span>
+            )}
+            {completed && <CheckIcon />}
+          </div>
+        </div>
+      </button>
+    );
+  };
+
+  const AchievementTask = ({ label, current, target, points, completed, taskId }) => (
+    <div className={`w-full p-4 rounded-xl border ${
+      completed ? 'border-[#FFD700]/20' : 'border-[#FFD700]/10'
+    } bg-[#1E1E22]`}>
+      <div className="flex justify-between items-center mb-3">
+        <div className="flex items-center gap-2">
+          <span className="text-gray-300 font-medium">{label}</span>
+        </div>
+        {!completed && <span className="text-[#FFD700] font-serif">+{points}</span>}
+        {completed && <CheckIcon className="text-[#FFD700]" />}
+      </div>
+      <div className="w-full bg-[#2A2A2E] rounded-full h-2 overflow-hidden">
+        <div 
+          className="h-full bg-[#FFD700] transition-all duration-500"
+          style={{ width: `${Math.min((current / target) * 100, 100)}%` }}
+        />
+      </div>
+      <div className="flex justify-between mt-2 text-sm">
+        <span className="text-[#FFD700] font-serif">{current.toLocaleString()}</span>
+        <span className="text-gray-400">{target.toLocaleString()}</span>
+      </div>
+    </div>
+  );
 
   return (
-    <div className="w-full">
-      <div className="fixed top-0 left-0 right-0 z-[70]">
-        <div className="w-full bg-[#1a1b1e] py-4">
-          <div className="w-full px-4">
-            <div className="flex items-center justify-center gap-4">
-              <div className="w-12 h-12 rounded-full bg-[#2c2d31] flex items-center justify-center">
-                <span className="text-2xl">🚀</span>
-              </div>
-              <h1 className="text-2xl font-bold text-white">
-                Challenges
-              </h1>
+    <div className="flex flex-col h-screen bg-[#121214]">
+      {/* Fixed Header */}
+      <div className="fixed top-0 left-0 right-0 z-50 bg-[#121214]">
+        <div className="w-full py-6 border-b border-[#FFD700]/10">
+          <div className="flex items-center justify-center gap-4">
+            <div className="w-12 h-12 rounded-full bg-[#1E1E22] flex items-center justify-center">
+              <span className="text-[#FFD700] text-2xl">🎯</span>
             </div>
+            <h1 className="text-2xl font-serif text-white">Challenges</h1>
           </div>
         </div>
       </div>
 
-      <div className="pt-[72px] pb-20 px-4">
+      {/* Scrollable Content */}
+      <div className="flex-1 overflow-auto pt-[120px] pb-20 px-4">
         <div className="max-w-md mx-auto">
-          <div className="flex flex-col gap-6">
-            {error && (
-              <div className="bg-red-500/20 text-red-400 p-4 rounded-lg">
-                {error}
-              </div>
-            )}
-            
+          {error && (
+            <div className="mb-4 p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400">
+              {error}
+            </div>
+          )}
+
+          <div className="space-y-6">
             {/* Quick Tasks Section */}
             <div>
-              <h2 className="text-lg font-semibold text-white mb-3">Quick Tasks</h2>
-              <div className="flex flex-col gap-4">
+              <h2 className="text-lg font-medium text-white mb-3">Quick Tasks</h2>
+              <div className="space-y-2">
                 {quickTasks.map((task) => (
                   <TaskButton
                     key={task.id}
+                    task={task}
                     completed={completedTasks.has(task.id)}
-                    onClick={() => handleTaskCompletion(task.id)}
-                    link={task.link}
-                  >
-                    {task.label} {!completedTasks.has(task.id) && 
-                      <span className="text-green-400">+{task.points}</span>
-                    }
-                  </TaskButton>
+                  />
                 ))}
               </div>
             </div>
 
-            {/* Achievement Tasks Section */}
+            {/* Achievements Section */}
             <div>
-              <h2 className="text-lg font-semibold text-white mb-3">Achievements</h2>
-              <div className="flex flex-col gap-4">
+              <h2 className="text-lg font-medium text-white mb-3">Achievements</h2>
+              <div className="space-y-3">
                 <AchievementTask
-                  label="Give Likes (Tier 1)"
+                  label="Like Collector (Tier 1)"
                   current={userData?.pointsBreakdown?.likes || 0}
                   target={1000}
                   points={1000}
                   completed={completedTasks.has('achievement-likes')}
-                  onClick={() => handleTaskCompletion('achievement-likes')}
+                  taskId="achievement-likes"
                 />
                 <AchievementTask
-                  label="Give Dislikes (Tier 1)"
+                  label="Hater Slayer (Tier 1)"
                   current={userData?.pointsBreakdown?.dislikes || 0}
                   target={1000}
                   points={1000}
                   completed={completedTasks.has('achievement-dislikes')}
-                  onClick={() => handleTaskCompletion('achievement-dislikes')}
+                  taskId="achievement-dislikes"
                 />
                 {userData?.pointsBreakdown?.superLikes >= 100 ? (
                   <AchievementTask
-                    label="Give Super Likes (Tier 2)"
+                    label="Super Swiper (Tier 2)"
                     current={userData?.pointsBreakdown?.superLikes || 0}
                     target={500}
                     points={5000}
                     completed={completedTasks.has('achievement-superlikes-2')}
-                    onClick={() => handleTaskCompletion('achievement-superlikes-2')}
+                    taskId="achievement-superlikes-2"
                   />
                 ) : (
                   <AchievementTask
-                    label="Give Super Likes (Tier 1)"
+                    label="Super Swiper (Tier 1)"
                     current={userData?.pointsBreakdown?.superLikes || 0}
                     target={100}
                     points={1000}
                     completed={completedTasks.has('achievement-superlikes')}
-                    onClick={() => handleTaskCompletion('achievement-superlikes')}
+                    taskId="achievement-superlikes"
                   />
                 )}
                 <AchievementTask
-                  label="Invite Friends (Tier 1)"
+                  label="Network Ninja (Tier 1)"
                   current={userData?.referralStats?.referredUsers?.length || 0}
                   target={20}
                   points={1000}
                   completed={completedTasks.has('achievement-referrals')}
-                  onClick={() => handleTaskCompletion('achievement-referrals')}
+                  taskId="achievement-referrals"
                 />
               </div>
             </div>

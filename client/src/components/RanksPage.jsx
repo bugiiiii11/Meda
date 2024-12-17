@@ -66,6 +66,7 @@ const RanksPage = () => {
               <span className="text-[#FFD700] text-2xl">🏆</span>
             </div>
             <h1 className="text-2xl font-serif text-white">Leaderboard</h1>
+            <span className="text-[#FFD700] text-2xl">🏆</span>
           </div>
         </div>
 
