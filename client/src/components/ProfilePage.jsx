@@ -1,13 +1,21 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ENDPOINTS, getHeaders } from '../config/api';
 
 const ProfilePage = ({ userData, onUserDataUpdate }) => {
   const [shareStatus, setShareStatus] = useState('');
+  
+  // Add useEffect to generate referral code if not exists
+  useEffect(() => {
+    if (userData && !userData.referralStats?.referralCode) {
+      generateReferralCode();
+    }
+  }, [userData]);
 
   const generateReferralCode = async () => {
     if (!userData?.telegramId) return;
     
     try {
+      console.log('Generating referral code for:', userData.telegramId);
       const response = await fetch(`${ENDPOINTS.base}/api/referrals/create`, {
         method: 'POST',
         headers: {
@@ -17,11 +25,11 @@ const ProfilePage = ({ userData, onUserDataUpdate }) => {
         body: JSON.stringify({ telegramId: userData.telegramId })
       });
       
-      if (response.ok) {
-        const data = await response.json();
-        if (data.success && onUserDataUpdate) {
-          onUserDataUpdate(data.data);
-        }
+      const data = await response.json();
+      console.log('Referral code response:', data);
+      
+      if (data.success && onUserDataUpdate) {
+        onUserDataUpdate(data.data);
       }
     } catch (error) {
       console.error('Error generating referral code:', error);
@@ -29,7 +37,10 @@ const ProfilePage = ({ userData, onUserDataUpdate }) => {
   };
 
   const handleShare = async () => {
-    if (!userData?.referralStats?.referralCode) return;
+    if (!userData?.referralStats?.referralCode) {
+      console.log('No referral code available');
+      return;
+    }
 
     const referralLink = `https://t.me/fynderapp_bot?start=${userData.referralStats.referralCode}`;
     const welcomeMessage = `Hello my friend, Join Fynder and find your crypto crush! ${referralLink}`;
@@ -38,9 +49,11 @@ const ProfilePage = ({ userData, onUserDataUpdate }) => {
       await navigator.clipboard.writeText(welcomeMessage);
       setShareStatus('Copied!');
 
-      // Open Telegram sharing if available
-      if (window.Telegram?.WebApp?.openTelegramLink) {
-        window.Telegram.WebApp.openTelegramLink('tg://msg_contacts');
+      // Open Telegram share interface
+      if (window.Telegram?.WebApp) {
+        console.log('Opening Telegram share interface');
+        // Use WebApp.openTelegramLink for direct messaging
+        window.Telegram.WebApp.openTelegramLink(`tg://msg`);
       }
 
       setTimeout(() => setShareStatus(''), 2000);
@@ -51,7 +64,6 @@ const ProfilePage = ({ userData, onUserDataUpdate }) => {
     }
   };
 
-  // Show loading state only if userData is null
   if (!userData) {
     return (
       <div className="flex justify-center items-center h-screen bg-[#121214]">
@@ -139,7 +151,7 @@ const ProfilePage = ({ userData, onUserDataUpdate }) => {
                 <code className="text-[#FFD700] font-mono text-sm overflow-hidden overflow-ellipsis whitespace-nowrap">
                   {userData?.referralStats?.referralCode ? 
                     `https://t.me/fynderapp_bot?start=${userData.referralStats.referralCode}` : 
-                    'Loading...'}
+                    'Generating...'}
                 </code>
               </div>
               <button
