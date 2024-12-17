@@ -97,7 +97,7 @@ const RanksPage = () => {
       </div>
 
       {/* Scrollable Content with proper padding */}
-      <div className="flex-1 overflow-auto pt-[200px] pb-20 px-4">
+      <div className="flex-1 overflow-auto pt-[194px] pb-20 px-4">
         <div className="max-w-md mx-auto">
           {loading ? (
             <div className="flex justify-center items-center h-48">
