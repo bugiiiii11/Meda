@@ -1,39 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { ENDPOINTS, getHeaders } from '../config/api';
 
-const ProfilePage = () => {
-  const [userData, setUserData] = useState(null);
-  const [loading, setLoading] = useState(true);
+const ProfilePage = ({ userData, onUserDataUpdate }) => {
   const [shareStatus, setShareStatus] = useState('');
-  const telegramUser = window.Telegram?.WebApp?.initDataUnsafe?.user;
 
-  useEffect(() => {
-    fetchUserData();
-  }, []);
-
-  const fetchUserData = async () => {
-    try {
-      const response = await fetch(
-        ENDPOINTS.users.get(telegramUser?.id || 'test123'),
-        {
-          headers: getHeaders()
-        }
-      );
-      const data = await response.json();
-      
-      if (data.success && !data.data.referralStats?.referralCode) {
-        await generateReferralCode(data.data.telegramId);
-      } else {
-        setUserData(data.data);
-      }
-    } catch (error) {
-      console.error('Error fetching user data:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const generateReferralCode = async (telegramId) => {
+  const generateReferralCode = async () => {
+    if (!userData?.telegramId) return;
+    
     try {
       const response = await fetch(`${ENDPOINTS.base}/api/referrals/create`, {
         method: 'POST',
@@ -41,12 +14,14 @@ const ProfilePage = () => {
           ...getHeaders(),
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ telegramId })
+        body: JSON.stringify({ telegramId: userData.telegramId })
       });
       
-      const data = await response.json();
-      if (data.success) {
-        await fetchUserData(); // Refresh user data
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success && onUserDataUpdate) {
+          onUserDataUpdate(data.data);
+        }
       }
     } catch (error) {
       console.error('Error generating referral code:', error);
@@ -76,7 +51,8 @@ const ProfilePage = () => {
     }
   };
 
-  if (loading) {
+  // Show loading state only if userData is null
+  if (!userData) {
     return (
       <div className="flex justify-center items-center h-screen bg-[#121214]">
         <div className="animate-spin rounded-full h-8 w-8 border-2 border-[#FFD700] border-t-transparent" />
@@ -96,10 +72,10 @@ const ProfilePage = () => {
         </div>
       </div>
 
-      {/* Scrollable Content */}
+      {/* Content */}
       <div className="flex-1 overflow-auto pt-[100px] pb-20 px-4">
         <div className="max-w-md mx-auto space-y-6">
-          {/* Total Points Card */}
+          {/* Points Card */}
           <div className="bg-[#1E1E22] rounded-xl p-6 border border-[#FFD700]/10">
             <div className="text-center">
               <span className="text-4xl font-serif text-[#FFD700]">
@@ -163,7 +139,7 @@ const ProfilePage = () => {
                 <code className="text-[#FFD700] font-mono text-sm overflow-hidden overflow-ellipsis whitespace-nowrap">
                   {userData?.referralStats?.referralCode ? 
                     `https://t.me/fynderapp_bot?start=${userData.referralStats.referralCode}` : 
-                    'Generating...'}
+                    'Loading...'}
                 </code>
               </div>
               <button
