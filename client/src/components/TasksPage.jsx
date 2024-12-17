@@ -158,17 +158,14 @@ const TasksPage = ({ userData, onUserDataUpdate }) => {
       {/* Fixed Header */}
       <div className="fixed top-0 left-0 right-0 z-50 bg-[#121214]">
         <div className="w-full py-6 border-b border-[#FFD700]/10">
-          <div className="flex items-center justify-center gap-4">
-            <div className="w-12 h-12 rounded-full bg-[#1E1E22] flex items-center justify-center">
-              <span className="text-[#FFD700] text-2xl">🎯</span>
-            </div>
+          <div className="text-center">
             <h1 className="text-2xl font-serif text-white">Challenges</h1>
           </div>
         </div>
       </div>
 
       {/* Scrollable Content */}
-      <div className="flex-1 overflow-auto pt-[120px] pb-20 px-4">
+      <div className="flex-1 overflow-auto pt-[100px] pb-20 px-4">
         <div className="max-w-md mx-auto">
           {error && (
             <div className="mb-4 p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400">

@@ -43,23 +43,18 @@ const ProfilePage = () => {
 
   return (
     <div className="flex flex-col h-screen bg-[#121214]">
-      {/* Fixed Header */}
+      {/* Fixed Header - Modified without icon */}
       <div className="fixed top-0 left-0 right-0 z-50 bg-[#121214]">
         <div className="w-full py-6 border-b border-[#FFD700]/10">
-          <div className="flex items-center justify-center gap-4">
-            <div className="w-12 h-12 rounded-full bg-[#1E1E22] flex items-center justify-center">
-              <span className="text-[#FFD700] text-2xl">👤</span>
-            </div>
-            <div className="text-center">
-              <h1 className="text-2xl font-serif text-white">Profile</h1>
-              <p className="text-gray-400 text-sm">@{userData?.username || 'Anonymous'}</p>
-            </div>
+          <div className="text-center">
+            <h1 className="text-2xl font-serif text-white">My Profile</h1>
+            <p className="text-gray-400 text-sm">@{userData?.username || 'Anonymous'}</p>
           </div>
         </div>
       </div>
 
       {/* Scrollable Content - Adjusted padding-top */}
-      <div className="flex-1 overflow-auto pt-[120px] pb-20 px-4">
+      <div className="flex-1 overflow-auto pt-[100px] pb-20 px-4">
         <div className="max-w-md mx-auto space-y-6">
           {/* Total Points Card */}
           <div className="bg-[#1E1E22] rounded-xl p-6 border border-[#FFD700]/10">

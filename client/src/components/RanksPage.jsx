@@ -59,19 +59,14 @@ const RanksPage = () => {
     <div className="flex flex-col h-screen bg-[#121214]">
       {/* Fixed Header */}
       <div className="fixed top-0 left-0 right-0 z-50 bg-[#121214]">
-        {/* Title Section */}
-        <div className="w-full py-6 border-b border-[#FFD700]/10">
-          <div className="flex items-center justify-center gap-4">
-            <div className="w-12 h-12 rounded-full bg-[#1E1E22] flex items-center justify-center">
-              <span className="text-[#FFD700] text-2xl">🏆</span>
-            </div>
-            <h1 className="text-2xl font-serif text-white">Leaderboard</h1>
-            <span className="text-[#FFD700] text-2xl">🏆</span>
-          </div>
-        </div>
+  <div className="w-full py-6 border-b border-[#FFD700]/10">
+    <div className="text-center">
+      <h1 className="text-2xl font-serif text-white">Leaderboard</h1>
+    </div>
+  </div>
 
-        {/* Tabs Section with increased bottom margin */}
-        <div className="px-4 py-4 border-b border-[#FFD700]/10">
+         {/* Tabs Section */}
+        <div className="px-4 py-4 pb-6 border-b border-[#FFD700]/10">
           <div className="flex gap-2 max-w-md mx-auto">
             <button
               onClick={() => setActiveTab('users')}
@@ -98,7 +93,7 @@ const RanksPage = () => {
       </div>
 
       {/* Scrollable Content with proper padding */}
-      <div className="flex-1 overflow-auto pt-[194px] pb-20 px-4">
+      <div className="flex-1 overflow-auto pt-[180px] pb-20 px-4">
         <div className="max-w-md mx-auto">
           {loading ? (
             <div className="flex justify-center items-center h-48">
