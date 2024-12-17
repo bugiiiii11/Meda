@@ -135,14 +135,19 @@ function App() {
 
   useEffect(() => {
     async function initializeApp() {
-      console.log('Initializing app...');
-      
+      console.log('App Environment:', {
+        nodeEnv: import.meta.env.NODE_ENV,
+        viteEnv: import.meta.env.VITE_ENV,
+        apiUrl: import.meta.env.VITE_API_URL,
+        botUsername: import.meta.env.VITE_BOT_USERNAME
+      });
+    
       try {
         setMemes(dummyMemes.map(meme => ({
           ...meme,
           engagement: { likes: 0, superLikes: 0, dislikes: 0 }
         })));
-  
+    
         await priceService.initializeData();
         
         if (window.Telegram?.WebApp) {
@@ -152,17 +157,26 @@ function App() {
           
           const tgUser = window.Telegram.WebApp.initDataUnsafe?.user;
           console.log('Telegram User Data:', tgUser);
-  
-          if (!tgUser && import.meta.env.VITE_ENV === 'development') {
-            const mockUser = {
-              telegramId: 'test123',
-              username: 'testUser',
-              firstName: 'Test',
-              lastName: 'User'
-            };
-            setUserData(mockUser);
-          } else if (tgUser) {
-            // Create or update user
+    
+          if (!tgUser) {
+            if (import.meta.env.VITE_ENV === 'development') {
+              const mockUser = {
+                telegramId: 'test123',
+                username: 'testUser',
+                firstName: 'Test',
+                lastName: 'User'
+              };
+              setUserData(mockUser);
+            } else {
+              throw new Error('No Telegram user data in production');
+            }
+          } else {
+            // Get referral ID from URL if it exists
+            const urlParams = new URLSearchParams(window.location.search);
+            const referralId = urlParams.get('ref');
+            console.log('Referral ID from URL:', referralId);
+    
+            // Create or update user with referral info
             const response = await fetch(ENDPOINTS.users.create, {
               method: 'POST',
               headers: {
@@ -173,37 +187,76 @@ function App() {
                 telegramId: tgUser.id.toString(),
                 username: tgUser.username || `user${tgUser.id.toString().slice(-4)}`,
                 firstName: tgUser.first_name,
-                lastName: tgUser.last_name
+                lastName: tgUser.last_name,
+                referredBy: referralId // Include referral ID if exists
               })
             });
-  
+    
             if (!response.ok) {
               throw new Error(`HTTP error! status: ${response.status}`);
             }
-  
+    
             const userData = await response.json();
+            
             if (userData.success) {
-              // After user creation/update, fetch complete user data
-              await handleUserDataUpdate(tgUser.id.toString());
+              // If there was a referral, process it
+              if (referralId) {
+                try {
+                  console.log('Processing referral for user:', tgUser.id.toString());
+                  const redeemResponse = await fetch(`${ENDPOINTS.base}/api/referrals/redeem`, {
+                    method: 'POST',
+                    headers: {
+                      ...getHeaders(),
+                      'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                      referralCode: referralId,
+                      newUserTelegramId: tgUser.id.toString(),
+                      username: tgUser.username || `user${tgUser.id.toString().slice(-4)}`
+                    })
+                  });
+                  
+                  const redeemData = await redeemResponse.json();
+                  console.log('Referral redemption result:', redeemData);
+    
+                  // Fetch updated user data after referral processing
+                  const updatedUserResponse = await fetch(
+                    ENDPOINTS.users.get(tgUser.id.toString()),
+                    { headers: getHeaders() }
+                  );
+                  
+                  if (updatedUserResponse.ok) {
+                    const updatedUserData = await updatedUserResponse.json();
+                    if (updatedUserData.success) {
+                      setUserData(updatedUserData.data);
+                    }
+                  }
+                } catch (error) {
+                  console.error('Error processing referral:', error);
+                }
+              } else {
+                // No referral, just set the user data
+                setUserData(userData.data);
+              }
             } else {
               throw new Error(userData.error || 'Failed to initialize user');
             }
-          } else {
-            throw new Error('No Telegram user data in production');
           }
-        } else if (import.meta.env.VITE_ENV !== 'production') {
-          setUserData({
-            telegramId: 'test123',
-            username: 'testUser',
-            firstName: 'Test',
-            lastName: 'User'
-          });
         } else {
-          throw new Error('This app must be run within Telegram');
+          if (import.meta.env.VITE_ENV !== 'production') {
+            setUserData({
+              telegramId: 'test123',
+              username: 'testUser',
+              firstName: 'Test',
+              lastName: 'User'
+            });
+          } else {
+            throw new Error('This app must be run within Telegram');
+          }
         }
-  
+    
         await fetchMemes();
-  
+    
       } catch (error) {
         console.error('Initialization error:', error);
         setInitError(error.message);
