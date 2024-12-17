@@ -65,6 +65,27 @@ const TopBar = ({ meme, onDetailsClick, isDetailsOpen }) => {
     return `$${numPrice.toFixed(2)}`;
   };
 
+  const formatMarketCap = (marketCap) => {
+    if (!marketCap) return '$0.00';
+    
+    // If marketCap already includes B/M suffix, return as is with $ prefix
+    if (typeof marketCap === 'string' && (marketCap.includes('B') || marketCap.includes('M'))) {
+      return `$${marketCap}`;
+    }
+  
+    // Convert to number and format
+    const num = Number(marketCap);
+    if (isNaN(num)) return '$0.00';
+  
+    if (num >= 1e9) {
+      return `$${(num / 1e9).toFixed(1)}B`;
+    }
+    if (num >= 1e6) {
+      return `$${(num / 1e6).toFixed(1)}M`;
+    }
+    return `$${num.toLocaleString()}`;
+  };
+
   const handleBuyClick = () => {
     setIsButtonLoading(true);
     try {
@@ -146,16 +167,16 @@ const TopBar = ({ meme, onDetailsClick, isDetailsOpen }) => {
               </div>
             )}
           </div>
-          <div className="text-right">
-            <div className="text-sm text-gray-400">Market Cap</div>
-            {loading ? (
-              <div className="h-6 w-24 ml-auto bg-[#2A2A2E] animate-pulse rounded" />
-            ) : (
-              <div className="font-medium text-white">
-                {formatPrice(priceData?.marketCap || meme?.projectDetails?.marketCap)}
-              </div>
-            )}
-          </div>
+            <div className="text-right">
+              <div className="text-sm text-gray-400">Market Cap</div>
+              {loading ? (
+                <div className="h-6 w-24 ml-auto bg-[#2A2A2E] animate-pulse rounded" />
+              ) : (
+                <div className="font-medium text-white">
+                  {formatMarketCap(priceData?.marketCap || meme?.projectDetails?.marketCap)}
+                </div>
+              )}
+            </div>
         </div>
 
         {/* Bottom Section: Details Button */}
