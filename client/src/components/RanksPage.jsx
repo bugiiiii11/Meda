@@ -45,20 +45,21 @@ const RanksPage = () => {
   const getRankIcon = (index) => {
     switch (index) {
       case 0:
-        return <span className="text-[#FFD700] text-xl">👑</span>;
+        return <span className="text-[#FFD700] text-2xl">👑</span>;
       case 1:
-        return <span className="text-[#C0C0C0] text-xl">🥈</span>;
+        return <span className="text-[#C0C0C0] text-2xl">🥈</span>;
       case 2:
-        return <span className="text-[#CD7F32] text-xl">🥉</span>;
+        return <span className="text-[#CD7F32] text-2xl">🥉</span>;
       default:
         return <span className="text-gray-400 font-serif text-lg">#{index + 1}</span>;
     }
   };
 
   return (
-    <div className="min-h-screen bg-[#121214]">
-      {/* Header */}
+    <div className="flex flex-col h-screen bg-[#121214]">
+      {/* Fixed Header */}
       <div className="fixed top-0 left-0 right-0 z-50 bg-[#121214]">
+        {/* Title Section */}
         <div className="w-full py-6 border-b border-[#FFD700]/10">
           <div className="flex items-center justify-center gap-4">
             <div className="w-12 h-12 rounded-full bg-[#1E1E22] flex items-center justify-center">
@@ -68,12 +69,12 @@ const RanksPage = () => {
           </div>
         </div>
 
-        {/* Tabs */}
-        <div className="px-4 py-3 border-b border-[#FFD700]/10">
+        {/* Tabs Section with increased bottom margin */}
+        <div className="px-4 py-4 border-b border-[#FFD700]/10">
           <div className="flex gap-2 max-w-md mx-auto">
             <button
               onClick={() => setActiveTab('users')}
-              className={`flex-1 py-2 px-4 rounded-lg font-medium transition-all ${
+              className={`flex-1 py-3 px-4 rounded-lg font-medium transition-all ${
                 activeTab === 'users'
                   ? 'bg-[#FFD700] text-black'
                   : 'bg-[#1E1E22] text-gray-400 hover:bg-[#2A2A2E]'
@@ -83,7 +84,7 @@ const RanksPage = () => {
             </button>
             <button
               onClick={() => setActiveTab('projects')}
-              className={`flex-1 py-2 px-4 rounded-lg font-medium transition-all ${
+              className={`flex-1 py-3 px-4 rounded-lg font-medium transition-all ${
                 activeTab === 'projects'
                   ? 'bg-[#FFD700] text-black'
                   : 'bg-[#1E1E22] text-gray-400 hover:bg-[#2A2A2E]'
@@ -95,15 +96,15 @@ const RanksPage = () => {
         </div>
       </div>
 
-      {/* Scrollable Content */}
-      <div className="pt-[140px] pb-20 px-4">
+      {/* Scrollable Content with proper padding */}
+      <div className="flex-1 overflow-auto pt-[160px] pb-20 px-4">
         <div className="max-w-md mx-auto">
           {loading ? (
             <div className="flex justify-center items-center h-48">
               <div className="animate-spin rounded-full h-8 w-8 border-2 border-[#FFD700] border-t-transparent"></div>
             </div>
           ) : (
-            <div className="space-y-2">
+            <div className="space-y-3">
               {activeTab === 'users' ? (
                 leaderboardData.users.map((user, index) => (
                   <div
