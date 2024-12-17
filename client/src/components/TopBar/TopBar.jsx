@@ -75,18 +75,19 @@ const TopBar = ({ meme, onDetailsClick, isDetailsOpen }) => {
   };
 
   return (
-    <div className="w-full bg-[#1E1E22] border border-[#FFD700]/10 rounded-xl overflow-hidden">
-      {process.env.NODE_ENV === 'development' && (
-        <div className="text-xs text-gray-500 p-2 border-b border-gray-800 max-w-md mx-auto">
-          Debug: MemeID: {meme?.id} | Loading: {loading.toString()} | 
-          Error: {error || 'none'} | 
-          Price: {priceData?.price || 'N/A'}
-        </div>
-      )}
-
-      <div className="max-w-md mx-auto p-4">
-        {/* Top Section: Project Info and Buy Button */}
-        <div className="flex justify-between items-center mb-4">
+    <div className="w-full px-4">
+      <div className="max-w-md mx-auto bg-[#1E1E22] border border-[#FFD700]/10 rounded-xl overflow-hidden">
+        {process.env.NODE_ENV === 'development' && (
+          <div className="text-xs text-gray-500 p-2 border-b border-gray-800">
+            Debug: MemeID: {meme?.id} | Loading: {loading.toString()} | 
+            Error: {error || 'none'} | 
+            Price: {priceData?.price || 'N/A'}
+          </div>
+        )}
+  
+        <div className="p-4">
+          {/* Top Section: Project Info and Buy Button */}
+          <div className="flex justify-between items-center mb-4">
           <div className="flex items-center gap-3">
             {meme?.logo && (
               <img
@@ -103,6 +104,7 @@ const TopBar = ({ meme, onDetailsClick, isDetailsOpen }) => {
                 {meme?.projectDetails?.network || ''}
               </p>
             </div>
+          </div>
           </div>
 
           <button
