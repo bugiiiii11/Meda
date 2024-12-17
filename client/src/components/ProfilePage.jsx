@@ -1,56 +1,19 @@
-import React, { useState, useEffect } from 'react';
-import { ENDPOINTS, getHeaders } from '../config/api';
+import React, { useState } from 'react';
 
-const ProfilePage = ({ userData, onUserDataUpdate }) => {
+const ProfilePage = ({ userData }) => {
   const [shareStatus, setShareStatus] = useState('');
-  const [isGeneratingCode, setIsGeneratingCode] = useState(false);
-
-  const generateReferralCode = async () => {
-    if (!userData?.telegramId || isGeneratingCode || userData?.referralStats?.referralCode) {
-      return;
-    }
-
-    try {
-      setIsGeneratingCode(true);
-      const response = await fetch(`${ENDPOINTS.base}/api/referrals/create`, {
-        method: 'POST',
-        headers: {
-          ...getHeaders(),
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ telegramId: userData.telegramId })
-      });
-
-      const data = await response.json();
-      
-      if (data.success) {
-        await onUserDataUpdate(userData.telegramId);
-      }
-    } catch (error) {
-      console.error('Error generating referral code:', error);
-    } finally {
-      setIsGeneratingCode(false);
-    }
-  };
-
-  // Generate code on initial load if needed
-  useEffect(() => {
-    if (userData?.telegramId && !userData?.referralStats?.referralCode && !isGeneratingCode) {
-      generateReferralCode();
-    }
-  }, [userData?.telegramId, userData?.referralStats?.referralCode]);
 
   const handleShare = async () => {
-    if (!userData?.referralStats?.referralCode) return;
+    if (!userData?.telegramId) return;
 
-    const referralLink = `https://t.me/fynderapp_bot?start=${userData.referralStats.referralCode}`;
+    const referralLink = `https://t.me/fynderapp_bot?start=${userData.telegramId}`;
     const welcomeMessage = `Hello my friend, Join Fynder and find your crypto crush! ${referralLink}`;
 
     try {
       await navigator.clipboard.writeText(welcomeMessage);
       setShareStatus('Copied!');
 
-      // Open Telegram sharing
+      // Open Telegram
       if (window.Telegram?.WebApp) {
         window.Telegram.WebApp.openTelegramLink('tg://msg');
       }
@@ -148,22 +111,21 @@ const ProfilePage = ({ userData, onUserDataUpdate }) => {
             <div className="bg-[#2A2A2E] p-4 rounded-lg space-y-3">
               <div className="flex items-center justify-between gap-4">
                 <code className="text-[#FFD700] font-mono text-sm overflow-hidden overflow-ellipsis whitespace-nowrap">
-                  {isGeneratingCode ? 'Generating...' : 
-                    userData?.referralStats?.referralCode ? 
-                    `https://t.me/fynderapp_bot?start=${userData.referralStats.referralCode}` : 
+                  {userData?.telegramId ? 
+                    `https://t.me/fynderapp_bot?start=${userData.telegramId}` : 
                     'Loading...'}
                 </code>
               </div>
               <button
                 onClick={handleShare}
-                disabled={!userData?.referralStats?.referralCode || isGeneratingCode}
+                disabled={!userData?.telegramId}
                 className={`w-full px-4 py-3 rounded-lg font-medium transition-all ${
                   shareStatus ? 
                   'bg-[#FFD700]/20 text-[#FFD700]' : 
                   'bg-[#FFD700] text-black hover:bg-[#FFD700]/90'
                 } disabled:opacity-50 disabled:cursor-not-allowed`}
               >
-                {shareStatus || (isGeneratingCode ? 'Generating...' : 'Share')}
+                {shareStatus || 'Share'}
               </button>
             </div>
           </div>
