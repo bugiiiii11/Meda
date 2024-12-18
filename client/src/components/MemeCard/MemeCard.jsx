@@ -49,7 +49,7 @@ const MemeCard = ({ meme, onSwipe, isTop, isMobile, onDragStart, onDragEnd }) =>
           alt={meme.projectName}
           className="w-full aspect-square object-cover"
         />
-        <div className="bg-[#121214] border-t border-[#FFD700]/10 px-4 py-2">
+        <div className="bg-[#1E1E22] border-t border-[#FFD700]/10 px-4 py-2">
           <div className="flex justify-between items-center">
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-1.5">
