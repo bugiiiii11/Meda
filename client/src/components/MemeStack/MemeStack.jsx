@@ -11,7 +11,6 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
   const [isAnimating, setIsAnimating] = React.useState(false);
   const [isMobile, setIsMobile] = React.useState(false);
   const [isDragging, setIsDragging] = React.useState(false);
-  const swipeAnimationRef = React.useRef(null);
 
   console.log('===== DEBUG: MemeStack Props =====');
   console.log('Received memes:', memes.map(m => ({
@@ -145,16 +144,25 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
 
   const handleSwipe = async (direction) => {
     if (isAnimating || !currentMeme) return;
-      
+    
+    console.log('Handling swipe:', direction);
+    console.log('Current meme before swipe:', {
+      id: currentMeme.id,
+      engagement: currentMeme.engagement
+    });
+    
     setIsAnimating(true);
     setLastSwipe(direction);
   
-    // Handle API interaction in background
+    // Transition to next meme immediately
+    transitionToNextMeme();
+    
+    // Handle interaction in the background
     try {
       const action = direction === 'right' ? 'like' : 
                     direction === 'left' ? 'dislike' : 'superlike';
   
-      fetch(ENDPOINTS.interactions.update, {
+      const response = await fetch(ENDPOINTS.interactions.update, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -166,44 +174,26 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
           telegramId: userData?.telegramId
         })
       });
+  
+      const data = await response.json();
+      console.log('Interaction response:', data);
+  
+      if (!data.success) {
+        throw new Error(data.error || 'Interaction failed');
+      }
     } catch (error) {
       console.error('Interaction error:', error);
-    }
-  
-    // Immediate transition to next meme
-    if (swipeAnimationRef.current) {
-      clearTimeout(swipeAnimationRef.current);
-    }
-  
-    // Update states in sequence
-    swipeAnimationRef.current = setTimeout(() => {
-      setCurrentMeme(nextMeme);
-      onMemeChange(nextMeme);
-  
-      // Prepare next background meme
-      const newNextMeme = getWeightedRandomMeme();
-      setNextMeme(newNextMeme);
-  
-      // Clear indicator after animation
+    } finally {
       setTimeout(() => {
         setLastSwipe(null);
         setIsAnimating(false);
-      }, 800); // Match the longest particle animation duration
-    }, 50); // Minimal delay for smooth state update
+      }, 300); // Reduced from default timing
+    }
   };
-
-  // Clear timeouts on unmount
-  React.useEffect(() => {
-    return () => {
-      if (swipeAnimationRef.current) {
-        clearTimeout(swipeAnimationRef.current);
-      }
-    };
-  }, []);
 
   return (
     <div className="relative max-w-[calc(100vw-32px)] mx-auto aspect-square bg-[#121214]">
-      {/* Background Layer (Next Meme) */}
+      {/* Background Layer (Next Meme) - Always below */}
       <div className="absolute inset-0 z-10">
         {nextMeme && (
           <MemeCard
@@ -214,58 +204,63 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
           />
         )}
       </div>
-
-      {/* Top Layer (Current Meme) */}
-      <AnimatePresence mode="wait">
+  
+      {/* Top Layer (Current Meme) - With animation */}
+      <AnimatePresence mode="sync">
         {currentMeme && (
           <motion.div
-          key={`meme-${currentMeme.id}`}
-          className="absolute inset-0 z-20"
-          initial={{ opacity: 1 }}
-          exit={{ 
-            opacity: 0,
-            transition: {
-              duration: 0.1 // Very quick fade out
-            }
-          }}
-        >
-          <MemeCard
-            meme={currentMeme}
-            onSwipe={handleSwipe}
-            isTop={true}
-            isMobile={isMobile}
-            userData={userData}
-            onDragStart={() => setIsDragging(true)}
-            onDragEnd={(e, info) => {
-              setIsDragging(false);
-              const xVel = info.velocity.x;
-              const yVel = info.velocity.y;
-              const xOffset = info.offset.x;
-              const yOffset = info.offset.y;
-              
-              if (Math.abs(yVel) > Math.abs(xVel) && yOffset < -50) {
-                handleSwipe('super');
-              } else if (xOffset > 50) {
-                handleSwipe('right');
-              } else if (xOffset < -50) {
-                handleSwipe('left');
+            key={currentMeme.id}
+            className="absolute inset-0 z-20"
+            initial={false}
+            animate={{ 
+              opacity: isDragging ? 0.5 : 1,
+              scale: 1,
+              zIndex: 20
+            }}
+            exit={{ 
+              opacity: 0,
+              scale: 0.95,
+              transition: { 
+                duration: 0.2,
+                ease: "easeOut"
               }
             }}
-          />
-        </motion.div>
+          >
+            <MemeCard
+              meme={currentMeme}
+              onSwipe={handleSwipe}
+              isTop={true}
+              isMobile={isMobile}
+              userData={userData}
+              onDragStart={() => setIsDragging(true)}
+              onDragEnd={(e, info) => {
+                setIsDragging(false);
+                const xVel = info.velocity.x;
+                const yVel = info.velocity.y;
+                const xOffset = info.offset.x;
+                const yOffset = info.offset.y;
+                
+                if (Math.abs(yVel) > Math.abs(xVel) && yOffset < -50) {
+                  handleSwipe('super');
+                } else if (xOffset > 50) {
+                  handleSwipe('right');
+                } else if (xOffset < -50) {
+                  handleSwipe('left');
+                }
+              }}
+            />
+          </motion.div>
         )}
       </AnimatePresence>
-
-      {/* Swipe Indicator with Effects */}
-      <AnimatePresence mode="wait">
-        {lastSwipe && (
-          <motion.div 
-            key={`indicator-${currentMeme?.id}-${lastSwipe}`}
-            className="absolute inset-0 flex items-center justify-center z-30 pointer-events-none"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
+  
+      {/* Swipe Indicator Overlay - Always on top */}
+          <AnimatePresence>
+      {lastSwipe && (
+        <motion.div 
+          className="absolute inset-0 flex items-center justify-center z-30 pointer-events-none"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
         >
           {lastSwipe === 'right' && (
           <>
@@ -273,38 +268,52 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
             <motion.div className="absolute inset-0 overflow-hidden">
               {[...Array(8)].map((_, i) => (
                 <motion.div
-                className="absolute w-8 h-8 text-2xl"
-                initial={{ 
-                  x: "50%",
-                  y: "50%",
-                  scale: 0,
-                  opacity: 0
-                }}
-                animate={{ 
-                  x: `${50 + (Math.random() * 80 - 40)}%`,
-                  y: `${50 + (Math.random() * 80 - 40)}%`,
-                  scale: [0, 2, 0],
-                  opacity: [0, 1, 0],
-                }}
-                transition={{
-                  duration: 0.8, // Shortened from 1s
-                  delay: i * 0.05, // Shortened from 0.1
-                  ease: "easeOut"
-                }}
-              >
-                {["👍", "💖", "✨", "💚"][i % 4]}
-              </motion.div>
+                  key={`like-particle-${i}`}
+                  className="absolute w-8 h-8 text-2xl"
+                  initial={{ 
+                    x: "50%",
+                    y: "50%",
+                    scale: 0,
+                    opacity: 0
+                  }}
+                  animate={{ 
+                    x: `${50 + (Math.random() * 80 - 40)}%`,
+                    y: `${50 + (Math.random() * 80 - 40)}%`,
+                    scale: [0, 2, 0],
+                    opacity: [0, 1, 0],
+                  }}
+                  transition={{
+                    duration: 1,
+                    delay: i * 0.1,
+                    ease: "easeOut"
+                  }}
+                >
+                  {["👍", "💖", "✨", "💚"][i % 4]}
+                </motion.div>
               ))}
             </motion.div>
             
             {/* Main LIKE indicator - keep your existing code */}
             <motion.div 
-              className="absolute inset-0 flex items-center justify-center z-30 pointer-events-none"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.2 }} // Shortened from 0.3
-            >
+              className="px-8 py-4 rounded-2xl border-4 border-green-500 shadow-xl backdrop-blur-sm bg-green-500/90"
+              initial={{ x: -100, rotate: -45, scale: 0 }}
+              animate={{ 
+                x: 0, 
+                rotate: 0, 
+                scale: 1,
+                transition: {
+                  type: "spring",
+                  stiffness: 300,
+                  damping: 15
+                }
+              }}
+              exit={{ 
+                x: 100,
+                rotate: 45,
+                scale: 0,
+                transition: { duration: 0.2 }
+                }}
+              >
                 <div className="text-4xl font-bold text-white flex items-center gap-3">
                   <motion.span
                     initial={{ scale: 0 }}
