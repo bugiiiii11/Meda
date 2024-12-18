@@ -12,7 +12,6 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
   const [isAnimating, setIsAnimating] = React.useState(false);
   const [isMobile, setIsMobile] = React.useState(false);
   const [isDragging, setIsDragging] = React.useState(false);
-  const [isTransitioning, setIsTransitioning] = React.useState(false);
 
   console.log('===== DEBUG: MemeStack Props =====');
   console.log('Received memes:', memes.map(m => ({
@@ -124,21 +123,20 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
     const transitionToNextMeme = React.useCallback(() => {
       if (!nextMeme) return;
       
-      setIsTransitioning(true);
-      
-      // Current becomes next, next becomes future next
+      // Update states in sequence to prevent flashing
       setCurrentMeme(nextMeme);
-      setNextMeme(futureNextMeme);
       onMemeChange(nextMeme);
       
-      // Prepare new future next meme
-      const newFutureNextMeme = getWeightedRandomMeme();
-      setFutureNextMeme(newFutureNextMeme);
-      
-      // Reset transition state after animation completes
-      setTimeout(() => {
-        setIsTransitioning(false);
-      }, 300);
+      // Slight delay to ensure smooth transition
+      requestAnimationFrame(() => {
+        setNextMeme(futureNextMeme);
+        
+        // Prepare new future next meme after current transition
+        requestAnimationFrame(() => {
+          const newFutureNextMeme = getWeightedRandomMeme();
+          setFutureNextMeme(newFutureNextMeme);
+        });
+      });
       
     }, [nextMeme, futureNextMeme, getWeightedRandomMeme, onMemeChange]);
   
@@ -184,7 +182,7 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
 
     return (
       <div className="relative max-w-[calc(100vw-32px)] mx-auto aspect-square bg-[#121214]">
-        {/* Base Layer (Next Meme - B) */}
+        {/* Background Layer (Next Meme - B) - Always visible */}
         <div className="absolute inset-0" style={{ zIndex: 10 }}>
           {nextMeme && (
             <MemeCard
@@ -195,35 +193,17 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
             />
           )}
         </div>
-  
-        {/* Hidden Background Layer (Future Next Meme - C) */}
-        <AnimatePresence>
-          {!isTransitioning && nextMeme && futureNextMeme && (
-            <motion.div 
-              className="absolute inset-0" 
-              style={{ zIndex: 5 }}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: isDragging ? 1 : 0 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.2 }}
-            >
-              <MemeCard
-                meme={futureNextMeme}
-                onSwipe={() => {}}
-                isTop={false}
-                userData={userData}
-              />
-            </motion.div>
-          )}
-        </AnimatePresence>
     
-        {/* Top Layer (Current Meme - A) */}
+        {/* Top Layer (Current Meme - A) with improved exit handling */}
         <AnimatePresence mode="wait">
           {currentMeme && (
             <motion.div
               key={currentMeme.id}
               className="absolute inset-0"
-              style={{ zIndex: 20 }}
+              style={{ 
+                zIndex: 20,
+                pointerEvents: isAnimating ? 'none' : 'auto'
+              }}
               initial={false}
               animate={{ 
                 opacity: isDragging ? 0.5 : 1,
@@ -231,9 +211,8 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
               }}
               exit={{ 
                 opacity: 0,
-                scale: 1,
                 transition: { 
-                  duration: 0.1,
+                  duration: 0.15,
                   ease: "linear"
                 }
               }}
