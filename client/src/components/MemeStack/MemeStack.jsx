@@ -20,6 +20,11 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
   })));
   console.log('================================');
 
+  // Platform detection effect - moved here
+  React.useEffect(() => {
+    setIsMobile(!!window.Telegram?.WebApp);
+  }, []);
+  
   const getWeightedRandomMeme = React.useCallback(() => {
     console.log('===== Getting Random Meme =====');
     console.log('Total memes available:', memes.length);
@@ -125,23 +130,17 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
     
     console.log('Transitioning to next meme with engagement:', nextMeme);
     
-    // Set current meme to next meme
+    // Set next meme as current immediately
     setCurrentMeme(nextMeme);
     onMemeChange(nextMeme);
     
-    // Slight delay before setting next meme to prevent blinking
-    setTimeout(() => {
-      const newNextMeme = getWeightedRandomMeme();
-      console.log('New next meme with engagement:', newNextMeme);
-      setNextMeme(newNextMeme);
-    }, 200); // Delay matches the exit animation duration
+    // Prepare the new next meme immediately
+    const newNextMeme = getWeightedRandomMeme();
+    console.log('New next meme with engagement:', newNextMeme);
+    setNextMeme(newNextMeme);
     
   }, [nextMeme, getWeightedRandomMeme, onMemeChange]);
-
-  React.useEffect(() => {
-    setIsMobile(!!window.Telegram?.WebApp);
-  }, []);
-
+  
   const handleSwipe = async (direction) => {
     if (isAnimating || !currentMeme) return;
     
@@ -154,7 +153,7 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
     setIsAnimating(true);
     setLastSwipe(direction);
   
-    // Transition to next meme immediately
+    // Handle transition first
     transitionToNextMeme();
     
     // Handle interaction in the background
@@ -184,16 +183,17 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
     } catch (error) {
       console.error('Interaction error:', error);
     } finally {
+      // Reset animation states with minimal delay
       setTimeout(() => {
         setLastSwipe(null);
         setIsAnimating(false);
-      }, 300); // Reduced from default timing
+      }, 200);
     }
   };
 
   return (
     <div className="relative max-w-[calc(100vw-32px)] mx-auto aspect-square bg-[#121214]">
-      {/* Background Layer (Next Meme) - Always below */}
+      {/* Background Layer (Next Meme) - Always visible */}
       <div className="absolute inset-0 z-10">
         {nextMeme && (
           <MemeCard
@@ -205,8 +205,8 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
         )}
       </div>
   
-      {/* Top Layer (Current Meme) - With animation */}
-      <AnimatePresence mode="sync">
+            {/* Top Layer (Current Meme) - With instant exit */}
+            <AnimatePresence mode="wait">
         {currentMeme && (
           <motion.div
             key={currentMeme.id}
@@ -219,10 +219,10 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
             }}
             exit={{ 
               opacity: 0,
-              scale: 0.95,
+              scale: 1,
               transition: { 
-                duration: 0.2,
-                ease: "easeOut"
+                duration: 0.1,
+                ease: "linear"
               }
             }}
           >
