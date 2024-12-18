@@ -1,7 +1,7 @@
 import React from 'react';
 
 const Navigation = ({ activeTab, onTabChange }) => {
-  // Updated SwipeIcon with a more engaging swipe motion representation
+  // Updated SwipeIcon with double chevron design
   const SwipeIcon = ({ className }) => (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -13,19 +13,19 @@ const Navigation = ({ activeTab, onTabChange }) => {
       <path
         strokeLinecap="round"
         strokeLinejoin="round"
-        strokeWidth={2}
-        d="M10 4l4 2m0 0l-4 2m4-2v12m0 0l4-2m-4 2l-4-2"
+        strokeWidth={2.5}
+        d="M9 5l6 7-6 7"
       />
       <path
         strokeLinecap="round"
         strokeLinejoin="round"
-        strokeWidth={2}
-        d="M4 12h12"
+        strokeWidth={2.5}
+        d="M4 5l6 7-6 7"
       />
     </svg>
   );
 
-  // Updated TaskIcon with a checkmark design
+  // Updated TaskIcon with larger checkmark
   const TaskIcon = ({ className }) => (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -37,7 +37,7 @@ const Navigation = ({ activeTab, onTabChange }) => {
       <circle
         cx="12"
         cy="12"
-        r="8"
+        r="7"
         strokeWidth={2}
         strokeLinecap="round"
         strokeLinejoin="round"
@@ -46,7 +46,7 @@ const Navigation = ({ activeTab, onTabChange }) => {
         strokeLinecap="round"
         strokeLinejoin="round"
         strokeWidth={2}
-        d="M9 12l2 2l4-4"
+        d="M8.5 12.5l2 2l5-5"
       />
     </svg>
   );
@@ -106,7 +106,7 @@ const Navigation = ({ activeTab, onTabChange }) => {
             }`}
           >
             <Icon
-              className={`h-6 w-6 mb-1 transition-all duration-300 ${
+              className={`h-7 w-7 mb-1 transition-all duration-300 ${
                 activeTab === id
                   ? 'text-[#FFD700]'
                   : 'text-gray-400 group-hover:text-[#FFD700]/70'
