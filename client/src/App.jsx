@@ -1,4 +1,4 @@
-//App.jsx
+//client/src/App.jsx
 import React, { useState, useEffect } from 'react';
 import WebApp from '@twa-dev/sdk';
 import './App.css';
@@ -301,7 +301,7 @@ function App() {
   }
 
   return (
-    <div className="fixed inset-0 bg-[#1a1b1e] overflow-hidden">
+    <div className="fixed inset-0 bg-[#17212b] overflow-hidden">
       {activeTab === 'memes' ? (
         <>
           <div className="fixed top-0 left-0 right-0 z-[70]">
