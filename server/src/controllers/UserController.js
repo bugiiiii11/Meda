@@ -9,9 +9,10 @@ class UserController {
   
     try {
       const { telegramId, username, firstName, lastName, referredBy } = req.body;
-      
+      console.log('Creating/updating user:', { telegramId, username, referredBy });
+  
       let user = await User.findOne({ telegramId });
-      
+  
       if (user) {
         // Update existing user
         user.username = username || user.username;
@@ -35,35 +36,43 @@ class UserController {
         });
       }
   
-      // Handle referral if new user
-      if (referredBy && !user.referredBy) {
-        // Call referral redemption
+      // Handle referral if provided
+    if (referredBy && !user.referredBy) {
+      try {
         await ReferralController.redeemReferral({
           body: {
             referralCode: referredBy,
             newUserTelegramId: telegramId
           }
-        }, { json: () => {} }); // Mock response object
+        }, {
+          json: (data) => console.log('Referral processed:', data),
+          status: () => ({
+            json: (data) => console.log('Referral error:', data)
+          })
+        });
+      } catch (error) {
+        console.error('Referral processing error:', error);
       }
-  
-      await user.save({ session });
-      await session.commitTransaction();
-  
-      res.status(201).json({
-        success: true,
-        data: user
-      });
-    } catch (error) {
-      await session.abortTransaction();
-      console.error('Create user error:', error);
-      res.status(500).json({
-        success: false,
-        error: error.message
-      });
-    } finally {
-      session.endSession();
     }
+
+    await user.save({ session });
+    await session.commitTransaction();
+
+    res.status(201).json({
+      success: true,
+      data: user
+    });
+  } catch (error) {
+    await session.abortTransaction();
+    console.error('Create user error:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  } finally {
+    session.endSession();
   }
+}
 
   static async getUser(req, res) {
     try {
