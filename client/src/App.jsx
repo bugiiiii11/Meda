@@ -12,6 +12,7 @@ import RanksPage from './components/RanksPage';
 import { ENDPOINTS, getHeaders } from './config/api';
 import { priceService } from './services/priceService';
 import dummyMemes from './data/dummyMemes';
+import './styles/globals.css';
 
 const LoadingScreen = () => (
   <div className="fixed inset-0 bg-[#1a1b1e] flex flex-col items-center justify-between p-0 overflow-hidden">
