@@ -115,7 +115,6 @@ const TasksPage = ({ userData, onUserDataUpdate }) => {
           await handleTaskCompletion(task.id);
         }
   
-        // Reset flash state after animation completes
         setTimeout(() => {
           setIsFlashing(false);
         }, 200);
@@ -126,15 +125,15 @@ const TasksPage = ({ userData, onUserDataUpdate }) => {
       <button
         onClick={handleClick}
         className={`
-          w-full p-4 rounded-xl border transition-all task-button-flash
+          w-full p-4 rounded-xl border transition-colors relative overflow-hidden
           ${completed
             ? 'bg-[#1E1E22] border-[#FFD700]/20 text-[#FFD700]'
             : 'bg-[#1E1E22] border-[#FFD700]/10 text-gray-300 hover:border-[#FFD700]/30'
           }
-          ${isFlashing ? 'flashing' : ''}
+          ${isFlashing ? 'animate-flash' : ''}
         `}
       >
-        <div className="flex items-center justify-between relative z-10">
+        <div className="relative z-10 flex items-center justify-between">
           <span className="font-medium">{task.label}</span>
           <div className="flex items-center gap-2">
             {!completed && (
@@ -143,6 +142,12 @@ const TasksPage = ({ userData, onUserDataUpdate }) => {
             {completed && <CheckIcon />}
           </div>
         </div>
+        {isFlashing && (
+          <div 
+            className="absolute inset-0 bg-[#FFD700] animate-flash"
+            style={{ opacity: 0.3 }}
+          />
+        )}
       </button>
     );
   };

@@ -6,32 +6,34 @@ body {
   font-family: 'Inter', sans-serif;
 }
 
-/* Custom button animation styles */
 .task-button-flash {
   position: relative;
-  overflow: hidden;
 }
 
-.task-button-flash::after {
+.task-button-flash::before {
   content: '';
   position: absolute;
-  inset: 0;
-  background-color: #FFD700;
-  opacity: 0;
-  transition: opacity 0.2s ease-out;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: transparent;
   pointer-events: none;
+  transition: background-color 0.2s ease-out;
 }
 
-.task-button-flash.flashing::after {
-  opacity: 0.3;
-  animation: flash-fade 0.2s ease-out forwards;
+.task-button-flash.flashing::before {
+  background-color: #FFD700;
+  animation: buttonFlash 0.2s ease-out forwards;
 }
 
-@keyframes flash-fade {
+@keyframes buttonFlash {
   0% {
+    background-color: #FFD700;
     opacity: 0.3;
   }
   100% {
+    background-color: transparent;
     opacity: 0;
   }
 }
