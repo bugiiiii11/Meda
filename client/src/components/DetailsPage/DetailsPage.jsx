@@ -17,6 +17,36 @@ const CopyIcon = () => (
   </svg>
 );
 
+// Reusable animated button component
+const AnimatedButton = ({ onClick, children, className }) => {
+  const [isFlashing, setIsFlashing] = React.useState(false);
+
+  const handleClick = async () => {
+    if (!isFlashing) {
+      setIsFlashing(true);
+      onClick?.();
+      setTimeout(() => {
+        setIsFlashing(false);
+      }, 200);
+    }
+  };
+
+  return (
+    <button
+      onClick={handleClick}
+      className={`relative overflow-hidden ${className}`}
+    >
+      <div className="relative z-10">{children}</div>
+      {isFlashing && (
+        <div 
+          className="absolute inset-0 bg-[#FFD700] animate-flash"
+          style={{ opacity: 0.3 }}
+        />
+      )}
+    </button>
+  );
+};
+
 const DetailsPage = ({ isOpen, meme }) => {
   const handleCopy = async (text) => {
     try {
@@ -26,13 +56,15 @@ const DetailsPage = ({ isOpen, meme }) => {
     }
   };
 
+  const buttonBaseClass = "w-full px-4 py-3 bg-[#1E1E22] text-gray-200 rounded-xl font-medium border border-[#FFD700]/10 hover:border-[#FFD700]/30 transition-all";
+
   return (
     <div
       className={`fixed left-0 right-0 bg-[#121214] z-50 transition-transform duration-300 ${
         isOpen ? 'translate-y-0' : 'translate-y-[-120%]'
       }`}
       style={{
-        top: '240px', // Adjusted to match the content
+        top: '240px',
         bottom: '60px',
         borderTop: '1px solid rgba(255, 255, 255, 0.1)',
       }}
@@ -46,48 +78,51 @@ const DetailsPage = ({ isOpen, meme }) => {
               <div className="text-gray-200 text-sm truncate flex-1">
                 {meme?.projectDetails?.contract || 'N/A'}
               </div>
-              <button
+              <AnimatedButton
                 onClick={() => handleCopy(meme?.projectDetails?.contract)}
                 className="text-gray-400 hover:text-[#FFD700] transition-colors p-1.5 rounded-md hover:bg-[#FFD700]/10"
-                title="Copy contract address"
               >
                 <CopyIcon />
-              </button>
+              </AnimatedButton>
             </div>
           </div>
 
           {/* Action Buttons */}
           <div className="space-y-2">
-            <button
+            <AnimatedButton
               onClick={() => window.open(meme?.projectDetails?.website, '_blank')}
-              className="w-full px-4 py-3 bg-[#1E1E22] text-gray-200 rounded-xl font-medium border border-[#FFD700]/10 hover:border-[#FFD700]/30 transition-all"
+              className={buttonBaseClass}
             >
               Website
-            </button>
-            <button
+            </AnimatedButton>
+
+            <AnimatedButton
               onClick={() => window.open(meme?.projectDetails?.priceChart, '_blank')}
-              className="w-full px-4 py-3 bg-[#1E1E22] text-gray-200 rounded-xl font-medium border border-[#FFD700]/10 hover:border-[#FFD700]/30 transition-all"
+              className={buttonBaseClass}
             >
               Price Chart
-            </button>
-            <button
+            </AnimatedButton>
+
+            <AnimatedButton
               onClick={() => window.open(meme?.projectDetails?.telegramUrl, '_blank')}
-              className="w-full px-4 py-3 bg-[#1E1E22] text-gray-200 rounded-xl font-medium border border-[#FFD700]/10 hover:border-[#FFD700]/30 transition-all"
+              className={buttonBaseClass}
             >
               Join Telegram Chat
-            </button>
-            <button
+            </AnimatedButton>
+
+            <AnimatedButton
               onClick={() => window.open(meme?.projectDetails?.twitterUrl, '_blank')}
-              className="w-full px-4 py-3 bg-[#1E1E22] text-gray-200 rounded-xl font-medium border border-[#FFD700]/10 hover:border-[#FFD700]/30 transition-all"
+              className={buttonBaseClass}
             >
               Join Twitter
-            </button>
-            <button
+            </AnimatedButton>
+
+            <AnimatedButton
               onClick={() => window.open(meme?.projectDetails?.instagramUrl, '_blank')}
-              className="w-full px-4 py-3 bg-[#1E1E22] text-gray-200 rounded-xl font-medium border border-[#FFD700]/10 hover:border-[#FFD700]/30 transition-all"
+              className={buttonBaseClass}
             >
               Join Instagram
-            </button>
+            </AnimatedButton>
           </div>
         </div>
       </div>
