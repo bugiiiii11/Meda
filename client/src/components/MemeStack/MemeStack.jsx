@@ -12,6 +12,7 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
   const [isAnimating, setIsAnimating] = React.useState(false);
   const [isMobile, setIsMobile] = React.useState(false);
   const [isDragging, setIsDragging] = React.useState(false);
+  const [swipeDirection, setSwipeDirection] = React.useState(null);
 
   console.log('===== DEBUG: MemeStack Props =====');
   console.log('Received memes:', memes.map(m => ({
@@ -144,12 +145,17 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
       if (isAnimating || !currentMeme) return;
       
       setIsAnimating(true);
+      setSwipeDirection(direction);
+      
+      // Start bounce animation
+      const bounceDistance = direction === 'right' ? 100 : direction === 'left' ? -100 : -50;
+      setSwipeDirection({ direction, distance: bounceDistance });
+      
+      // Show swipe indicator during bounce
       setLastSwipe(direction);
-      
-      // Handle transition first
-      transitionToNextMeme();
-      
+  
       try {
+        // Handle API interaction during animation
         const action = direction === 'right' ? 'like' : 
                       direction === 'left' ? 'dislike' : 'superlike';
     
@@ -172,17 +178,31 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
         }
       } catch (error) {
         console.error('Interaction error:', error);
-      } finally {
+      }
+  
+      // After bounce animation (500ms) + indicator display (300ms)
+      setTimeout(() => {
+        // Load future meme while current meme is still visible
+        const newFutureNextMeme = getWeightedRandomMeme();
+        setFutureNextMeme(newFutureNextMeme);
+        
+        // After loading, transition to next meme
         setTimeout(() => {
+          setCurrentMeme(nextMeme);
+          setNextMeme(futureNextMeme);
+          onMemeChange(nextMeme);
+          
+          // Reset states
           setLastSwipe(null);
+          setSwipeDirection(null);
           setIsAnimating(false);
         }, 200);
-      }
+      }, 800);
     };
 
     return (
       <div className="relative max-w-[calc(100vw-32px)] mx-auto aspect-square bg-[#121214]">
-        {/* Background Layer (Next Meme - B) - Always visible */}
+        {/* Background Layer (Next Meme - B) */}
         <div className="absolute inset-0" style={{ zIndex: 10 }}>
           {nextMeme && (
             <MemeCard
@@ -194,26 +214,32 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
           )}
         </div>
     
-        {/* Top Layer (Current Meme - A) with improved exit handling */}
+        {/* Top Layer (Current Meme - A) with bounce animation */}
         <AnimatePresence mode="wait">
           {currentMeme && (
             <motion.div
               key={currentMeme.id}
               className="absolute inset-0"
-              style={{ 
-                zIndex: 20,
-                pointerEvents: isAnimating ? 'none' : 'auto'
-              }}
+              style={{ zIndex: 20 }}
               initial={false}
-              animate={{ 
-                opacity: isDragging ? 0.5 : 1,
-                scale: 1,
+              animate={swipeDirection ? {
+                x: swipeDirection.distance,
+                scale: 0.95,
+                transition: {
+                  type: "spring",
+                  stiffness: 300,
+                  damping: 20
+                }
+              } : {
+                x: 0,
+                scale: 1
               }}
               exit={{ 
                 opacity: 0,
+                scale: 0.9,
                 transition: { 
-                  duration: 0.15,
-                  ease: "linear"
+                  duration: 0.2,
+                  ease: "easeOut"
                 }
               }}
             >
@@ -223,8 +249,11 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
                 isTop={true}
                 isMobile={isMobile}
                 userData={userData}
-                onDragStart={() => setIsDragging(true)}
+                disabled={isAnimating}
+                onDragStart={() => !isAnimating && setIsDragging(true)}
                 onDragEnd={(e, info) => {
+                  if (isAnimating) return;
+                  
                   setIsDragging(false);
                   const xVel = info.velocity.x;
                   const yVel = info.velocity.y;
@@ -243,36 +272,17 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
             </motion.div>
           )}
         </AnimatePresence>
-  
-      {/* Optional Future Next Meme Layer (C) - Only render when needed */}
-      <div 
-            className="absolute inset-0" 
-            style={{ 
-              zIndex: 5,
-              opacity: 0,
-              visibility: 'hidden',
-              position: 'absolute',
-              pointerEvents: 'none'
-            }}
-          >
-            {futureNextMeme && (
-              <MemeCard
-                meme={futureNextMeme}
-                onSwipe={() => {}}
-                isTop={false}
-                userData={userData}
-              />
-            )}
-          </div>
 
-      {/* Swipe Indicator Overlay - Always on top */}
-          <AnimatePresence>
-      {lastSwipe && (
-        <motion.div 
-          className="absolute inset-0 flex items-center justify-center z-30 pointer-events-none"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
+
+       {/* Swipe Indicator Overlay */}
+       <AnimatePresence>
+        {lastSwipe && (
+          <motion.div 
+            className="absolute inset-0 flex items-center justify-center z-30 pointer-events-none"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
         >
           {lastSwipe === 'right' && (
           <>
