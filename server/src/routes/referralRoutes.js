@@ -1,20 +1,26 @@
+
+// referralRoutes.js
 const express = require('express');
 const router = express.Router();
 const ReferralController = require('../controllers/ReferralController');
 const { validateRequest } = require('../middleware/validation');
 const { bypassAuthInDevelopment } = require('../middleware/auth');
 
-// Create referral code
 router.post('/create',
   bypassAuthInDevelopment,
   validateRequest('createReferral'),
-  (req, res) => ReferralController.redeemReferral(req, res)
+  ReferralController.createReferralCode
 );
 
-// Stats endpoint
+router.post('/redeem',
+  bypassAuthInDevelopment,
+  validateRequest('redeemReferral'),
+  ReferralController.redeemReferral
+);
+
 router.get('/:telegramId/stats',
   bypassAuthInDevelopment,
-  (req, res) => ReferralController.getReferralStats(req, res)
+  ReferralController.getReferralStats
 );
 
 module.exports = router;

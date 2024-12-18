@@ -4,19 +4,37 @@ const User = require('../models/User');
 
 class UserController {
   static async createUser(req, res) {
-    const session = await mongoose.startSession();
-    session.startTransaction();
+    console.log('Create user request:', {
+      headers: req.headers,
+      body: req.body,
+      telegramUser: req.telegramUser
+    });
   
     try {
-      const { telegramId, username, firstName, lastName, referredBy } = req.body;
-      
+      const { telegramId, username, firstName, lastName } = req.body;
+      console.log('Creating/updating user with data:', {
+        telegramId,
+        username,
+        firstName,
+        lastName
+      });
+
+      // Validate required data
+      if (!telegramId) {
+        throw new Error('telegramId is required');
+      }
+
+      // Check if user exists
       let user = await User.findOne({ telegramId });
-      
+      console.log('Existing user found:', user);
+
       if (user) {
         // Update existing user
         user.username = username || user.username;
         user.firstName = firstName || user.firstName;
         user.lastName = lastName || user.lastName;
+        await user.save();
+        console.log('Updated existing user:', user);
       } else {
         // Create new user
         user = new User({
@@ -33,35 +51,20 @@ class UserController {
             referrals: 0
           }
         });
+        await user.save();
+        console.log('Created new user:', user);
       }
-  
-      // Handle referral if new user
-      if (referredBy && !user.referredBy) {
-        // Call referral redemption
-        await ReferralController.redeemReferral({
-          body: {
-            referralCode: referredBy,
-            newUserTelegramId: telegramId
-          }
-        }, { json: () => {} }); // Mock response object
-      }
-  
-      await user.save({ session });
-      await session.commitTransaction();
-  
+
       res.status(201).json({
         success: true,
         data: user
       });
     } catch (error) {
-      await session.abortTransaction();
       console.error('Create user error:', error);
       res.status(500).json({
         success: false,
         error: error.message
       });
-    } finally {
-      session.endSession();
     }
   }
 
