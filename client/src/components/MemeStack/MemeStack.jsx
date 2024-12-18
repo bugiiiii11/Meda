@@ -9,6 +9,7 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
   const [nextMeme, setNextMeme] = React.useState(null);
   const [lastSwipe, setLastSwipe] = React.useState(null);
   const [isAnimating, setIsAnimating] = React.useState(false);
+  const [isMobile, setIsMobile] = React.useState(false);
   const [isDragging, setIsDragging] = React.useState(false);
   const animationTimeoutRef = React.useRef(null);
   const indicatorTimeoutRef = React.useRef(null);
@@ -143,7 +144,7 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
     setIsMobile(!!window.Telegram?.WebApp);
   }, []);
 
-  const handleSwipe = async (direction) => {
+   const handleSwipe = async (direction) => {
     if (isAnimating || !currentMeme) return;
     
     // Clear any existing timeouts
@@ -203,7 +204,7 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
     };
   }, []);
 
-   return (
+  return (
     <div className="relative max-w-[calc(100vw-32px)] mx-auto aspect-square bg-[#121214]">
       {/* Background Layer (Next Meme) */}
       <div className="absolute inset-0 z-10">
