@@ -12,6 +12,7 @@ module.exports = {
         },
         'flash': {
           '0%': { opacity: '0.3' },
+          '50%': { opacity: '0.3' },
           '100%': { opacity: '0' }
         }
       },

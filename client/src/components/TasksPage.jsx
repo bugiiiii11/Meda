@@ -125,14 +125,23 @@ const TasksPage = ({ userData, onUserDataUpdate }) => {
       <button
         onClick={handleClick}
         className={`
-          task-button w-full p-4 rounded-xl border
+          w-full p-4 rounded-xl border relative
           ${completed
             ? 'bg-[#1E1E22] border-[#FFD700]/20 text-[#FFD700]'
             : 'bg-[#1E1E22] border-[#FFD700]/10 text-gray-300 hover:border-[#FFD700]/30'
           }
         `}
       >
-        <div className="relative z-10 flex items-center justify-between">
+        {/* Base background layer */}
+        <div className="absolute inset-0 bg-[#1E1E22]" />
+        
+        {/* Flash overlay */}
+        {isFlashing && (
+          <div className="absolute inset-0 bg-[#FFD700] animate-flash" />
+        )}
+        
+        {/* Content layer */}
+        <div className="relative z-20 flex items-center justify-between">
           <span className="font-medium">{task.label}</span>
           <div className="flex items-center gap-2">
             {!completed && (
@@ -141,7 +150,6 @@ const TasksPage = ({ userData, onUserDataUpdate }) => {
             {completed && <CheckIcon />}
           </div>
         </div>
-        {isFlashing && <div className="flash-overlay" />}
       </button>
     );
   };

@@ -35,9 +35,16 @@ code {
   0% {
     opacity: 0.3;
   }
+  50% {
+    opacity: 0.3;
+  }
   100% {
     opacity: 0;
   }
+}
+
+.animate-flash {
+  animation: flashAnimation 0.3s ease-out forwards;
 }
 
 .task-button {
