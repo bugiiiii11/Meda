@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 const CopyIcon = () => (
   <svg
@@ -47,15 +47,43 @@ const AnimatedButton = ({ onClick, children, className }) => {
   );
 };
 
-const DetailsPage = ({ isOpen, meme }) => {
-  const handleCopy = async (text) => {
+// Copy button with notification
+const CopyButton = ({ text }) => {
+  const [showCopied, setShowCopied] = useState(false);
+
+  const handleCopy = async () => {
     try {
       await navigator.clipboard.writeText(text);
+      setShowCopied(true);
+      setTimeout(() => setShowCopied(false), 1000);
     } catch (err) {
       console.error('Failed to copy:', err);
     }
   };
 
+  return (
+    <div className="relative">
+      {/* Copied notification */}
+      <div className={`
+        absolute -top-8 left-1/2 -translate-x-1/2 
+        text-[#FFD700] text-sm font-medium
+        transition-all duration-200
+        ${showCopied ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-1'}
+      `}>
+        Copied
+      </div>
+      
+      <AnimatedButton
+        onClick={handleCopy}
+        className="text-gray-400 hover:text-[#FFD700] transition-colors p-1.5 rounded-md hover:bg-[#FFD700]/10"
+      >
+        <CopyIcon />
+      </AnimatedButton>
+    </div>
+  );
+};
+
+const DetailsPage = ({ isOpen, meme }) => {
   const buttonBaseClass = "w-full px-4 py-3 bg-[#1E1E22] text-gray-200 rounded-xl font-medium border border-[#FFD700]/10 hover:border-[#FFD700]/30 transition-all";
 
   return (
@@ -78,12 +106,7 @@ const DetailsPage = ({ isOpen, meme }) => {
               <div className="text-gray-200 text-sm truncate flex-1">
                 {meme?.projectDetails?.contract || 'N/A'}
               </div>
-              <AnimatedButton
-                onClick={() => handleCopy(meme?.projectDetails?.contract)}
-                className="text-gray-400 hover:text-[#FFD700] transition-colors p-1.5 rounded-md hover:bg-[#FFD700]/10"
-              >
-                <CopyIcon />
-              </AnimatedButton>
+              <CopyButton text={meme?.projectDetails?.contract || ''} />
             </div>
           </div>
 
