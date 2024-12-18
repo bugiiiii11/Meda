@@ -192,7 +192,7 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
   };
 
   return (
-    <div className="relative max-w-[calc(100vw-32px)] mx-auto aspect-square bg-[#1E1E22]">
+    <div className="relative max-w-[calc(100vw-32px)] mx-auto aspect-square bg-[#121214]">
       {/* Background Layer (Next Meme) - Always below */}
       <div className="absolute inset-0 z-10">
         {nextMeme && (
