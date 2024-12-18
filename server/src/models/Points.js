@@ -1,8 +1,9 @@
+//server/src/models/Points.js
 const mongoose = require('mongoose');
 
 const pointsTransactionSchema = new mongoose.Schema({
   user: {
-    type: String,  // Changed to String to store telegramId
+    type: String, // Telegram ID
     ref: 'User',
     required: true,
     index: true
@@ -24,11 +25,11 @@ const pointsTransactionSchema = new mongoose.Schema({
   relatedEntity: {
     entityType: {
       type: String,
-      enum: ['meme', 'task', 'referral', 'project'],
+      enum: ['meme', 'task', 'user', 'referral', 'project'],  // Added 'user' to enum
       required: true
     },
     entityId: {
-      type: mongoose.Schema.Types.Mixed,  // Can be ObjectId or Number (for memeId)
+      type: mongoose.Schema.Types.Mixed,
       required: true
     }
   },
