@@ -20,6 +20,36 @@ const CheckIcon = () => (
   </div>
 );
 
+// Reusable AnimatedButton component
+const AnimatedButton = ({ onClick, children, className }) => {
+  const [isFlashing, setIsFlashing] = React.useState(false);
+
+  const handleClick = async () => {
+    if (!isFlashing) {
+      setIsFlashing(true);
+      onClick?.();
+      setTimeout(() => {
+        setIsFlashing(false);
+      }, 300);
+    }
+  };
+
+  return (
+    <button
+      onClick={handleClick}
+      className={`relative overflow-hidden ${className}`}
+    >
+      <div className="relative z-10">{children}</div>
+      {isFlashing && (
+        <div 
+          className="absolute inset-0 bg-[#FFD700] animate-flash"
+          style={{ opacity: 0.3 }}
+        />
+      )}
+    </button>
+  );
+};
+
 const TasksPage = ({ userData, onUserDataUpdate }) => {
   const [completedTasks, setCompletedTasks] = useState(new Set());
   const [isLoading, setIsLoading] = useState(false);
@@ -101,63 +131,34 @@ const TasksPage = ({ userData, onUserDataUpdate }) => {
   };
 
   const TaskButton = ({ task, completed }) => {
-    const [isFlashing, setIsFlashing] = useState(false);
-  
     const handleClick = async () => {
-      if (!isFlashing) {
-        setIsFlashing(true);
-        
-        if (task.link) {
-          window.open(task.link, '_blank');
-        }
-        if (!completed) {
-          await handleTaskCompletion(task.id);
-        }
-  
-        setTimeout(() => {
-          setIsFlashing(false);
-        }, 300);
+      if (task.link) {
+        window.open(task.link, '_blank');
+      }
+      if (!completed) {
+        await handleTaskCompletion(task.id);
       }
     };
-  
+
     return (
-      <button
+      <AnimatedButton
         onClick={handleClick}
-        className="w-full relative rounded-xl overflow-hidden"
+        className={`w-full ${
+          completed
+            ? 'bg-[#1E1E22] border border-[#FFD700]/20 text-[#FFD700]'
+            : 'bg-[#1E1E22] border border-[#FFD700]/10 text-gray-300 hover:border-[#FFD700]/30'
+        } rounded-xl`}
       >
-        {/* Base layer */}
-        <div 
-          className={`
-            w-full p-4 relative z-10
-            ${completed
-              ? 'bg-[#1E1E22] border border-[#FFD700]/20 text-[#FFD700]'
-              : 'bg-[#1E1E22] border border-[#FFD700]/10 text-gray-300 hover:border-[#FFD700]/30'
-            }
-            rounded-xl
-          `}
-        >
-          <div className="relative z-20 flex items-center justify-between">
-            <span className="font-medium">{task.label}</span>
-            <div className="flex items-center gap-2">
-              {!completed && (
-                <span className="text-[#FFD700] font-serif">+{task.points}</span>
-              )}
-              {completed && <CheckIcon />}
-            </div>
+        <div className="p-4 flex items-center justify-between">
+          <span className="font-medium">{task.label}</span>
+          <div className="flex items-center gap-2">
+            {!completed && (
+              <span className="text-[#FFD700] font-serif">+{task.points}</span>
+            )}
+            {completed && <CheckIcon />}
           </div>
         </div>
-        
-        {/* Flash overlay */}
-        {isFlashing && (
-          <div 
-            className="absolute inset-0 bg-[#FFD700] z-20 animate-flash"
-            style={{
-              animation: 'flashAnimation 0.3s ease-out forwards',
-              opacity: 0.3
-            }}
-          />
-        )}
-      </button>
+      </AnimatedButton>
     );
   };
 

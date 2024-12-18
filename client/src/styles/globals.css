@@ -10,21 +10,14 @@ body {
   0% {
     opacity: 0.3;
   }
+  50% {
+    opacity: 0.3;
+  }
   100% {
     opacity: 0;
   }
 }
 
-.task-button {
-  position: relative;
-  overflow: hidden;
-}
-
-.flash-overlay {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background-color: #FFD700;
-  opacity: 0.3;
+.animate-flash {
   animation: flashAnimation 0.3s ease-out forwards;
 }
