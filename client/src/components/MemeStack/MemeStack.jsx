@@ -9,8 +9,9 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
   const [nextMeme, setNextMeme] = React.useState(null);
   const [lastSwipe, setLastSwipe] = React.useState(null);
   const [isAnimating, setIsAnimating] = React.useState(false);
-  const [isMobile, setIsMobile] = React.useState(false);
   const [isDragging, setIsDragging] = React.useState(false);
+  const animationTimeoutRef = React.useRef(null);
+  const indicatorTimeoutRef = React.useRef(null);
 
   console.log('===== DEBUG: MemeStack Props =====');
   console.log('Received memes:', memes.map(m => ({
@@ -145,19 +146,14 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
   const handleSwipe = async (direction) => {
     if (isAnimating || !currentMeme) return;
     
-    console.log('Handling swipe:', direction);
-    console.log('Current meme before swipe:', {
-      id: currentMeme.id,
-      engagement: currentMeme.engagement
-    });
+    // Clear any existing timeouts
+    if (animationTimeoutRef.current) clearTimeout(animationTimeoutRef.current);
+    if (indicatorTimeoutRef.current) clearTimeout(indicatorTimeoutRef.current);
     
     setIsAnimating(true);
     setLastSwipe(direction);
   
-    // Transition to next meme immediately
-    transitionToNextMeme();
-    
-    // Handle interaction in the background
+    // Handle the API interaction first
     try {
       const action = direction === 'right' ? 'like' : 
                     direction === 'left' ? 'dislike' : 'superlike';
@@ -176,24 +172,40 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
       });
   
       const data = await response.json();
-      console.log('Interaction response:', data);
-  
       if (!data.success) {
         throw new Error(data.error || 'Interaction failed');
       }
     } catch (error) {
       console.error('Interaction error:', error);
-    } finally {
-      setTimeout(() => {
-        setLastSwipe(null);
-        setIsAnimating(false);
-      }, 300); // Reduced from default timing
     }
+
+    // Transition to next meme with delay to allow exit animation
+    setTimeout(() => {
+      transitionToNextMeme();
+    }, 200);
+
+    // Set a longer timeout for the swipe indicator and particles
+    indicatorTimeoutRef.current = setTimeout(() => {
+      setLastSwipe(null);
+    }, 1000); // Match the longest animation duration
+
+    // Set final timeout to clear animation state
+    animationTimeoutRef.current = setTimeout(() => {
+      setIsAnimating(false);
+    }, 1200); // Slightly longer than indicator to ensure smooth transition
   };
 
-  return (
+  // Cleanup timeouts on unmount
+  React.useEffect(() => {
+    return () => {
+      if (animationTimeoutRef.current) clearTimeout(animationTimeoutRef.current);
+      if (indicatorTimeoutRef.current) clearTimeout(indicatorTimeoutRef.current);
+    };
+  }, []);
+
+   return (
     <div className="relative max-w-[calc(100vw-32px)] mx-auto aspect-square bg-[#121214]">
-      {/* Background Layer (Next Meme) - Always below */}
+      {/* Background Layer (Next Meme) */}
       <div className="absolute inset-0 z-10">
         {nextMeme && (
           <MemeCard
@@ -204,9 +216,9 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
           />
         )}
       </div>
-  
-      {/* Top Layer (Current Meme) - With animation */}
-      <AnimatePresence mode="sync">
+
+      {/* Top Layer (Current Meme) */}
+      <AnimatePresence mode="wait">
         {currentMeme && (
           <motion.div
             key={currentMeme.id}
@@ -252,15 +264,16 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
           </motion.div>
         )}
       </AnimatePresence>
-  
-      {/* Swipe Indicator Overlay - Always on top */}
-          <AnimatePresence>
-      {lastSwipe && (
-        <motion.div 
-          className="absolute inset-0 flex items-center justify-center z-30 pointer-events-none"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
+
+      {/* Swipe Indicator Overlay */}
+      <AnimatePresence mode="wait">
+        {lastSwipe && (
+          <motion.div 
+            key={`indicator-${currentMeme?.id}-${lastSwipe}`}
+            className="absolute inset-0 flex items-center justify-center z-30 pointer-events-none"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
         >
           {lastSwipe === 'right' && (
           <>
