@@ -40,37 +40,47 @@ class UserController {
         });
       }
 
-      // Handle referral if provided and user hasn't been referred yet
-      if (referredBy && !user.referredBy) {
-        console.log('Processing referral:', { referredBy, newUser: telegramId });
-        
-        try {
-          const referralResult = await ReferralController.redeemReferral({
-            body: {
-              referralCode: referredBy,
-              newUserTelegramId: telegramId,
-              username: username
-            }
-          }, {
-            json: (data) => {
-              console.log('Referral processed:', data);
-              return data;
-            },
-            status: (code) => ({
-              json: (data) => {
-                console.log('Referral response:', { code, data });
-                return data;
+         // Handle referral if provided and user hasn't been referred yet
+         if (referredBy && !user.referredBy) {
+          console.log('Processing referral:', { referredBy, newUser: telegramId });
+          
+          try {
+            const referralResult = await ReferralController.redeemReferral({
+              body: {
+                referralCode: referredBy,
+                newUserTelegramId: telegramId,
+                username: username
               }
-            })
-          });
-
-          console.log('Referral result:', referralResult);
-          user.referredBy = referredBy;
-        } catch (error) {
-          console.error('Referral processing error:', error);
-          // Continue with user creation even if referral fails
+            }, {
+              json: (data) => {
+                console.log('Referral processed:', data);
+                return data;
+              },
+              status: (code) => ({
+                json: (data) => {
+                  // Only log as error if it's not an "already referred" case
+                  if (data.error !== 'User has already been referred') {
+                    console.error('Referral response:', { code, data });
+                  } else {
+                    console.log('User already referred - skipping referral process');
+                  }
+                  return data;
+                }
+              })
+            });
+  
+            if (referralResult && referralResult.success) {
+              user.referredBy = referredBy;
+            }
+          } catch (error) {
+            // Only log as error if it's not an "already referred" case
+            if (!error.message?.includes('already been referred')) {
+              console.error('Referral processing error:', error);
+            } else {
+              console.log('Skipping referral - user already referred');
+            }
+          }
         }
-      }
 
       await user.save({ session });
       await session.commitTransaction();
