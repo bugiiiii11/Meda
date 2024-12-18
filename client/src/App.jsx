@@ -29,7 +29,7 @@ const LoadingScreen = () => (
     </div>
     <div className="w-full px-6 mb-20">
       <div className="w-full h-2 bg-gray-800 rounded-full overflow-hidden">
-        <div className="h-full bg-green-500 animate-load-progress" />
+        <div className="h-full bg-yellow-500 animate-load-progress" />
       </div>
       <p className="text-gray-400 mt-4 text-center text-lg">Loading market data...</p>
     </div>
@@ -301,7 +301,7 @@ function App() {
   }
 
   return (
-    <div className="fixed inset-0 bg-[#17212b] overflow-hidden">
+    <div className="fixed inset-0 bg-[#121214] overflow-hidden">
       {activeTab === 'memes' ? (
         <>
           <div className="fixed top-0 left-0 right-0 z-[70]">
