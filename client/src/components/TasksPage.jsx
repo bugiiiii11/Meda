@@ -1,4 +1,3 @@
-//TasksPage.jsx
 import React, { useState, useEffect } from 'react';
 import { ENDPOINTS, getHeaders } from '../config/api';
 
@@ -102,7 +101,7 @@ const TasksPage = ({ userData, onUserDataUpdate }) => {
   };
 
   const TaskButton = ({ task, completed }) => {
-    const [isFlashing, setIsFlashing] = React.useState(false);
+    const [isFlashing, setIsFlashing] = useState(false);
   
     const handleClick = async () => {
       if (!isFlashing) {
@@ -124,32 +123,40 @@ const TasksPage = ({ userData, onUserDataUpdate }) => {
     return (
       <button
         onClick={handleClick}
-        className={`
-          w-full p-4 rounded-xl border relative
-          ${completed
-            ? 'bg-[#1E1E22] border-[#FFD700]/20 text-[#FFD700]'
-            : 'bg-[#1E1E22] border-[#FFD700]/10 text-gray-300 hover:border-[#FFD700]/30'
-          }
-        `}
+        className="w-full relative rounded-xl overflow-hidden"
       >
-        {/* Base background layer */}
-        <div className="absolute inset-0 bg-[#1E1E22]" />
+        {/* Base layer */}
+        <div 
+          className={`
+            w-full p-4 relative z-10
+            ${completed
+              ? 'bg-[#1E1E22] border border-[#FFD700]/20 text-[#FFD700]'
+              : 'bg-[#1E1E22] border border-[#FFD700]/10 text-gray-300 hover:border-[#FFD700]/30'
+            }
+            rounded-xl
+          `}
+        >
+          <div className="relative z-20 flex items-center justify-between">
+            <span className="font-medium">{task.label}</span>
+            <div className="flex items-center gap-2">
+              {!completed && (
+                <span className="text-[#FFD700] font-serif">+{task.points}</span>
+              )}
+              {completed && <CheckIcon />}
+            </div>
+          </div>
+        </div>
         
         {/* Flash overlay */}
         {isFlashing && (
-          <div className="absolute inset-0 bg-[#FFD700] animate-flash" />
+          <div 
+            className="absolute inset-0 bg-[#FFD700] z-20 animate-flash"
+            style={{
+              animation: 'flashAnimation 0.3s ease-out forwards',
+              opacity: 0.3
+            }}
+          />
         )}
-        
-        {/* Content layer */}
-        <div className="relative z-20 flex items-center justify-between">
-          <span className="font-medium">{task.label}</span>
-          <div className="flex items-center gap-2">
-            {!completed && (
-              <span className="text-[#FFD700] font-serif">+{task.points}</span>
-            )}
-            {completed && <CheckIcon />}
-          </div>
-        </div>
       </button>
     );
   };
@@ -180,7 +187,6 @@ const TasksPage = ({ userData, onUserDataUpdate }) => {
 
   return (
     <div className="flex flex-col h-screen bg-[#121214]">
-      {/* Fixed Header */}
       <div className="fixed top-0 left-0 right-0 z-50 bg-[#121214]">
         <div className="w-full py-6 border-b border-[#FFD700]/10">
           <div className="text-center">
@@ -189,7 +195,6 @@ const TasksPage = ({ userData, onUserDataUpdate }) => {
         </div>
       </div>
 
-      {/* Scrollable Content */}
       <div className="flex-1 overflow-auto pt-[100px] pb-20 px-4">
         <div className="max-w-md mx-auto">
           {error && (
@@ -199,7 +204,6 @@ const TasksPage = ({ userData, onUserDataUpdate }) => {
           )}
 
           <div className="space-y-6">
-            {/* Quick Tasks Section */}
             <div>
               <h2 className="text-lg font-medium text-white mb-3">Quick Tasks</h2>
               <div className="space-y-2">
@@ -213,7 +217,6 @@ const TasksPage = ({ userData, onUserDataUpdate }) => {
               </div>
             </div>
 
-            {/* Achievements Section */}
             <div>
               <h2 className="text-lg font-medium text-white mb-3">Achievements</h2>
               <div className="space-y-3">
