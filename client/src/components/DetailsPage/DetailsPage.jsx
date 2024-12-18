@@ -27,7 +27,7 @@ const AnimatedButton = ({ onClick, children, className }) => {
       onClick?.();
       setTimeout(() => {
         setIsFlashing(false);
-      }, 200);
+      }, 300);
     }
   };
 

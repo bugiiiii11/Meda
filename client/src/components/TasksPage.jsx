@@ -36,19 +36,19 @@ const TasksPage = ({ userData, onUserDataUpdate }) => {
     { 
       id: 'telegram', 
       label: 'Join Telegram Chat', 
-      link: 'https://t.me/pumpme_me', 
+      link: 'https://t.me/fynderapp', 
       points: 10
     },
     { 
       id: 'twitter', 
       label: 'Follow X', 
-      link: 'https://x.com/pumpme_me', 
+      link: 'https://x.com/fynderapp', 
       points: 10
     },
     { 
       id: 'instagram', 
       label: 'Follow Instagram', 
-      link: 'https://instagram.com/pumpme_me', 
+      link: 'https://instagram.com/fynderapp', 
       points: 10
     },
     { 
@@ -117,7 +117,7 @@ const TasksPage = ({ userData, onUserDataUpdate }) => {
   
         setTimeout(() => {
           setIsFlashing(false);
-        }, 200);
+        }, 300);
       }
     };
   
@@ -130,7 +130,6 @@ const TasksPage = ({ userData, onUserDataUpdate }) => {
             ? 'bg-[#1E1E22] border-[#FFD700]/20 text-[#FFD700]'
             : 'bg-[#1E1E22] border-[#FFD700]/10 text-gray-300 hover:border-[#FFD700]/30'
           }
-          ${isFlashing ? 'animate-flash' : ''}
         `}
       >
         <div className="relative z-10 flex items-center justify-between">
@@ -142,6 +141,7 @@ const TasksPage = ({ userData, onUserDataUpdate }) => {
             {completed && <CheckIcon />}
           </div>
         </div>
+        {/* Flash overlay - moved outside the condition */}
         {isFlashing && (
           <div 
             className="absolute inset-0 bg-[#FFD700] animate-flash"
