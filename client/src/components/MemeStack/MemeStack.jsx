@@ -11,8 +11,7 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
   const [isAnimating, setIsAnimating] = React.useState(false);
   const [isMobile, setIsMobile] = React.useState(false);
   const [isDragging, setIsDragging] = React.useState(false);
-  const animationTimeoutRef = React.useRef(null);
-  const indicatorTimeoutRef = React.useRef(null);
+  const swipeAnimationRef = React.useRef(null);
 
   console.log('===== DEBUG: MemeStack Props =====');
   console.log('Received memes:', memes.map(m => ({
@@ -144,17 +143,20 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
     setIsMobile(!!window.Telegram?.WebApp);
   }, []);
 
-   const handleSwipe = async (direction) => {
+    const handleSwipe = async (direction) => {
     if (isAnimating || !currentMeme) return;
     
-    // Clear any existing timeouts
-    if (animationTimeoutRef.current) clearTimeout(animationTimeoutRef.current);
-    if (indicatorTimeoutRef.current) clearTimeout(indicatorTimeoutRef.current);
-    
+    // Prevent multiple swipes during animation
     setIsAnimating(true);
+
+    // Calculate exit direction for animation
+    const exitX = direction === 'right' ? 1000 : direction === 'left' ? -1000 : 0;
+    const exitY = direction === 'super' ? -1000 : 0;
+    
+    // Set swipe direction for indicator
     setLastSwipe(direction);
-  
-    // Handle the API interaction first
+
+    // Handle API interaction
     try {
       const action = direction === 'right' ? 'like' : 
                     direction === 'left' ? 'dislike' : 'superlike';
@@ -171,36 +173,40 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
           telegramId: userData?.telegramId
         })
       });
-  
-      const data = await response.json();
-      if (!data.success) {
-        throw new Error(data.error || 'Interaction failed');
-      }
+
+      if (!response.ok) throw new Error('Interaction failed');
     } catch (error) {
       console.error('Interaction error:', error);
     }
 
-    // Transition to next meme with delay to allow exit animation
-    setTimeout(() => {
-      transitionToNextMeme();
-    }, 200);
+    // Start exit animation sequence
+    if (swipeAnimationRef.current) {
+      clearTimeout(swipeAnimationRef.current);
+    }
 
-    // Set a longer timeout for the swipe indicator and particles
-    indicatorTimeoutRef.current = setTimeout(() => {
-      setLastSwipe(null);
-    }, 1000); // Match the longest animation duration
+    swipeAnimationRef.current = setTimeout(() => {
+      // Transition to next meme
+      setCurrentMeme(nextMeme);
+      onMemeChange(nextMeme);
 
-    // Set final timeout to clear animation state
-    animationTimeoutRef.current = setTimeout(() => {
-      setIsAnimating(false);
-    }, 1200); // Slightly longer than indicator to ensure smooth transition
+      // Queue up the next meme in background
+      const newNextMeme = getWeightedRandomMeme();
+      setNextMeme(newNextMeme);
+
+      // Clear animation states after transition
+      setTimeout(() => {
+        setLastSwipe(null);
+        setIsAnimating(false);
+      }, 500); // Matches exit animation duration
+    }, 100); // Slight delay to ensure smooth animation start
   };
 
-  // Cleanup timeouts on unmount
+  // Clear timeouts on unmount
   React.useEffect(() => {
     return () => {
-      if (animationTimeoutRef.current) clearTimeout(animationTimeoutRef.current);
-      if (indicatorTimeoutRef.current) clearTimeout(indicatorTimeoutRef.current);
+      if (swipeAnimationRef.current) {
+        clearTimeout(swipeAnimationRef.current);
+      }
     };
   }, []);
 
@@ -222,22 +228,19 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
       <AnimatePresence mode="wait">
         {currentMeme && (
           <motion.div
-            key={currentMeme.id}
+            key={`meme-${currentMeme.id}`}
             className="absolute inset-0 z-20"
-            initial={false}
-            animate={{ 
-              opacity: isDragging ? 0.5 : 1,
-              scale: 1,
-              zIndex: 20
-            }}
-            exit={{ 
+            initial={{ scale: 1, opacity: 1 }}
+            exit={direction => ({
+              x: direction === 'right' ? 1000 : direction === 'left' ? -1000 : 0,
+              y: direction === 'super' ? -1000 : 0,
               opacity: 0,
-              scale: 0.95,
-              transition: { 
-                duration: 0.2,
-                ease: "easeOut"
+              scale: 0.8,
+              transition: {
+                duration: 0.5,
+                ease: [0.32, 0.72, 0, 1] // Custom easing for smooth motion
               }
-            }}
+            })}
           >
             <MemeCard
               meme={currentMeme}
@@ -266,7 +269,7 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
         )}
       </AnimatePresence>
 
-      {/* Swipe Indicator Overlay */}
+      {/* Swipe Indicator with Effects */}
       <AnimatePresence mode="wait">
         {lastSwipe && (
           <motion.div 
@@ -275,6 +278,7 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
         >
           {lastSwipe === 'right' && (
           <>
