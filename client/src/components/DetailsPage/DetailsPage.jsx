@@ -101,7 +101,7 @@ const DetailsPage = ({ isOpen, meme }) => {
         <div className="space-y-4">
           {/* Contract Section */}
           <div className="bg-[#1E1E22] rounded-xl p-4 border border-[#FFD700]/10">
-            <div className="text-sm text-gray-400 mb-2">Contract Address</div>
+            <div className="text-sm text-gray-400 mb-2 text-center">Contract Address</div>
             <div className="flex items-center gap-2 bg-[#2A2A2E] rounded-lg px-3 py-2">
               <div className="text-gray-200 text-sm truncate flex-1">
                 {meme?.projectDetails?.contract || 'N/A'}

@@ -1,6 +1,36 @@
 import React, { useEffect, useState } from 'react';
 import { priceService } from '../../services/priceService';
 
+// Add AnimatedButton component
+const AnimatedButton = ({ onClick, children, className }) => {
+  const [isFlashing, setIsFlashing] = React.useState(false);
+
+  const handleClick = async () => {
+    if (!isFlashing) {
+      setIsFlashing(true);
+      onClick?.();
+      setTimeout(() => {
+        setIsFlashing(false);
+      }, 300);
+    }
+  };
+
+  return (
+    <button
+      onClick={handleClick}
+      className={`relative overflow-hidden ${className}`}
+    >
+      <div className="relative z-10 w-full h-full">{children}</div>
+      {isFlashing && (
+        <div 
+          className="absolute inset-0 bg-[#FFD700] animate-flash"
+          style={{ opacity: 0.3 }}
+        />
+      )}
+    </button>
+  );
+};
+
 const TopBar = ({ meme, onDetailsClick, isDetailsOpen }) => {
   const [priceData, setPriceData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -180,16 +210,18 @@ const TopBar = ({ meme, onDetailsClick, isDetailsOpen }) => {
         </div>
 
         {/* Bottom Section: Details Button */}
-        <button
+        <AnimatedButton
           onClick={onDetailsClick}
-          className={`w-full py-3 px-4 rounded-lg font-medium transition-all ${
+          className={`w-full rounded-lg font-medium transition-all ${
             isDetailsOpen
               ? 'bg-[#2A2A2E] text-[#FFD700] border border-[#FFD700]/20'
               : 'bg-[#2A2A2E] text-gray-300 hover:text-white hover:bg-[#363639]'
           }`}
         >
-          {isDetailsOpen ? 'Close Details' : 'View Details'}
-        </button>
+          <div className="py-3 px-4">
+            {isDetailsOpen ? 'Close Details' : 'View Details'}
+          </div>
+        </AnimatedButton>
       </div>
     </div>
     </div>
