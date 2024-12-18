@@ -162,11 +162,6 @@ function App() {
             fullInitData: window.Telegram?.WebApp?.initDataUnsafe
           });
     
-          // Get referral ID from URL params
-          const urlParams = new URLSearchParams(window.location.search);
-          const referralId = urlParams.get('ref');
-          console.log('Referral ID from URL:', referralId);
-
           if (!tgUser) {
             if (import.meta.env.VITE_ENV === 'development') {
               const mockUser = {
@@ -180,7 +175,11 @@ function App() {
               throw new Error('No Telegram user data in production');
             }
           } else {
-
+            // Get referral ID from URL if it exists
+            const urlParams = new URLSearchParams(window.location.search);
+            const referralId = urlParams.get('ref');
+            console.log('Referral ID from URL:', referralId);
+    
             // Create or update user with referral info
             const response = await fetch(ENDPOINTS.users.create, {
               method: 'POST',
@@ -202,49 +201,75 @@ function App() {
             }
     
             const userData = await response.json();
-        console.log('User creation/update response:', userData);
-        
-        if (userData.success) {
-          // Fetch fresh user data to ensure we have referral info
-          const userResponse = await fetch(
-            ENDPOINTS.users.get(tgUser.id.toString()),
-            { headers: getHeaders() }
-          );
-          
-          if (userResponse.ok) {
-            const completeUserData = await userResponse.json();
-            if (completeUserData.success) {
-              setUserData(completeUserData.data);
+            
+            if (userData.success) {
+              // If there was a referral, process it
+              if (referralId) {
+                try {
+                  console.log('Processing referral for user:', tgUser.id.toString());
+                  const redeemResponse = await fetch(`${ENDPOINTS.base}/api/referrals/redeem`, {
+                    method: 'POST',
+                    headers: {
+                      ...getHeaders(),
+                      'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                      referralCode: referralId,
+                      newUserTelegramId: tgUser.id.toString(),
+                      username: tgUser.username || `user${tgUser.id.toString().slice(-4)}`
+                    })
+                  });
+                  
+                  const redeemData = await redeemResponse.json();
+                  console.log('Referral redemption result:', redeemData);
+    
+                  // Fetch updated user data after referral processing
+                  const updatedUserResponse = await fetch(
+                    ENDPOINTS.users.get(tgUser.id.toString()),
+                    { headers: getHeaders() }
+                  );
+                  
+                  if (updatedUserResponse.ok) {
+                    const updatedUserData = await updatedUserResponse.json();
+                    if (updatedUserData.success) {
+                      setUserData(updatedUserData.data);
+                    }
+                  }
+                } catch (error) {
+                  console.error('Error processing referral:', error);
+                }
+              } else {
+                // No referral, just set the user data
+                setUserData(userData.data);
+              }
+            } else {
+              throw new Error(userData.error || 'Failed to initialize user');
             }
-          } else {
-            setUserData(userData.data);
           }
         } else {
-          throw new Error(userData.error || 'Failed to initialize user');
+          if (import.meta.env.VITE_ENV !== 'production') {
+            setUserData({
+              telegramId: 'test123',
+              username: 'testUser',
+              firstName: 'Test',
+              lastName: 'User'
+            });
+          } else {
+            throw new Error('This app must be run within Telegram');
+          }
         }
+    
+        await fetchMemes();
+    
+      } catch (error) {
+        console.error('Initialization error:', error);
+        setInitError(error.message);
+      } finally {
+        setTimeout(() => {
+          setIsLoading(false);
+        }, 1500);
       }
-    } else if (import.meta.env.VITE_ENV !== 'production') {
-      setUserData({
-        telegramId: 'test123',
-        username: 'testUser',
-        firstName: 'Test',
-        lastName: 'User'
-      });
-    } else {
-      throw new Error('This app must be run within Telegram');
     }
-
-    await fetchMemes();
-
-  } catch (error) {
-    console.error('Initialization error:', error);
-    setInitError(error.message);
-  } finally {
-    setTimeout(() => {
-      setIsLoading(false);
-    }, 1500);
-  }
-}
 
     initializeApp();
   }, []);
