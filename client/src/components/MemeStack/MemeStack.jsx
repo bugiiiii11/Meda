@@ -244,6 +244,27 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
           )}
         </AnimatePresence>
   
+      {/* Optional Future Next Meme Layer (C) - Only render when needed */}
+      <div 
+            className="absolute inset-0" 
+            style={{ 
+              zIndex: 5,
+              opacity: 0,
+              visibility: 'hidden',
+              position: 'absolute',
+              pointerEvents: 'none'
+            }}
+          >
+            {futureNextMeme && (
+              <MemeCard
+                meme={futureNextMeme}
+                onSwipe={() => {}}
+                isTop={false}
+                userData={userData}
+              />
+            )}
+          </div>
+
       {/* Swipe Indicator Overlay - Always on top */}
           <AnimatePresence>
       {lastSwipe && (
