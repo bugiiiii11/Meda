@@ -1,7 +1,7 @@
 import React from 'react';
 
 const Navigation = ({ activeTab, onTabChange }) => {
-  // Updated SwipeIcon with double chevron design
+  // Updated SwipeIcon with triple chevron design
   const SwipeIcon = ({ className }) => (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -13,19 +13,13 @@ const Navigation = ({ activeTab, onTabChange }) => {
       <path
         strokeLinecap="round"
         strokeLinejoin="round"
-        strokeWidth={2.5}
-        d="M9 5l6 7-6 7"
-      />
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth={2.5}
-        d="M4 5l6 7-6 7"
+        strokeWidth={2}
+        d="M13 5l4 7-4 7M8 5l4 7-4 7M3 5l4 7-4 7"
       />
     </svg>
   );
 
-  // Updated TaskIcon with larger checkmark
+  // Updated TaskIcon with larger circle
   const TaskIcon = ({ className }) => (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -37,7 +31,7 @@ const Navigation = ({ activeTab, onTabChange }) => {
       <circle
         cx="12"
         cy="12"
-        r="7"
+        r="8"
         strokeWidth={2}
         strokeLinecap="round"
         strokeLinejoin="round"
@@ -105,13 +99,15 @@ const Navigation = ({ activeTab, onTabChange }) => {
                 : 'text-gray-400'
             }`}
           >
-            <Icon
-              className={`h-7 w-7 mb-1 transition-all duration-300 ${
-                activeTab === id
-                  ? 'text-[#FFD700]'
-                  : 'text-gray-400 group-hover:text-[#FFD700]/70'
-              }`}
-            />
+            <div className="flex items-center justify-center w-7 h-7 mb-1">
+              <Icon
+                className={`w-full h-full transition-all duration-300 ${
+                  activeTab === id
+                    ? 'text-[#FFD700]'
+                    : 'text-gray-400 group-hover:text-[#FFD700]/70'
+                }`}
+              />
+            </div>
             <span
               className={`text-xs font-medium transition-all duration-300 ${
                 activeTab === id
