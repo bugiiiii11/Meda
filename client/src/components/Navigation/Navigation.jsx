@@ -1,8 +1,7 @@
-//Navigation.jsx
 import React from 'react';
 
 const Navigation = ({ activeTab, onTabChange }) => {
-  // Updated SwipeIcon to better represent swiping motion
+  // Updated SwipeIcon with a more engaging swipe motion representation
   const SwipeIcon = ({ className }) => (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -15,12 +14,18 @@ const Navigation = ({ activeTab, onTabChange }) => {
         strokeLinecap="round"
         strokeLinejoin="round"
         strokeWidth={2}
-        d="M14 5l7 7m0 0l-7 7m7-7H3"
+        d="M10 4l4 2m0 0l-4 2m4-2v12m0 0l4-2m-4 2l-4-2"
+      />
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M4 12h12"
       />
     </svg>
   );
 
-  // Updated TaskIcon to represent challenges/achievements
+  // Updated TaskIcon with a checkmark design
   const TaskIcon = ({ className }) => (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -29,11 +34,19 @@ const Navigation = ({ activeTab, onTabChange }) => {
       viewBox="0 0 24 24"
       stroke="currentColor"
     >
+      <circle
+        cx="12"
+        cy="12"
+        r="8"
+        strokeWidth={2}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
       <path
         strokeLinecap="round"
         strokeLinejoin="round"
         strokeWidth={2}
-        d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"
+        d="M9 12l2 2l4-4"
       />
     </svg>
   );
