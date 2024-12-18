@@ -117,7 +117,7 @@ const TasksPage = ({ userData, onUserDataUpdate }) => {
   
         setTimeout(() => {
           setIsFlashing(false);
-        }, 200);
+        }, 300);
       }
     };
   
@@ -125,7 +125,7 @@ const TasksPage = ({ userData, onUserDataUpdate }) => {
       <button
         onClick={handleClick}
         className={`
-          w-full p-4 rounded-xl border transition-colors relative overflow-hidden
+          task-button w-full p-4 rounded-xl border
           ${completed
             ? 'bg-[#1E1E22] border-[#FFD700]/20 text-[#FFD700]'
             : 'bg-[#1E1E22] border-[#FFD700]/10 text-gray-300 hover:border-[#FFD700]/30'
@@ -141,13 +141,7 @@ const TasksPage = ({ userData, onUserDataUpdate }) => {
             {completed && <CheckIcon />}
           </div>
         </div>
-        {/* Flash overlay - moved outside the condition */}
-        {isFlashing && (
-          <div 
-            className="absolute inset-0 bg-[#FFD700] animate-flash"
-            style={{ opacity: 0.3 }}
-          />
-        )}
+        {isFlashing && <div className="flash-overlay" />}
       </button>
     );
   };

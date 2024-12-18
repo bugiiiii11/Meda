@@ -15,3 +15,48 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+/* Loading animation */
+@keyframes load-progress {
+  0% {
+    width: 0%;
+  }
+  100% {
+    width: 100%;
+  }
+}
+
+.animate-load-progress {
+  animation: load-progress 3s ease-in-out infinite;
+}
+
+/* Flash animation for buttons */
+@keyframes flashAnimation {
+  0% {
+    opacity: 0.3;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+.task-button {
+  position: relative;
+  overflow: hidden;
+}
+
+.flash-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-color: #FFD700;
+  opacity: 0.3;
+  animation: flashAnimation 0.3s ease-out forwards;
+}
+
+/* Image styles */
+img[src="/loading.png"] {
+  max-width: none !important;
+  width: 100% !important;
+  height: auto !important;
+}
