@@ -20,7 +20,7 @@ const CheckIcon = () => (
   </div>
 );
 
-// Reusable AnimatedButton component
+// Fixed AnimatedButton component
 const AnimatedButton = ({ onClick, children, className }) => {
   const [isFlashing, setIsFlashing] = React.useState(false);
 
@@ -37,13 +37,22 @@ const AnimatedButton = ({ onClick, children, className }) => {
   return (
     <button
       onClick={handleClick}
-      className={`relative overflow-hidden ${className}`}
+      className={`relative ${className}`}
     >
-      <div className="relative z-10">{children}</div>
+      {/* Background and content container */}
+      <div className="relative z-10 w-full h-full bg-[#1E1E22] rounded-xl">
+        {children}
+      </div>
+      
+      {/* Flash overlay */}
       {isFlashing && (
         <div 
-          className="absolute inset-0 bg-[#FFD700] animate-flash"
-          style={{ opacity: 0.3 }}
+          className="absolute inset-0 bg-[#FFD700] rounded-xl"
+          style={{
+            opacity: 0.3,
+            animation: 'flashAnimation 0.3s ease-out forwards',
+            zIndex: 20
+          }}
         />
       )}
     </button>
@@ -143,10 +152,10 @@ const TasksPage = ({ userData, onUserDataUpdate }) => {
     return (
       <AnimatedButton
         onClick={handleClick}
-        className={`w-full ${
+        className={`w-full overflow-hidden ${
           completed
-            ? 'bg-[#1E1E22] border border-[#FFD700]/20 text-[#FFD700]'
-            : 'bg-[#1E1E22] border border-[#FFD700]/10 text-gray-300 hover:border-[#FFD700]/30'
+            ? 'border border-[#FFD700]/20 text-[#FFD700]'
+            : 'border border-[#FFD700]/10 text-gray-300 hover:border-[#FFD700]/30'
         } rounded-xl`}
       >
         <div className="p-4 flex items-center justify-between">

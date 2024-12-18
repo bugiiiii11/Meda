@@ -18,6 +18,8 @@ body {
   }
 }
 
-.animate-flash {
-  animation: flashAnimation 0.3s ease-out forwards;
+/* Remove any conflicting animation classes */
+.task-button,
+.flash-overlay {
+  display: none;
 }
