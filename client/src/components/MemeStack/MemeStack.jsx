@@ -143,25 +143,18 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
     setIsMobile(!!window.Telegram?.WebApp);
   }, []);
 
-    const handleSwipe = async (direction) => {
+  const handleSwipe = async (direction) => {
     if (isAnimating || !currentMeme) return;
-    
-    // Prevent multiple swipes during animation
+      
     setIsAnimating(true);
-
-    // Calculate exit direction for animation
-    const exitX = direction === 'right' ? 1000 : direction === 'left' ? -1000 : 0;
-    const exitY = direction === 'super' ? -1000 : 0;
-    
-    // Set swipe direction for indicator
     setLastSwipe(direction);
-
-    // Handle API interaction
+  
+    // Handle API interaction in background
     try {
       const action = direction === 'right' ? 'like' : 
                     direction === 'left' ? 'dislike' : 'superlike';
   
-      const response = await fetch(ENDPOINTS.interactions.update, {
+      fetch(ENDPOINTS.interactions.update, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -173,32 +166,30 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
           telegramId: userData?.telegramId
         })
       });
-
-      if (!response.ok) throw new Error('Interaction failed');
     } catch (error) {
       console.error('Interaction error:', error);
     }
-
-    // Start exit animation sequence
+  
+    // Immediate transition to next meme
     if (swipeAnimationRef.current) {
       clearTimeout(swipeAnimationRef.current);
     }
-
+  
+    // Update states in sequence
     swipeAnimationRef.current = setTimeout(() => {
-      // Transition to next meme
       setCurrentMeme(nextMeme);
       onMemeChange(nextMeme);
-
-      // Queue up the next meme in background
+  
+      // Prepare next background meme
       const newNextMeme = getWeightedRandomMeme();
       setNextMeme(newNextMeme);
-
-      // Clear animation states after transition
+  
+      // Clear indicator after animation
       setTimeout(() => {
         setLastSwipe(null);
         setIsAnimating(false);
-      }, 500); // Matches exit animation duration
-    }, 100); // Slight delay to ensure smooth animation start
+      }, 800); // Match the longest particle animation duration
+    }, 50); // Minimal delay for smooth state update
   };
 
   // Clear timeouts on unmount
@@ -228,44 +219,40 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
       <AnimatePresence mode="wait">
         {currentMeme && (
           <motion.div
-            key={`meme-${currentMeme.id}`}
-            className="absolute inset-0 z-20"
-            initial={{ scale: 1, opacity: 1 }}
-            exit={direction => ({
-              x: direction === 'right' ? 1000 : direction === 'left' ? -1000 : 0,
-              y: direction === 'super' ? -1000 : 0,
-              opacity: 0,
-              scale: 0.8,
-              transition: {
-                duration: 0.5,
-                ease: [0.32, 0.72, 0, 1] // Custom easing for smooth motion
+          key={`meme-${currentMeme.id}`}
+          className="absolute inset-0 z-20"
+          initial={{ opacity: 1 }}
+          exit={{ 
+            opacity: 0,
+            transition: {
+              duration: 0.1 // Very quick fade out
+            }
+          }}
+        >
+          <MemeCard
+            meme={currentMeme}
+            onSwipe={handleSwipe}
+            isTop={true}
+            isMobile={isMobile}
+            userData={userData}
+            onDragStart={() => setIsDragging(true)}
+            onDragEnd={(e, info) => {
+              setIsDragging(false);
+              const xVel = info.velocity.x;
+              const yVel = info.velocity.y;
+              const xOffset = info.offset.x;
+              const yOffset = info.offset.y;
+              
+              if (Math.abs(yVel) > Math.abs(xVel) && yOffset < -50) {
+                handleSwipe('super');
+              } else if (xOffset > 50) {
+                handleSwipe('right');
+              } else if (xOffset < -50) {
+                handleSwipe('left');
               }
-            })}
-          >
-            <MemeCard
-              meme={currentMeme}
-              onSwipe={handleSwipe}
-              isTop={true}
-              isMobile={isMobile}
-              userData={userData}
-              onDragStart={() => setIsDragging(true)}
-              onDragEnd={(e, info) => {
-                setIsDragging(false);
-                const xVel = info.velocity.x;
-                const yVel = info.velocity.y;
-                const xOffset = info.offset.x;
-                const yOffset = info.offset.y;
-                
-                if (Math.abs(yVel) > Math.abs(xVel) && yOffset < -50) {
-                  handleSwipe('super');
-                } else if (xOffset > 50) {
-                  handleSwipe('right');
-                } else if (xOffset < -50) {
-                  handleSwipe('left');
-                }
-              }}
-            />
-          </motion.div>
+            }}
+          />
+        </motion.div>
         )}
       </AnimatePresence>
 
@@ -286,52 +273,38 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
             <motion.div className="absolute inset-0 overflow-hidden">
               {[...Array(8)].map((_, i) => (
                 <motion.div
-                  key={`like-particle-${i}`}
-                  className="absolute w-8 h-8 text-2xl"
-                  initial={{ 
-                    x: "50%",
-                    y: "50%",
-                    scale: 0,
-                    opacity: 0
-                  }}
-                  animate={{ 
-                    x: `${50 + (Math.random() * 80 - 40)}%`,
-                    y: `${50 + (Math.random() * 80 - 40)}%`,
-                    scale: [0, 2, 0],
-                    opacity: [0, 1, 0],
-                  }}
-                  transition={{
-                    duration: 1,
-                    delay: i * 0.1,
-                    ease: "easeOut"
-                  }}
-                >
-                  {["👍", "💖", "✨", "💚"][i % 4]}
-                </motion.div>
+                className="absolute w-8 h-8 text-2xl"
+                initial={{ 
+                  x: "50%",
+                  y: "50%",
+                  scale: 0,
+                  opacity: 0
+                }}
+                animate={{ 
+                  x: `${50 + (Math.random() * 80 - 40)}%`,
+                  y: `${50 + (Math.random() * 80 - 40)}%`,
+                  scale: [0, 2, 0],
+                  opacity: [0, 1, 0],
+                }}
+                transition={{
+                  duration: 0.8, // Shortened from 1s
+                  delay: i * 0.05, // Shortened from 0.1
+                  ease: "easeOut"
+                }}
+              >
+                {["👍", "💖", "✨", "💚"][i % 4]}
+              </motion.div>
               ))}
             </motion.div>
             
             {/* Main LIKE indicator - keep your existing code */}
             <motion.div 
-              className="px-8 py-4 rounded-2xl border-4 border-green-500 shadow-xl backdrop-blur-sm bg-green-500/90"
-              initial={{ x: -100, rotate: -45, scale: 0 }}
-              animate={{ 
-                x: 0, 
-                rotate: 0, 
-                scale: 1,
-                transition: {
-                  type: "spring",
-                  stiffness: 300,
-                  damping: 15
-                }
-              }}
-              exit={{ 
-                x: 100,
-                rotate: 45,
-                scale: 0,
-                transition: { duration: 0.2 }
-                }}
-              >
+              className="absolute inset-0 flex items-center justify-center z-30 pointer-events-none"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }} // Shortened from 0.3
+            >
                 <div className="text-4xl font-bold text-white flex items-center gap-3">
                   <motion.span
                     initial={{ scale: 0 }}
