@@ -1,3 +1,4 @@
+//TasksPage.jsx
 import React, { useState, useEffect } from 'react';
 import { ENDPOINTS, getHeaders } from '../config/api';
 
@@ -5,12 +6,12 @@ const CheckIcon = () => (
   <div className="bg-[#FFD700] rounded-full p-1.5 flex items-center justify-center">
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      width="14"
-      height="14"
+      width="16"
+      height="16"
       viewBox="0 0 24 24"
       fill="none"
       stroke="black"
-      strokeWidth="3"
+      strokeWidth="4"
       strokeLinecap="round"
       strokeLinejoin="round"
       className="text-black"
