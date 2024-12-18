@@ -7,6 +7,7 @@ import { ENDPOINTS } from '../../config/api';
 const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData }) => {
   const [currentMeme, setCurrentMeme] = React.useState(null);
   const [nextMeme, setNextMeme] = React.useState(null);
+  const [futureNextMeme, setFutureNextMeme] = React.useState(null);
   const [lastSwipe, setLastSwipe] = React.useState(null);
   const [isAnimating, setIsAnimating] = React.useState(false);
   const [isMobile, setIsMobile] = React.useState(false);
@@ -35,7 +36,9 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
     console.log('Filtering out memes:', { currentMemeId, nextMemeId });
     
     const availableMemes = memes.filter(meme => 
-      meme.id !== currentMemeId && meme.id !== nextMemeId
+      meme.id !== currentMeme?.id && 
+      meme.id !== nextMeme?.id && 
+      meme.id !== futureNextMeme?.id
     );
     
     console.log('Filtered available memes:', availableMemes.length);
@@ -101,45 +104,35 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
     });
     
     return fallbackMeme;
-  }, [memes, currentMeme, nextMeme]);
+  }, [memes, currentMeme, nextMeme, futureNextMeme]);
 
-  // Initialize memes
-  React.useEffect(() => {
-    if (memes.length > 0 && !currentMeme) {
-      console.log('Initializing first meme with engagement data');
-      const firstMeme = propCurrentMeme || getWeightedRandomMeme();
-      console.log('First meme:', {
-        id: firstMeme.id,
-        engagement: firstMeme.engagement
-      });
-      
-      setCurrentMeme(firstMeme);
-      onMemeChange(firstMeme);
-      
-      const secondMeme = getWeightedRandomMeme();
-      console.log('Next meme:', {
-        id: secondMeme.id,
-        engagement: secondMeme.engagement
-      });
-      setNextMeme(secondMeme);
-    }
-  }, [memes, propCurrentMeme, getWeightedRandomMeme, onMemeChange]);
+    // Initialize memes
+    React.useEffect(() => {
+      if (memes.length > 0 && !currentMeme) {
+        const firstMeme = propCurrentMeme || getWeightedRandomMeme();
+        const secondMeme = getWeightedRandomMeme();
+        const thirdMeme = getWeightedRandomMeme();
+        
+        setCurrentMeme(firstMeme);
+        setNextMeme(secondMeme);
+        setFutureNextMeme(thirdMeme);
+        onMemeChange(firstMeme);
+      }
+    }, [memes, propCurrentMeme, getWeightedRandomMeme, onMemeChange]);
 
-  const transitionToNextMeme = React.useCallback(() => {
-    if (!nextMeme) return;
-    
-    console.log('Transitioning to next meme with engagement:', nextMeme);
-    
-    // Set next meme as current immediately
-    setCurrentMeme(nextMeme);
-    onMemeChange(nextMeme);
-    
-    // Prepare the new next meme immediately
-    const newNextMeme = getWeightedRandomMeme();
-    console.log('New next meme with engagement:', newNextMeme);
-    setNextMeme(newNextMeme);
-    
-  }, [nextMeme, getWeightedRandomMeme, onMemeChange]);
+    const transitionToNextMeme = React.useCallback(() => {
+      if (!nextMeme) return;
+      
+      // Current becomes next, next becomes future next
+      setCurrentMeme(nextMeme);
+      setNextMeme(futureNextMeme);
+      onMemeChange(nextMeme);
+      
+      // Prepare new future next meme
+      const newFutureNextMeme = getWeightedRandomMeme();
+      setFutureNextMeme(newFutureNextMeme);
+      
+    }, [nextMeme, futureNextMeme, getWeightedRandomMeme, onMemeChange]);
   
   const handleSwipe = async (direction) => {
     if (isAnimating || !currentMeme) return;
@@ -193,8 +186,20 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
 
   return (
     <div className="relative max-w-[calc(100vw-32px)] mx-auto aspect-square bg-[#121214]">
-      {/* Background Layer (Next Meme) - Always visible */}
-      <div className="absolute inset-0 z-10">
+      {/* Bottom Layer (Future Next Meme - C) - Hidden until needed */}
+      <div className="absolute inset-0" style={{ zIndex: 5, opacity: 0 }}>
+        {futureNextMeme && (
+          <MemeCard
+            meme={futureNextMeme}
+            onSwipe={() => {}}
+            isTop={false}
+            userData={userData}
+          />
+        )}
+      </div>
+
+      {/* Middle Layer (Next Meme - B) */}
+      <div className="absolute inset-0" style={{ zIndex: 10 }}>
         {nextMeme && (
           <MemeCard
             meme={nextMeme}
@@ -205,17 +210,17 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
         )}
       </div>
   
-            {/* Top Layer (Current Meme) - With instant exit */}
-            <AnimatePresence mode="wait">
+      {/* Top Layer (Current Meme - A) */}
+      <AnimatePresence mode="wait">
         {currentMeme && (
           <motion.div
             key={currentMeme.id}
-            className="absolute inset-0 z-20"
+            className="absolute inset-0"
+            style={{ zIndex: 20 }}
             initial={false}
             animate={{ 
               opacity: isDragging ? 0.5 : 1,
-              scale: 1,
-              zIndex: 20
+              scale: 1
             }}
             exit={{ 
               opacity: 0,
