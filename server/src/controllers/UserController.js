@@ -4,75 +4,36 @@ const User = require('../models/User');
 
 class UserController {
   static async createUser(req, res) {
-    const session = await mongoose.startSession();
-    session.startTransaction();
-  
     try {
       const { telegramId, username, firstName, lastName, referredBy } = req.body;
-      console.log('Creating/updating user:', { telegramId, username, referredBy });
+      console.log('Creating/updating user with data:', {
+        telegramId,
+        username,
+        firstName,
+        lastName,
+        referredBy
+      });
   
-      let user = await User.findOne({ telegramId });
+      const user = await User.createOrUpdateWithReferral({
+        telegramId,
+        username,
+        firstName,
+        lastName,
+        referredBy
+      });
   
-      if (user) {
-        // Update existing user
-        user.username = username || user.username;
-        user.firstName = firstName || user.firstName;
-        user.lastName = lastName || user.lastName;
-      } else {
-        // Create new user
-        user = new User({
-          telegramId,
-          username: username || `user${telegramId.slice(-4)}`,
-          firstName,
-          lastName,
-          totalPoints: 0,
-          pointsBreakdown: {
-            likes: 0,
-            dislikes: 0,
-            superLikes: 0,
-            tasks: 0,
-            referrals: 0
-          }
-        });
-      }
-  
-      // Handle referral if provided
-    if (referredBy && !user.referredBy) {
-      try {
-        await ReferralController.redeemReferral({
-          body: {
-            referralCode: referredBy,
-            newUserTelegramId: telegramId
-          }
-        }, {
-          json: (data) => console.log('Referral processed:', data),
-          status: () => ({
-            json: (data) => console.log('Referral error:', data)
-          })
-        });
-      } catch (error) {
-        console.error('Referral processing error:', error);
-      }
+      res.status(201).json({
+        success: true,
+        data: user
+      });
+    } catch (error) {
+      console.error('Create user error:', error);
+      res.status(500).json({
+        success: false,
+        error: error.message
+      });
     }
-
-    await user.save({ session });
-    await session.commitTransaction();
-
-    res.status(201).json({
-      success: true,
-      data: user
-    });
-  } catch (error) {
-    await session.abortTransaction();
-    console.error('Create user error:', error);
-    res.status(500).json({
-      success: false,
-      error: error.message
-    });
-  } finally {
-    session.endSession();
   }
-}
 
   static async getUser(req, res) {
     try {
