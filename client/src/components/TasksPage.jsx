@@ -141,21 +141,46 @@ const TasksPage = ({ userData, onUserDataUpdate }) => {
 
   const TaskButton = ({ task, completed }) => {
     const handleClick = async () => {
-      if (task.link) {
-        window.open(task.link, '_blank');
-      }
-      if (!completed) {
-        await handleTaskCompletion(task.id);
+      try {
+        // If task is not completed and it's the Telegram task, handle it first
+        if (!completed && task.id === 'telegram') {
+          // Complete the task before opening the link
+          await handleTaskCompletion(task.id);
+          
+          // Small delay to ensure task completion is processed
+          await new Promise(resolve => setTimeout(resolve, 100));
+          
+          // Check if we're on desktop Telegram
+          const isDesktopTelegram = window.Telegram?.WebApp?.platform === 'tdesktop';
+          
+          if (isDesktopTelegram) {
+            // For desktop, open in new tab to prevent immediate webapp closure
+            window.open(task.link, '_blank', 'noopener');
+          } else {
+            // For mobile, use regular link opening
+            window.open(task.link, '_blank');
+          }
+        } else {
+          // For non-Telegram tasks or already completed tasks, maintain original behavior
+          if (task.link) {
+            window.open(task.link, '_blank');
+          }
+          if (!completed) {
+            await handleTaskCompletion(task.id);
+          }
+        }
+      } catch (error) {
+        console.error('Error handling task:', error);
       }
     };
-
+  
     return (
       <AnimatedButton
         onClick={handleClick}
-        className={`w-full overflow-hidden ${
+        className={`w-full ${
           completed
-            ? 'border border-[#FFD700]/20 text-[#FFD700]'
-            : 'border border-[#FFD700]/10 text-gray-300 hover:border-[#FFD700]/30'
+            ? 'bg-[#1E1E22] border border-[#FFD700]/20 text-[#FFD700]'
+            : 'bg-[#1E1E22] border border-[#FFD700]/10 text-gray-300 hover:border-[#FFD700]/30'
         } rounded-xl`}
       >
         <div className="p-4 flex items-center justify-between">
@@ -170,6 +195,7 @@ const TasksPage = ({ userData, onUserDataUpdate }) => {
       </AnimatedButton>
     );
   };
+  
 
   const AchievementTask = ({ label, current, target, points, completed, taskId }) => (
     <div className={`w-full p-4 rounded-xl border ${
