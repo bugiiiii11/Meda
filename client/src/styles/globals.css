@@ -1,8 +1,37 @@
-/* client/src/styles/globals.css */
 @import 'tailwindcss/base';
 @import 'tailwindcss/components';
 @import 'tailwindcss/utilities';
 
 body {
   font-family: 'Inter', sans-serif;
+}
+
+/* Custom button animation styles */
+.task-button-flash {
+  position: relative;
+  overflow: hidden;
+}
+
+.task-button-flash::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-color: #FFD700;
+  opacity: 0;
+  transition: opacity 0.2s ease-out;
+  pointer-events: none;
+}
+
+.task-button-flash.flashing::after {
+  opacity: 0.3;
+  animation: flash-fade 0.2s ease-out forwards;
+}
+
+@keyframes flash-fade {
+  0% {
+    opacity: 0.3;
+  }
+  100% {
+    opacity: 0;
+  }
 }

@@ -102,25 +102,39 @@ const TasksPage = ({ userData, onUserDataUpdate }) => {
   };
 
   const TaskButton = ({ task, completed }) => {
+    const [isFlashing, setIsFlashing] = React.useState(false);
+  
     const handleClick = async () => {
-      if (task.link) {
-        window.open(task.link, '_blank');
-      }
-      if (!completed) {
-        await handleTaskCompletion(task.id);
+      if (!isFlashing) {
+        setIsFlashing(true);
+        
+        if (task.link) {
+          window.open(task.link, '_blank');
+        }
+        if (!completed) {
+          await handleTaskCompletion(task.id);
+        }
+  
+        // Reset flash state after animation completes
+        setTimeout(() => {
+          setIsFlashing(false);
+        }, 200);
       }
     };
-
+  
     return (
       <button
         onClick={handleClick}
-        className={`w-full p-4 rounded-xl border transition-all ${
-          completed
+        className={`
+          w-full p-4 rounded-xl border transition-all task-button-flash
+          ${completed
             ? 'bg-[#1E1E22] border-[#FFD700]/20 text-[#FFD700]'
             : 'bg-[#1E1E22] border-[#FFD700]/10 text-gray-300 hover:border-[#FFD700]/30'
-        }`}
+          }
+          ${isFlashing ? 'flashing' : ''}
+        `}
       >
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between relative z-10">
           <span className="font-medium">{task.label}</span>
           <div className="flex items-center gap-2">
             {!completed && (
