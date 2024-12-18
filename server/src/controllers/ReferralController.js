@@ -6,55 +6,83 @@ const PointsTransaction = require('../models/Points');
 class ReferralController {
   static REFERRAL_POINTS = 20;
 
+  static async createReferralCode(req, res) {
+    const session = await mongoose.startSession();
+    session.startTransaction();
+
+    try {
+      const { telegramId } = req.body;
+
+      let user = await User.findOne({ telegramId });
+      if (!user) {
+        throw new Error('User not found');
+      }
+
+      // Generate referral code based on telegramId
+      if (!user.referralCode) {
+        user.referralCode = `${telegramId}_${Math.random().toString(36).substring(7)}`;
+        await user.save({ session });
+      }
+
+      await session.commitTransaction();
+
+      res.json({
+        success: true,
+        data: {
+          referralCode: user.referralCode
+        }
+      });
+
+    } catch (error) {
+      await session.abortTransaction();
+      console.error('Create referral code error:', error);
+      res.status(500).json({
+        success: false,
+        error: error.message
+      });
+    } finally {
+      session.endSession();
+    }
+  }
+
   static async redeemReferral(req, res) {
     const session = await mongoose.startSession();
     session.startTransaction();
 
     try {
       const { referralCode, newUserTelegramId } = req.body;
-      console.log('Attempting to redeem referral:', {
-        referralCode,
-        newUserTelegramId,
-        body: req.body
-      });
 
-      // Find referrer by their telegram ID (which is now used as referral code)
-      const referrer = await User.findOne({ telegramId: referralCode });
-      console.log('Referrer found:', referrer);
-
+      // Find referrer
+      const referrer = await User.findOne({ referralCode });
       if (!referrer) {
         throw new Error('Invalid referral code');
       }
 
       // Check if new user already exists
       const existingUser = await User.findOne({ telegramId: newUserTelegramId });
-      console.log('Existing user check:', existingUser);
-
       if (existingUser) {
-        if (existingUser.referredBy) {
-          console.log('User already referred by:', existingUser.referredBy);
-          throw new Error('User has already been referred');
-        }
-        
-        // Update existing user with referral info
-        existingUser.referredBy = referrer.telegramId;
-        await existingUser.save({ session });
-        console.log('Updated existing user with referral:', existingUser);
+        throw new Error('User has already joined');
       }
 
-      // Update referrer's points and stats
+      // Create new user
+      const newUser = new User({
+        telegramId: newUserTelegramId,
+        username: req.body.username,
+        referredBy: referrer.telegramId,
+        totalPoints: 0,
+        pointsBreakdown: {
+          likes: 0,
+          dislikes: 0,
+          superLikes: 0,
+          tasks: 0,
+          referrals: 0
+        }
+      });
+
+      // Update referrer's points and referred users
       referrer.totalPoints += ReferralController.REFERRAL_POINTS;
       referrer.pointsBreakdown.referrals += ReferralController.REFERRAL_POINTS;
-      if (!referrer.referralStats) {
-        referrer.referralStats = { referredUsers: [] };
-      }
-      referrer.referralStats.referredUsers.push(newUserTelegramId);
-      await referrer.save({ session });
-      console.log('Updated referrer stats:', {
-        totalPoints: referrer.totalPoints,
-        referralPoints: referrer.pointsBreakdown.referrals,
-        referredUsers: referrer.referralStats.referredUsers
-      });
+      referrer.referredUsers.push(newUserTelegramId);
 
       // Create points transaction for referrer
       const pointsTransaction = new PointsTransaction({
@@ -68,28 +96,35 @@ class ReferralController {
         },
         description: `Earned points for referring user ${newUserTelegramId}`
       });
-      await pointsTransaction.save({ session });
-      console.log('Created points transaction:', pointsTransaction);
+
+      // Save all changes
+      await Promise.all([
+        newUser.save({ session }),
+        referrer.save({ session }),
+        pointsTransaction.save({ session })
+      ]);
 
       await session.commitTransaction();
-      console.log('Referral redemption completed successfully');
 
       res.json({
         success: true,
         data: {
-          newUserId: newUserTelegramId,
+          newUser: {
+            telegramId: newUser.telegramId,
+            username: newUser.username
+          },
           referrer: {
             telegramId: referrer.telegramId,
             totalPoints: referrer.totalPoints,
-            referralCount: referrer.referralStats.referredUsers.length
+            referralCount: referrer.referredUsers.length
           }
         }
       });
 
     } catch (error) {
       await session.abortTransaction();
-      console.error('Referral redemption error:', error);
-      res.status(400).json({
+      console.error('Redeem referral error:', error);
+      res.status(500).json({
         success: false,
         error: error.message
       });
@@ -101,10 +136,9 @@ class ReferralController {
   static async getReferralStats(req, res) {
     try {
       const { telegramId } = req.params;
-      console.log('Getting referral stats for:', telegramId);
 
-      const user = await User.findOne({ telegramId });
-      console.log('Found user stats:', user);
+      const user = await User.findOne({ telegramId })
+        .select('referralCode referredUsers pointsBreakdown.referrals');
 
       if (!user) {
         return res.status(404).json({
@@ -116,8 +150,9 @@ class ReferralController {
       res.json({
         success: true,
         data: {
-          referredUsers: user.referralStats?.referredUsers || [],
-          referralPoints: user.pointsBreakdown?.referrals || 0
+          referralCode: user.referralCode,
+          referralCount: user.referredUsers.length,
+          referralPoints: user.pointsBreakdown.referrals
         }
       });
 
