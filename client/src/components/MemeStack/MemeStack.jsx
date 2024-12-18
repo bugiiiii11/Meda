@@ -12,6 +12,7 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
   const [isAnimating, setIsAnimating] = React.useState(false);
   const [isMobile, setIsMobile] = React.useState(false);
   const [isDragging, setIsDragging] = React.useState(false);
+  const [isTransitioning, setIsTransitioning] = React.useState(false);
 
   console.log('===== DEBUG: MemeStack Props =====');
   console.log('Received memes:', memes.map(m => ({
@@ -119,9 +120,11 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
         onMemeChange(firstMeme);
       }
     }, [memes, propCurrentMeme, getWeightedRandomMeme, onMemeChange]);
-
+  
     const transitionToNextMeme = React.useCallback(() => {
       if (!nextMeme) return;
+      
+      setIsTransitioning(true);
       
       // Current becomes next, next becomes future next
       setCurrentMeme(nextMeme);
@@ -132,131 +135,135 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
       const newFutureNextMeme = getWeightedRandomMeme();
       setFutureNextMeme(newFutureNextMeme);
       
+      // Reset transition state after animation completes
+      setTimeout(() => {
+        setIsTransitioning(false);
+      }, 300);
+      
     }, [nextMeme, futureNextMeme, getWeightedRandomMeme, onMemeChange]);
   
-  const handleSwipe = async (direction) => {
-    if (isAnimating || !currentMeme) return;
+    const handleSwipe = async (direction) => {
+      if (isAnimating || !currentMeme) return;
+      
+      setIsAnimating(true);
+      setLastSwipe(direction);
+      
+      // Handle transition first
+      transitionToNextMeme();
+      
+      try {
+        const action = direction === 'right' ? 'like' : 
+                      direction === 'left' ? 'dislike' : 'superlike';
     
-    console.log('Handling swipe:', direction);
-    console.log('Current meme before swipe:', {
-      id: currentMeme.id,
-      engagement: currentMeme.engagement
-    });
+        const response = await fetch(ENDPOINTS.interactions.update, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Origin': window.location.origin
+          },
+          body: JSON.stringify({
+            action,
+            memeId: currentMeme.id,
+            telegramId: userData?.telegramId
+          })
+        });
     
-    setIsAnimating(true);
-    setLastSwipe(direction);
-  
-    // Handle transition first
-    transitionToNextMeme();
-    
-    // Handle interaction in the background
-    try {
-      const action = direction === 'right' ? 'like' : 
-                    direction === 'left' ? 'dislike' : 'superlike';
-  
-      const response = await fetch(ENDPOINTS.interactions.update, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Origin': window.location.origin
-        },
-        body: JSON.stringify({
-          action,
-          memeId: currentMeme.id,
-          telegramId: userData?.telegramId
-        })
-      });
-  
-      const data = await response.json();
-      console.log('Interaction response:', data);
-  
-      if (!data.success) {
-        throw new Error(data.error || 'Interaction failed');
+        const data = await response.json();
+        if (!data.success) {
+          throw new Error(data.error || 'Interaction failed');
+        }
+      } catch (error) {
+        console.error('Interaction error:', error);
+      } finally {
+        setTimeout(() => {
+          setLastSwipe(null);
+          setIsAnimating(false);
+        }, 200);
       }
-    } catch (error) {
-      console.error('Interaction error:', error);
-    } finally {
-      // Reset animation states with minimal delay
-      setTimeout(() => {
-        setLastSwipe(null);
-        setIsAnimating(false);
-      }, 200);
-    }
-  };
+    };
 
-  return (
-    <div className="relative max-w-[calc(100vw-32px)] mx-auto aspect-square bg-[#121214]">
-      {/* Bottom Layer (Future Next Meme - C) - Hidden until needed */}
-      <div className="absolute inset-0" style={{ zIndex: 5, opacity: 0 }}>
-        {futureNextMeme && (
-          <MemeCard
-            meme={futureNextMeme}
-            onSwipe={() => {}}
-            isTop={false}
-            userData={userData}
-          />
-        )}
-      </div>
-
-      {/* Middle Layer (Next Meme - B) */}
-      <div className="absolute inset-0" style={{ zIndex: 10 }}>
-        {nextMeme && (
-          <MemeCard
-            meme={nextMeme}
-            onSwipe={() => {}}
-            isTop={false}
-            userData={userData}
-          />
-        )}
-      </div>
-  
-      {/* Top Layer (Current Meme - A) */}
-      <AnimatePresence mode="wait">
-        {currentMeme && (
-          <motion.div
-            key={currentMeme.id}
-            className="absolute inset-0"
-            style={{ zIndex: 20 }}
-            initial={false}
-            animate={{ 
-              opacity: isDragging ? 0.5 : 1,
-              scale: 1
-            }}
-            exit={{ 
-              opacity: 0,
-              scale: 1,
-              transition: { 
-                duration: 0.1,
-                ease: "linear"
-              }
-            }}
-          >
+    return (
+      <div className="relative max-w-[calc(100vw-32px)] mx-auto aspect-square bg-[#121214]">
+        {/* Base Layer (Next Meme - B) */}
+        <div className="absolute inset-0" style={{ zIndex: 10 }}>
+          {nextMeme && (
             <MemeCard
-              meme={currentMeme}
-              onSwipe={handleSwipe}
-              isTop={true}
-              isMobile={isMobile}
+              meme={nextMeme}
+              onSwipe={() => {}}
+              isTop={false}
               userData={userData}
-              onDragStart={() => setIsDragging(true)}
-              onDragEnd={(e, info) => {
-                setIsDragging(false);
-                const xVel = info.velocity.x;
-                const yVel = info.velocity.y;
-                const xOffset = info.offset.x;
-                const yOffset = info.offset.y;
-                
-                if (Math.abs(yVel) > Math.abs(xVel) && yOffset < -50) {
-                  handleSwipe('super');
-                } else if (xOffset > 50) {
-                  handleSwipe('right');
-                } else if (xOffset < -50) {
-                  handleSwipe('left');
+            />
+          )}
+        </div>
+  
+        {/* Hidden Background Layer (Future Next Meme - C) */}
+        <AnimatePresence>
+          {!isTransitioning && nextMeme && futureNextMeme && (
+            <motion.div 
+              className="absolute inset-0" 
+              style={{ zIndex: 5 }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: isDragging ? 1 : 0 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+            >
+              <MemeCard
+                meme={futureNextMeme}
+                onSwipe={() => {}}
+                isTop={false}
+                userData={userData}
+              />
+            </motion.div>
+          )}
+        </AnimatePresence>
+    
+        {/* Top Layer (Current Meme - A) */}
+        <AnimatePresence mode="wait">
+          {currentMeme && (
+            <motion.div
+              key={currentMeme.id}
+              className="absolute inset-0"
+              style={{ zIndex: 20 }}
+              initial={false}
+              animate={{ 
+                opacity: isDragging ? 0.5 : 1,
+                scale: 1,
+              }}
+              exit={{ 
+                opacity: 0,
+                scale: 1,
+                transition: { 
+                  duration: 0.1,
+                  ease: "linear"
                 }
               }}
-            />
-          </motion.div>
-        )}
-      </AnimatePresence>
+            >
+              <MemeCard
+                meme={currentMeme}
+                onSwipe={handleSwipe}
+                isTop={true}
+                isMobile={isMobile}
+                userData={userData}
+                onDragStart={() => setIsDragging(true)}
+                onDragEnd={(e, info) => {
+                  setIsDragging(false);
+                  const xVel = info.velocity.x;
+                  const yVel = info.velocity.y;
+                  const xOffset = info.offset.x;
+                  const yOffset = info.offset.y;
+                  
+                  if (Math.abs(yVel) > Math.abs(xVel) && yOffset < -50) {
+                    handleSwipe('super');
+                  } else if (xOffset > 50) {
+                    handleSwipe('right');
+                  } else if (xOffset < -50) {
+                    handleSwipe('left');
+                  }
+                }}
+              />
+            </motion.div>
+          )}
+        </AnimatePresence>
   
       {/* Swipe Indicator Overlay - Always on top */}
           <AnimatePresence>
