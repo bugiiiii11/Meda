@@ -19,12 +19,12 @@ body {
   bottom: 0;
   background-color: transparent;
   pointer-events: none;
-  transition: background-color 0.3s ease-out;
+  transition: background-color 0.2s ease-out;
 }
 
 .task-button-flash.flashing::before {
   background-color: #FFD700;
-  animation: buttonFlash 0.3s ease-out forwards;
+  animation: buttonFlash 0.2s ease-out forwards;
 }
 
 @keyframes buttonFlash {

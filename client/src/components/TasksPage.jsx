@@ -117,7 +117,7 @@ const TasksPage = ({ userData, onUserDataUpdate }) => {
   
         setTimeout(() => {
           setIsFlashing(false);
-        }, 300);
+        }, 200);
       }
     };
   

@@ -17,7 +17,7 @@ module.exports = {
       },
       animation: {
         'load-progress': 'load-progress 3s ease-in-out infinite',
-        'flash': 'flash 0.3s ease-out'
+        'flash': 'flash 0.2s ease-out'
       }
     },
   },
