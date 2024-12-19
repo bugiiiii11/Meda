@@ -5,28 +5,29 @@ const ReferralController = require('../controllers/ReferralController');
 
 class UserController {
   static async createUser(req, res) {
-    const session = await mongoose.startSession();
-    session.startTransaction();
+    console.log('Received user creation request:', {
+      body: req.body,
+      headers: req.headers,
+      telegramUser: req.telegramUser
+    });
   
     try {
-      const { telegramId, username, firstName, lastName, referredBy } = req.body;
-      console.log('Creating/updating user with data:', { 
-        telegramId, 
-        username, 
-        firstName, 
-        lastName, 
-        referredBy 
-      });
+      const { telegramId, username, firstName, lastName, referralId } = req.body;
+      
+      if (!telegramId) {
+        console.error('Missing telegramId in request');
+        return res.status(400).json({
+          success: false,
+          error: 'telegramId is required'
+        });
+      }
   
-      let user = await User.findOne({ telegramId }).session(session);
+      // Check if user exists
+      let user = await User.findOne({ telegramId });
+      console.log('Existing user found:', user);
   
-      if (user) {
-        console.log('Updating existing user:', user.telegramId);
-        user.username = username || user.username;
-        user.firstName = firstName || user.firstName;
-        user.lastName = lastName || user.lastName;
-      } else {
-        console.log('Creating new user with telegramId:', telegramId);
+      if (!user) {
+        // Create new user
         user = new User({
           telegramId,
           username: username || `user${telegramId.slice(-4)}`,
@@ -39,40 +40,59 @@ class UserController {
             superLikes: 0,
             tasks: 0,
             referrals: 0
-          },
-          referralStats: {
-            referredUsers: [],
-            totalReferralPoints: 0
           }
         });
+  
+        // Handle referral if present
+        if (referralId) {
+          console.log('Processing referral:', { referralId, newUserId: telegramId });
+          
+          const referrer = await User.findOne({ telegramId: referralId });
+          if (referrer) {
+            // Update new user
+            user.referralStats.referredBy = referralId;
+            
+            // Update referrer
+            referrer.referralStats.referredUsers.push(telegramId);
+            referrer.referralStats.totalReferralPoints += 20;
+            referrer.totalPoints += 20;
+            referrer.pointsBreakdown.referrals += 20;
+            
+            await referrer.save();
+            console.log('Updated referrer:', {
+              telegramId: referrer.telegramId,
+              referredUsers: referrer.referralStats.referredUsers,
+              totalReferralPoints: referrer.referralStats.totalReferralPoints
+            });
+          }
+        }
+  
+        await user.save();
+        console.log('Created new user:', user);
+      } else {
+        // Update existing user
+        user.username = username || user.username;
+        user.firstName = firstName || user.firstName;
+        user.lastName = lastName || user.lastName;
+        user.lastActive = new Date();
+        await user.save();
+        console.log('Updated existing user:', user);
       }
   
-      // Handle referral if provided and user hasn't been referred yet
-      if (referredBy && !user.referredBy) {
-        console.log('Processing referral:', { referredBy, newUser: telegramId });
-        user.referredBy = referredBy;
-      }
-  
-      await user.save({ session });
-      await session.commitTransaction();
-  
-      console.log('User saved successfully:', user.telegramId);
       res.status(201).json({
         success: true,
         data: user
       });
     } catch (error) {
-      await session.abortTransaction();
       console.error('Create user error:', {
-        message: error.message,
+        error: error.message,
         stack: error.stack
       });
-      res.status(400).json({
+      res.status(500).json({
         success: false,
-        error: error.message
+        error: 'Failed to create/update user',
+        details: error.message
       });
-    } finally {
-      session.endSession();
     }
   }
 
