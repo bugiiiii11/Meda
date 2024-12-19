@@ -18,19 +18,32 @@ class InteractionController {
   let session;
   
   try {
+    console.log('Starting interaction with data:', {
+      body: req.body,
+      headers: req.headers
+    });
+
     session = await mongoose.startSession();
     session.startTransaction();
 
     const { action, memeId, telegramId } = req.body;
-
-    // Find meme and include current engagement data
+    
+    // Find meme with detailed logging
+    console.log('Looking for meme:', { memeId });
     const meme = await Meme.findOne({ id: memeId }).session(session);
+    console.log('Found meme:', {
+      found: !!meme,
+      engagement: meme?.engagement,
+      projectName: meme?.projectName
+    });
+
     if (!meme) {
       throw new Error('Meme not found');
     }
 
     // Ensure engagement object exists
     meme.engagement = meme.engagement || { likes: 0, superLikes: 0, dislikes: 0 };
+    console.log('Before update - Meme engagement:', meme.engagement);
 
     // Update engagement counts
     if (action === 'like') {
@@ -41,19 +54,38 @@ class InteractionController {
       meme.engagement.dislikes += 1;
     }
 
-    // Update project stats if needed
+    console.log('After update - Meme engagement:', meme.engagement);
+
+    // Update project stats with logging
     if (action !== 'dislike') {
+      console.log('Looking for project:', { projectName: meme.projectName });
       const project = await Project.findOne({ name: meme.projectName }).session(session);
+      console.log('Found project:', {
+        found: !!project,
+        memeStats: project?.memeStats
+      });
+      
       if (project) {
         await project.updateMemeStats(memeId, action);
+        console.log('Updated project stats:', {
+          projectName: project.name,
+          memeStats: project.memeStats
+        });
       }
     }
 
     // Save meme with updated engagement
     await meme.save({ session });
 
-    // Update user points
+    // Update user points with logging
+    console.log('Looking for user:', { telegramId });
     const user = await User.findOne({ telegramId }).session(session);
+    console.log('Found user:', {
+      found: !!user,
+      pointsBreakdown: user?.pointsBreakdown,
+      totalPoints: user?.totalPoints
+    });
+
     if (!user) {
       throw new Error('User not found');
     }
@@ -61,9 +93,15 @@ class InteractionController {
     const points = InteractionController.POINTS[action];
     user.pointsBreakdown[action === 'superlike' ? 'superLikes' : action === 'like' ? 'likes' : 'dislikes'] += 1;
     user.totalPoints += points;
-    await user.save({ session });
+    
+    console.log('Updated user stats:', {
+      pointsBreakdown: user.pointsBreakdown,
+      totalPoints: user.totalPoints
+    });
 
+    await user.save({ session });
     await session.commitTransaction();
+    console.log('Transaction committed successfully');
 
     // Return updated engagement data
     res.json({
@@ -71,7 +109,7 @@ class InteractionController {
       data: {
         meme: {
           id: meme.id,
-          engagement: meme.engagement // Send back updated engagement counts
+          engagement: meme.engagement
         },
         user: {
           telegramId: user.telegramId,
@@ -82,10 +120,17 @@ class InteractionController {
     });
 
   } catch (error) {
+    console.error('Interaction error:', {
+      error: error.message,
+      stack: error.stack,
+      body: req.body
+    });
+    
     if (session) {
       await session.abortTransaction();
+      console.log('Transaction aborted');
     }
-    console.error('Interaction error:', error);
+    
     res.status(400).json({
       success: false,
       error: error.message
