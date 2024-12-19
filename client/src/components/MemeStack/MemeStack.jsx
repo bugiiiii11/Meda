@@ -162,18 +162,20 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
       const action = direction === 'right' ? 'like' : 
                     direction === 'left' ? 'dislike' : 'superlike';
   
-      const response = await fetch(ENDPOINTS.interactions.update, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Origin': window.location.origin
-        },
-        body: JSON.stringify({
-          action,
-          memeId: currentMeme.id,
-          telegramId: userData?.telegramId
-        })
-      });
+    const response = await fetch(ENDPOINTS.interactions.update, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Origin': window.location.origin,
+        'X-Telegram-Init-Data': window.Telegram?.WebApp?.initData || '' // Add this line
+      },
+      body: JSON.stringify({
+        action,
+        memeId: currentMeme.id,
+        telegramId: userData?.telegramId,
+        username: userData?.username
+      })
+    });
   
       const data = await response.json();
       console.log('Interaction response:', data);
