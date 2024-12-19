@@ -1,4 +1,3 @@
-//MemeCard.jsx
 import React from 'react';
 import { motion, useMotionValue, useTransform } from 'framer-motion';
 
@@ -51,7 +50,6 @@ const MemeCard = ({ meme, onSwipe, isTop, isMobile, onDragStart, onDragEnd }) =>
         />
         <div className="bg-[#1E1E22] border-t border-[#FFD700]/10 px-4 py-2">
           <div className="flex justify-between items-center">
-            {/* Left side: Likes and Super Likes */}
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-1.5">
                 <span className="text-lg">👍</span>
@@ -66,13 +64,24 @@ const MemeCard = ({ meme, onSwipe, isTop, isMobile, onDragStart, onDragEnd }) =>
                 </span>
               </div>
             </div>
-            
-            {/* Right side: Sector */}
-            <div className="flex items-center">
-              <span className="text-gray-400 text-sm">
-                {meme.projectDetails?.sector || 'Meme'}
-              </span>
-            </div>
+            <motion.div 
+              className="flex items-center"
+              initial={{ scale: 0.9 }}
+              animate={{ 
+                scale: 1,
+                transition: {
+                  repeat: Infinity,
+                  repeatType: "reverse",
+                  duration: 1.5
+                }
+              }}
+            >
+              <div className="px-3 py-1 rounded-lg bg-[#FFD700]/10">
+                <span className="text-lg font-bold text-[#FFD700]">
+                  {meme.projectDetails?.sector || 'Meme'}
+                </span>
+              </div>
+            </motion.div>
           </div>
         </div>
       </div>
