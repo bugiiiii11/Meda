@@ -36,11 +36,12 @@ const memeSchema = new mongoose.Schema({
     marketCap: { type: String, required: true },
     priceChange24h: { type: Number, required: true },
     contract: { type: String, required: true },
-    website: { type: String, required: true },
-    priceChart: { type: String },
+    sector: { type: String },
     buyLink: { type: String, required: true },
-    telegramUrl: { type: String },
-    twitterUrl: { type: String }
+    buttons: [{
+      label: { type: String, required: true },
+      url: { type: String, required: true }
+    }]
   },
   analytics: {
     linkClicks: {
