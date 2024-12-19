@@ -112,13 +112,6 @@ const ProfilePage = ({ userData }) => {
 
             {/* Referral Link and Share Button */}
             <div className="bg-[#2A2A2E] p-4 rounded-lg space-y-3">
-              <div className="flex items-center justify-between gap-4">
-                <code className="text-[#FFD700] font-mono text-sm overflow-hidden overflow-ellipsis whitespace-nowrap">
-                  {userData?.telegramId ? 
-                    `https://t.me/fynderapp_bot?start=${userData.telegramId}` : 
-                    'Loading...'}
-                </code>
-              </div>
               <button
                 onClick={handleShare}
                 disabled={!userData?.telegramId}
@@ -128,7 +121,7 @@ const ProfilePage = ({ userData }) => {
                   'bg-[#FFD700] text-black hover:bg-[#FFD700]/90'
                 } disabled:opacity-50 disabled:cursor-not-allowed`}
               >
-                {shareStatus || 'Share'}
+                {shareStatus || 'Invite Friends'}
               </button>
             </div>
           </div>
