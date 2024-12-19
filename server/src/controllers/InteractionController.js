@@ -18,9 +18,12 @@ class InteractionController {
   let session;
   
   try {
-    console.log('Starting interaction with data:', {
+    console.log('Interaction request received:', {
       body: req.body,
-      headers: req.headers
+      headers: req.headers,
+      environment: process.env.NODE_ENV,
+      telegramUser: req.telegramUser,
+      auth: !!req.headers['x-telegram-init-data']
     });
 
     session = await mongoose.startSession();
