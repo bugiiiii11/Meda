@@ -10,29 +10,7 @@ const app = express();
 
 // CORS configuration
 app.use(cors({
-  origin: function(origin, callback) {
-    const allowedOrigins = [
-      'https://fynder-2h5g.vercel.app',
-      'https://fynder-production.up.railway.app',
-      'http://localhost:3000',
-      'http://localhost:3001',
-      'http://localhost:5173'  // Vite default port
-    ];
-    
-    // Allow requests with no origin (like mobile apps or Telegram WebApp)
-    if (!origin) {
-      return callback(null, true);
-    }
-
-    if (allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      console.log('Blocked origin:', origin);
-      // In production, you might want to change this to:
-      // callback(new Error('Not allowed by CORS'))
-      callback(null, true); // Temporarily allow all origins for testing
-    }
-  },
+  origin: ['https://fynder-2h5q.vercel.app', 'https://fynder-production.up.railway.app'],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: [

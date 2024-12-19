@@ -84,17 +84,16 @@ const verifyTelegramWebAppData = (req, res, next) => {
 };
 
 const bypassAuthInDevelopment = (req, res, next) => {
-  console.log('Auth middleware - Environment:', process.env.NODE_ENV);
-  console.log('Auth middleware - Headers:', req.headers);
-
-  // Always bypass auth for now (both development and production)
-  console.log('Bypassing auth for testing');
-  req.telegramUser = {
-    id: req.body.telegramId || 'test123',
-    username: req.body.username || 'testuser'
-  };
-  console.log('Setting user:', req.telegramUser);
-  return next();
+  if (process.env.NODE_ENV === 'development') {
+    console.log('Bypassing auth in development');
+    req.telegramUser = {
+      id: req.body.telegramId || 'test123',
+      username: req.body.username || 'testuser'
+    };
+    return next();
+  }
+  
+  return verifyTelegramWebAppData(req, res, next);
 };
 
 module.exports = {

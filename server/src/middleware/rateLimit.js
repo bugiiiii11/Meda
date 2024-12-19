@@ -1,3 +1,4 @@
+//rateLimit.js
 const rateLimit = require('express-rate-limit');
 
 // Create a rate limiter that allows 100 requests per minute
