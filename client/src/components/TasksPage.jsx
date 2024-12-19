@@ -272,7 +272,7 @@ const TasksPage = ({ userData, onUserDataUpdate }) => {
                   completed={completedTasks.has('achievement-dislikes')}
                   taskId="achievement-dislikes"
                 />
-                {userData?.pointsBreakdown?.superLikes >= 100 ? (
+                {userData?.pointsBreakdown?.superLikes >= 10 ? (
                   <AchievementTask
                     label="Super Swiper (Tier 2)"
                     current={userData?.pointsBreakdown?.superLikes || 0}
@@ -285,7 +285,7 @@ const TasksPage = ({ userData, onUserDataUpdate }) => {
                   <AchievementTask
                     label="Super Swiper (Tier 1)"
                     current={userData?.pointsBreakdown?.superLikes || 0}
-                    target={100}
+                    target={10}
                     points={1000}
                     completed={completedTasks.has('achievement-superlikes')}
                     taskId="achievement-superlikes"
