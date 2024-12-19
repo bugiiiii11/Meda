@@ -7,12 +7,10 @@ import { ENDPOINTS } from '../../config/api';
 const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData }) => {
   const [currentMeme, setCurrentMeme] = React.useState(null);
   const [nextMeme, setNextMeme] = React.useState(null);
-  const [futureNextMeme, setFutureNextMeme] = React.useState(null);
   const [lastSwipe, setLastSwipe] = React.useState(null);
   const [isAnimating, setIsAnimating] = React.useState(false);
   const [isMobile, setIsMobile] = React.useState(false);
   const [isDragging, setIsDragging] = React.useState(false);
-  const [swipeDirection, setSwipeDirection] = React.useState(null);
 
   console.log('===== DEBUG: MemeStack Props =====');
   console.log('Received memes:', memes.map(m => ({
@@ -22,11 +20,6 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
   })));
   console.log('================================');
 
-  // Platform detection effect - moved here
-  React.useEffect(() => {
-    setIsMobile(!!window.Telegram?.WebApp);
-  }, []);
-  
   const getWeightedRandomMeme = React.useCallback(() => {
     console.log('===== Getting Random Meme =====');
     console.log('Total memes available:', memes.length);
@@ -37,9 +30,7 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
     console.log('Filtering out memes:', { currentMemeId, nextMemeId });
     
     const availableMemes = memes.filter(meme => 
-      meme.id !== currentMeme?.id && 
-      meme.id !== nextMeme?.id && 
-      meme.id !== futureNextMeme?.id
+      meme.id !== currentMemeId && meme.id !== nextMemeId
     );
     
     console.log('Filtered available memes:', availableMemes.length);
@@ -105,184 +96,171 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
     });
     
     return fallbackMeme;
-  }, [memes, currentMeme, nextMeme, futureNextMeme]);
+  }, [memes, currentMeme, nextMeme]);
 
-    // Initialize memes
-    React.useEffect(() => {
-      if (memes.length > 0 && !currentMeme) {
-        const firstMeme = propCurrentMeme || getWeightedRandomMeme();
-        const secondMeme = getWeightedRandomMeme();
-        const thirdMeme = getWeightedRandomMeme();
-        
-        setCurrentMeme(firstMeme);
-        setNextMeme(secondMeme);
-        setFutureNextMeme(thirdMeme);
-        onMemeChange(firstMeme);
-      }
-    }, [memes, propCurrentMeme, getWeightedRandomMeme, onMemeChange]);
-  
-    const transitionToNextMeme = React.useCallback(() => {
-      if (!nextMeme) return;
-      
-      // Update states in sequence to prevent flashing
-      setCurrentMeme(nextMeme);
-      onMemeChange(nextMeme);
-      
-      // Slight delay to ensure smooth transition
-      requestAnimationFrame(() => {
-        setNextMeme(futureNextMeme);
-        
-        // Prepare new future next meme after current transition
-        requestAnimationFrame(() => {
-          const newFutureNextMeme = getWeightedRandomMeme();
-          setFutureNextMeme(newFutureNextMeme);
-        });
+  // Initialize memes
+  React.useEffect(() => {
+    if (memes.length > 0 && !currentMeme) {
+      console.log('Initializing first meme with engagement data');
+      const firstMeme = propCurrentMeme || getWeightedRandomMeme();
+      console.log('First meme:', {
+        id: firstMeme.id,
+        engagement: firstMeme.engagement
       });
       
-    }, [nextMeme, futureNextMeme, getWeightedRandomMeme, onMemeChange]);
-  
-    const handleSwipe = async (direction) => {
-      if (isAnimating || !currentMeme) return;
+      setCurrentMeme(firstMeme);
+      onMemeChange(firstMeme);
       
-      setIsAnimating(true);
-      setSwipeDirection(direction);
-      
-      // Start bounce animation
-      const bounceDistance = direction === 'right' ? 100 : direction === 'left' ? -100 : -50;
-      setSwipeDirection({ direction, distance: bounceDistance });
-      
-      // Show swipe indicator during bounce
-      setLastSwipe(direction);
-  
-      try {
-        // Handle API interaction during animation
-        const action = direction === 'right' ? 'like' : 
-                      direction === 'left' ? 'dislike' : 'superlike';
+      const secondMeme = getWeightedRandomMeme();
+      console.log('Next meme:', {
+        id: secondMeme.id,
+        engagement: secondMeme.engagement
+      });
+      setNextMeme(secondMeme);
+    }
+  }, [memes, propCurrentMeme, getWeightedRandomMeme, onMemeChange]);
+
+  const transitionToNextMeme = React.useCallback(() => {
+    if (!nextMeme) return;
     
-        const response = await fetch(ENDPOINTS.interactions.update, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Origin': window.location.origin
-          },
-          body: JSON.stringify({
-            action,
-            memeId: currentMeme.id,
-            telegramId: userData?.telegramId
-          })
-        });
+    console.log('Transitioning to next meme with engagement:', nextMeme);
     
-        const data = await response.json();
-        if (!data.success) {
-          throw new Error(data.error || 'Interaction failed');
-        }
-      } catch (error) {
-        console.error('Interaction error:', error);
+    // Set current meme to next meme
+    setCurrentMeme(nextMeme);
+    onMemeChange(nextMeme);
+    
+    // Slight delay before setting next meme to prevent blinking
+    setTimeout(() => {
+      const newNextMeme = getWeightedRandomMeme();
+      console.log('New next meme with engagement:', newNextMeme);
+      setNextMeme(newNextMeme);
+    }, 200); // Delay matches the exit animation duration
+    
+  }, [nextMeme, getWeightedRandomMeme, onMemeChange]);
+
+  React.useEffect(() => {
+    setIsMobile(!!window.Telegram?.WebApp);
+  }, []);
+
+  const handleSwipe = async (direction) => {
+    if (isAnimating || !currentMeme) return;
+    
+    console.log('Handling swipe:', direction);
+    console.log('Current meme before swipe:', {
+      id: currentMeme.id,
+      engagement: currentMeme.engagement
+    });
+    
+    setIsAnimating(true);
+    setLastSwipe(direction);
+  
+    // Transition to next meme immediately
+    transitionToNextMeme();
+    
+    // Handle interaction in the background
+    try {
+      const action = direction === 'right' ? 'like' : 
+                    direction === 'left' ? 'dislike' : 'superlike';
+  
+      const response = await fetch(ENDPOINTS.interactions.update, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Origin': window.location.origin
+        },
+        body: JSON.stringify({
+          action,
+          memeId: currentMeme.id,
+          telegramId: userData?.telegramId
+        })
+      });
+  
+      const data = await response.json();
+      console.log('Interaction response:', data);
+  
+      if (!data.success) {
+        throw new Error(data.error || 'Interaction failed');
       }
-  
-      // After bounce animation (500ms) + indicator display (300ms)
+    } catch (error) {
+      console.error('Interaction error:', error);
+    } finally {
       setTimeout(() => {
-        // Load future meme while current meme is still visible
-        const newFutureNextMeme = getWeightedRandomMeme();
-        setFutureNextMeme(newFutureNextMeme);
-        
-        // After loading, transition to next meme
-        setTimeout(() => {
-          setCurrentMeme(nextMeme);
-          setNextMeme(futureNextMeme);
-          onMemeChange(nextMeme);
-          
-          // Reset states
-          setLastSwipe(null);
-          setSwipeDirection(null);
-          setIsAnimating(false);
-        }, 200);
-      }, 800);
-    };
+        setLastSwipe(null);
+        setIsAnimating(false);
+      }, 300); // Reduced from default timing
+    }
+  };
 
-    return (
-      <div className="relative max-w-[calc(100vw-32px)] mx-auto aspect-square bg-[#121214]">
-        {/* Background Layer (Next Meme - B) */}
-        <div className="absolute inset-0" style={{ zIndex: 10 }}>
-          {nextMeme && (
+  return (
+    <div className="relative max-w-[calc(100vw-32px)] mx-auto aspect-square bg-[#121214]">
+      {/* Background Layer (Next Meme) - Always below */}
+      <div className="absolute inset-0 z-10">
+        {nextMeme && (
+          <MemeCard
+            meme={nextMeme}
+            onSwipe={() => {}}
+            isTop={false}
+            userData={userData}
+          />
+        )}
+      </div>
+  
+      {/* Top Layer (Current Meme) - With animation */}
+      <AnimatePresence mode="sync">
+        {currentMeme && (
+          <motion.div
+            key={currentMeme.id}
+            className="absolute inset-0 z-20"
+            initial={false}
+            animate={{ 
+              opacity: isDragging ? 0.5 : 1,
+              scale: 1,
+              zIndex: 20
+            }}
+            exit={{ 
+              opacity: 0,
+              scale: 0.95,
+              transition: { 
+                duration: 0.2,
+                ease: "easeOut"
+              }
+            }}
+          >
             <MemeCard
-              meme={nextMeme}
-              onSwipe={() => {}}
-              isTop={false}
+              meme={currentMeme}
+              onSwipe={handleSwipe}
+              isTop={true}
+              isMobile={isMobile}
               userData={userData}
+              onDragStart={() => setIsDragging(true)}
+              onDragEnd={(e, info) => {
+                setIsDragging(false);
+                const xVel = info.velocity.x;
+                const yVel = info.velocity.y;
+                const xOffset = info.offset.x;
+                const yOffset = info.offset.y;
+                
+                if (Math.abs(yVel) > Math.abs(xVel) && yOffset < -50) {
+                  handleSwipe('super');
+                } else if (xOffset > 50) {
+                  handleSwipe('right');
+                } else if (xOffset < -50) {
+                  handleSwipe('left');
+                }
+              }}
             />
-          )}
-        </div>
-    
-        {/* Top Layer (Current Meme - A) with bounce animation */}
-        <AnimatePresence mode="wait">
-          {currentMeme && (
-            <motion.div
-              key={currentMeme.id}
-              className="absolute inset-0"
-              style={{ zIndex: 20 }}
-              initial={false}
-              animate={swipeDirection ? {
-                x: swipeDirection.distance,
-                scale: 0.95,
-                transition: {
-                  type: "spring",
-                  stiffness: 300,
-                  damping: 20
-                }
-              } : {
-                x: 0,
-                scale: 1
-              }}
-              exit={{ 
-                opacity: 0,
-                scale: 0.9,
-                transition: { 
-                  duration: 0.2,
-                  ease: "easeOut"
-                }
-              }}
-            >
-              <MemeCard
-                meme={currentMeme}
-                onSwipe={handleSwipe}
-                isTop={true}
-                isMobile={isMobile}
-                userData={userData}
-                disabled={isAnimating}
-                onDragStart={() => !isAnimating && setIsDragging(true)}
-                onDragEnd={(e, info) => {
-                  if (isAnimating) return;
-                  
-                  setIsDragging(false);
-                  const xVel = info.velocity.x;
-                  const yVel = info.velocity.y;
-                  const xOffset = info.offset.x;
-                  const yOffset = info.offset.y;
-                  
-                  if (Math.abs(yVel) > Math.abs(xVel) && yOffset < -50) {
-                    handleSwipe('super');
-                  } else if (xOffset > 50) {
-                    handleSwipe('right');
-                  } else if (xOffset < -50) {
-                    handleSwipe('left');
-                  }
-                }}
-              />
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-
-       {/* Swipe Indicator Overlay */}
-       <AnimatePresence>
-        {lastSwipe && (
-          <motion.div 
-            className="absolute inset-0 flex items-center justify-center z-30 pointer-events-none"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
+          </motion.div>
+        )}
+      </AnimatePresence>
+  
+      {/* Swipe Indicator Overlay - Always on top */}
+          <AnimatePresence>
+      {lastSwipe && (
+        <motion.div 
+          className="absolute inset-0 flex items-center justify-center z-30 pointer-events-none"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
         >
           {lastSwipe === 'right' && (
           <>
