@@ -23,7 +23,10 @@ class PriceService {
       'dogwifcoin': ['17'],
       'floki': ['18'],
       'based-brett': ['19'],
-      'goatseus-maximus': ['20']
+      'goatseus-maximus': ['20'],
+      'pixels': ['21'],
+      'gala': ['22'],
+      'virtuals-protocol': ['23']
     };
     
     this.cache = new Map();
