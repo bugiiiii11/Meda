@@ -13,13 +13,11 @@ const ProfilePage = ({ userData }) => {
       await navigator.clipboard.writeText(welcomeMessage);
       setShareStatus('Copied!');
 
-      // Open Telegram share interface using correct method
       if (window.Telegram?.WebApp) {
         try {
           window.Telegram.WebApp.switchInlineQuery(welcomeMessage);
         } catch (telegramError) {
           console.log('Telegram share fallback');
-          // Fallback to basic link if switchInlineQuery fails
           window.location.href = 'tg://msg';
         }
       }
@@ -55,13 +53,27 @@ const ProfilePage = ({ userData }) => {
       {/* Content */}
       <div className="flex-1 overflow-auto pt-[100px] pb-20 px-4">
         <div className="max-w-md mx-auto space-y-6">
-          {/* Points Card */}
+          {/* My Stats Section */}
           <div className="bg-[#1E1E22] rounded-xl p-6 border border-[#FFD700]/10">
-            <div className="text-center">
-              <span className="text-4xl font-serif text-[#FFD700]">
-                {userData?.totalPoints || 0}
-              </span>
-              <p className="text-gray-400 mt-1">Total Points</p>
+            <h3 className="text-lg font-medium text-white mb-4">My Stats</h3>
+            <div className="space-y-3">
+              {[
+                { label: 'Total Points', icon: '🏆', value: userData?.totalPoints || 0 },
+                { label: 'Referrals', icon: '👥', value: userData?.referralStats?.referredUsers?.length || 0 },
+                { label: 'Available Super Likes', icon: '⭐', value: 'X' },
+                { label: 'My Membership', icon: '👑', value: 'Free Tier' }
+              ].map((item, index) => (
+                <div 
+                  key={index} 
+                  className="flex items-center justify-between p-3 bg-[#2A2A2E] rounded-lg hover:bg-[#2F2F33] transition-colors"
+                >
+                  <span className="text-gray-300 flex items-center gap-2">
+                    <span className="text-lg">{item.icon}</span>
+                    {item.label}
+                  </span>
+                  <span className="text-[#FFD700] font-serif">{item.value}</span>
+                </div>
+              ))}
             </div>
           </div>
 
@@ -96,22 +108,6 @@ const ProfilePage = ({ userData }) => {
             <p className="text-gray-400 text-sm mb-4">
               Invite friends and earn 20 points for each referral!
             </p>
-            
-            {/* Referral Stats */}
-            <div className="mb-4 grid grid-cols-2 gap-4">
-              <div className="bg-[#2A2A2E] p-4 rounded-lg text-center">
-                <p className="text-[#FFD700] text-xl font-serif">
-                  {userData?.referralStats?.referredUsers?.length || 0}
-                </p>
-                <p className="text-gray-400 text-sm">Referrals</p>
-              </div>
-              <div className="bg-[#2A2A2E] p-4 rounded-lg text-center">
-                <p className="text-[#FFD700] text-xl font-serif">
-                  {userData?.pointsBreakdown?.referrals || 0}
-                </p>
-                <p className="text-gray-400 text-sm">Points Earned</p>
-              </div>
-            </div>
 
             {/* Referral Link and Share Button */}
             <div className="bg-[#2A2A2E] p-4 rounded-lg space-y-3">
