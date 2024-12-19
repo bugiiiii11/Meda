@@ -21,10 +21,7 @@ router.post('/update',
   InteractionController.handleInteraction
 );
 
-router.get('/leaderboard',
-  bypassAuthInDevelopment,
-  InteractionController.getLeaderboard  
-);
+router.get('/leaderboard', InteractionController.getLeaderboard);
 
 if (process.env.NODE_ENV === 'development') {
   router.get('/debug', (req, res) => res.json({ status: 'ok' }));
