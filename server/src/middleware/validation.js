@@ -13,9 +13,10 @@ const schemas = {
   // User validations
   createUser: Joi.object({
     telegramId: Joi.string().required(),
-    username: Joi.string().optional(),
-    firstName: Joi.string().optional(),
-    lastName: Joi.string().optional()
+    username: Joi.string().allow('', null).optional(),
+    firstName: Joi.string().allow('', null).optional(),
+    lastName: Joi.string().allow('', null).optional(),
+    referredBy: Joi.string().allow('', null).optional()
   }),
 
   // Meme validations

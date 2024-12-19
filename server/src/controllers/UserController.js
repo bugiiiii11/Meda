@@ -10,17 +10,23 @@ class UserController {
   
     try {
       const { telegramId, username, firstName, lastName, referredBy } = req.body;
-      console.log('Creating/updating user:', { telegramId, username, referredBy });
+      console.log('Creating/updating user with data:', { 
+        telegramId, 
+        username, 
+        firstName, 
+        lastName, 
+        referredBy 
+      });
   
-      let user = await User.findOne({ telegramId });
+      let user = await User.findOne({ telegramId }).session(session);
   
       if (user) {
-        // Update existing user
+        console.log('Updating existing user:', user.telegramId);
         user.username = username || user.username;
         user.firstName = firstName || user.firstName;
         user.lastName = lastName || user.lastName;
       } else {
-        // Create new user
+        console.log('Creating new user with telegramId:', telegramId);
         user = new User({
           telegramId,
           username: username || `user${telegramId.slice(-4)}`,
@@ -40,60 +46,28 @@ class UserController {
           }
         });
       }
-
-         // Handle referral if provided and user hasn't been referred yet
-         if (referredBy && !user.referredBy) {
-          console.log('Processing referral:', { referredBy, newUser: telegramId });
-          
-          try {
-            const referralResult = await ReferralController.redeemReferral({
-              body: {
-                referralCode: referredBy,
-                newUserTelegramId: telegramId,
-                username: username
-              }
-            }, {
-              json: (data) => {
-                console.log('Referral processed:', data);
-                return data;
-              },
-              status: (code) => ({
-                json: (data) => {
-                  // Only log as error if it's not an "already referred" case
-                  if (data.error !== 'User has already been referred') {
-                    console.error('Referral response:', { code, data });
-                  } else {
-                    console.log('User already referred - skipping referral process');
-                  }
-                  return data;
-                }
-              })
-            });
   
-            if (referralResult && referralResult.success) {
-              user.referredBy = referredBy;
-            }
-          } catch (error) {
-            // Only log as error if it's not an "already referred" case
-            if (!error.message?.includes('already been referred')) {
-              console.error('Referral processing error:', error);
-            } else {
-              console.log('Skipping referral - user already referred');
-            }
-          }
-        }
-
+      // Handle referral if provided and user hasn't been referred yet
+      if (referredBy && !user.referredBy) {
+        console.log('Processing referral:', { referredBy, newUser: telegramId });
+        user.referredBy = referredBy;
+      }
+  
       await user.save({ session });
       await session.commitTransaction();
-
+  
+      console.log('User saved successfully:', user.telegramId);
       res.status(201).json({
         success: true,
         data: user
       });
     } catch (error) {
       await session.abortTransaction();
-      console.error('Create user error:', error);
-      res.status(500).json({
+      console.error('Create user error:', {
+        message: error.message,
+        stack: error.stack
+      });
+      res.status(400).json({
         success: false,
         error: error.message
       });
