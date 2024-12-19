@@ -860,7 +860,7 @@ const dummyMemes = [
     priceChange24h: -1,
     contract: "0xd1d2eb1b1e90b638588728b4130137d262c87cae",
     buyLink: "https://www.binance.com/en/trade/GALA_USDT?ref=37754157&type=spot",
-    sector: "Meme", 
+    sector: "Gaming", 
     buttons: [
       {
         label: "Website",
