@@ -86,6 +86,7 @@ const ProfilePage = ({ userData }) => {
                 { label: 'Dislikes', icon: '👎', points: userData?.pointsBreakdown?.dislikes || 0 },
                 { label: 'Super Likes', icon: '⭐', points: (userData?.pointsBreakdown?.superLikes || 0) * 3 },
                 { label: 'Tasks Completed', icon: '✅', points: userData?.pointsBreakdown?.tasks || 0 },
+                { label: 'Achievements', icon: '🏅', points: 0 },
                 { label: 'Referral Bonus', icon: '🎁', points: userData?.pointsBreakdown?.referrals || 0 }
               ].map((item, index) => (
                 <div 
