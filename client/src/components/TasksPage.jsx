@@ -96,7 +96,7 @@ const TasksPage = ({ userData, onUserDataUpdate }) => {
     { 
       id: 'news-1', 
       label: 'Read the Latest News', 
-      link: 'https://x.com/bitcoinlfgo/status/1868172844129235110', 
+      link: 'https://x.com/Fynder_app/status/1870148097092849780', 
       points: 10
     }
   ];
