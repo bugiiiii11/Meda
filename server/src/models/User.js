@@ -1,4 +1,3 @@
-//User.js
 const mongoose = require('mongoose');
 
 const completedTaskSchema = new mongoose.Schema({
@@ -40,6 +39,14 @@ const userSchema = new mongoose.Schema({
     type: Number,
     default: 0
   },
+  // SuperLike limit feature
+  superlikes: {
+    daily: {
+      count: { type: Number, default: 0 },
+      lastReset: { type: Date, default: Date.now }
+    },
+    limit: { type: Number, default: 3 }
+  },
   pointsBreakdown: {
     likes: { type: Number, default: 0 },
     dislikes: { type: Number, default: 0 },
@@ -79,6 +86,39 @@ const userSchema = new mongoose.Schema({
 }, {
   timestamps: true
 });
+
+// SuperLike methods
+const superlikeMethods = {
+  canSuperlike: async function() {
+    const now = new Date();
+    const lastReset = this.superlikes.daily.lastReset;
+    const hoursSinceReset = Math.abs(now - lastReset) / 36e5;
+
+    if (hoursSinceReset >= 24) {
+      this.superlikes.daily.count = 0;
+      this.superlikes.daily.lastReset = now;
+      await this.save();
+      return true;
+    }
+
+    return this.superlikes.daily.count < this.superlikes.limit;
+  },
+
+  useSuperlike: async function() {
+    const canUse = await this.canSuperlike();
+    if (canUse) {
+      this.superlikes.daily.count += 1;
+      await this.save();
+      return true;
+    }
+    return false;
+  }
+};
+
+userSchema.methods = {
+  ...userSchema.methods,
+  ...superlikeMethods
+};
 
 // Method to get display name
 userSchema.methods.getDisplayName = function() {
