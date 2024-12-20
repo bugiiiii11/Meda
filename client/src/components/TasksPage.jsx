@@ -65,12 +65,14 @@ const TasksPage = ({ userData, onUserDataUpdate }) => {
   const [error, setError] = useState(null);
 
   const quickTasks = [
+    /*
     { 
       id: 'website', 
       label: 'Browse Our Web', 
       link: 'https://cryptomeme.me', 
       points: 10
     },
+    */
     { 
       id: 'telegram', 
       label: 'Join Telegram Chat', 
@@ -80,15 +82,17 @@ const TasksPage = ({ userData, onUserDataUpdate }) => {
     { 
       id: 'twitter', 
       label: 'Follow X', 
-      link: 'https://x.com/fynderapp', 
+      link: 'https://x.com/fynder_app', 
       points: 10
     },
+    /*
     { 
       id: 'instagram', 
       label: 'Follow Instagram', 
       link: 'https://instagram.com/fynderapp', 
       points: 10
     },
+    */
     { 
       id: 'news-1', 
       label: 'Read the Latest News', 
