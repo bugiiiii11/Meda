@@ -95,6 +95,12 @@ const schemas = {
   getLeaderboard: Joi.object({
     type: Joi.string().valid('all', 'users', 'projects').default('all'),
     limit: Joi.number().min(1).max(100).default(50)
+  }),
+
+  // Superlikes validations
+  useSuperlike: Joi.object({
+    telegramId: Joi.string().required(),
+    memeId: Joi.number().required()
   })
 };
 

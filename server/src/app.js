@@ -78,6 +78,7 @@ const userRoutes = require('./routes/userRoutes');
 const interactionRoutes = require('./routes/interactionRoutes');
 const referralRoutes = require('./routes/referralRoutes');
 const priceRoutes = require('./routes/priceRoutes');
+const superLikesRoutes = require('./routes/superLikesRoutes');
 
 // API routes with versioning prefix
 const API_PREFIX = '/api';
@@ -88,6 +89,8 @@ app.use(`${API_PREFIX}/users`, userRoutes);
 app.use(`${API_PREFIX}/interactions`, interactionRoutes);
 app.use(`${API_PREFIX}/referrals`, referralRoutes);
 app.use(`${API_PREFIX}/coingecko`, priceRoutes);
+app.use(`${API_PREFIX}`, superLikesRoutes);
+app.use(`${API_PREFIX}/superlikes`, superLikesRoutes);
 
 // Debug routes for non-production environments
 if (process.env.NODE_ENV !== 'production') {
