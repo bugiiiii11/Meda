@@ -603,7 +603,7 @@ const dummyMemes = [
       },
       {
         label: "Join Telegram",
-        url: "https://t.me/GoatseusMaximusSolanaPortal"
+        url: "https://t.me/ShibaInu_Dogecoinkiller"
       },
       {
         label: "Twitter",
@@ -899,7 +899,7 @@ const dummyMemes = [
     priceChange24h: -1,
     contract: "0x0b3e328455c4059eeb9e3f84b5543f74e24e7e1b",
     buyLink: "https://aerodrome.finance/swap?from=0x4200000000000000000000000000000000000006&to=0x0b3e328455c4059eeb9e3f84b5543f74e24e7e1b",
-    sector: "Meme", 
+    sector: "AI", 
     buttons: [
       {
         label: "Website",

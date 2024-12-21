@@ -496,7 +496,7 @@ const dummyMemes = [
         },
         {
           label: "Join Telegram",
-          url: "https://t.me/GoatseusMaximusSolanaPortal"
+          url: "https://t.me/ShibaInu_Dogecoinkiller"
         },
         {
           label: "Twitter",

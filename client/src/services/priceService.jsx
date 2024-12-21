@@ -16,7 +16,7 @@ class PriceService {
       
     this.uniqueTokens = {
       'pepe': ['1', '2', '4'],
-      'peanut-the-squirrel': ['3', '5', '6', '7', '9'],
+      '-the-squirrel': ['3', '5', '6', '7', '9'],
       'popcat': ['8', '10', '11', '12', '13', '14'],
       'shiba-inu': ['15'],
       'bonk': ['16'],
@@ -26,7 +26,7 @@ class PriceService {
       'goatseus-maximus': ['20'],
       'pixels': ['21'],
       'gala': ['22'],
-      'virtuals-protocol': ['23']
+      'virtual-protocol': ['23']
     };
     
     this.cache = new Map();
