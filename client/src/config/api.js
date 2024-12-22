@@ -20,6 +20,10 @@ export const ENDPOINTS = {
     create: `${BASE_URL}/api/users/create`,
     get: (telegramId) => `${BASE_URL}/api/users/${telegramId}`,
     points: `${BASE_URL}/api/users/points`
+  },
+  superlikes: {
+    status: (telegramId) => `${BASE_URL}/api/superlikes/status/${telegramId}`,
+    use: `${BASE_URL}/api/superlikes/use`
   }
 };
 

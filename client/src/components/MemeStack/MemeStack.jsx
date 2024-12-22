@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import MemeCard from '../MemeCard/MemeCard';
 import { ENDPOINTS } from '../../config/api';
 
+// Initial state declarations
 const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData }) => {
   const [currentMeme, setCurrentMeme] = React.useState(null);
   const [nextMeme, setNextMeme] = React.useState(null);
@@ -11,6 +12,17 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
   const [isAnimating, setIsAnimating] = React.useState(false);
   const [isMobile, setIsMobile] = React.useState(false);
   const [isDragging, setIsDragging] = React.useState(false);
+  const [superlikeStatus, setSuperlikeStatus] = React.useState({
+    canSuperlike: true,
+    remainingSuperlikes: 3,
+    nextResetIn: 24
+  });
+
+  // DEBUG - START
+  React.useEffect(() => {
+    console.log('Superlike status updated:', superlikeStatus);
+  }, [superlikeStatus]);
+  // DEBUG - END
 
   console.log('===== DEBUG: MemeStack Props =====');
   console.log('Received memes:', memes.map(m => ({
@@ -98,6 +110,32 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
     return fallbackMeme;
   }, [memes, currentMeme, nextMeme]);
 
+  // Function to fetch superlikes status
+  const fetchSuperlikeStatus = React.useCallback(async () => {
+    console.log('Fetching superlike status for user:', userData?.telegramId);
+    if (!userData?.telegramId) {
+      console.log('No telegram ID available, skipping fetch');
+      return;
+    }
+  
+    try {
+      console.log('Making superlike status request...');
+      const response = await fetch(ENDPOINTS.superlikes.status(userData.telegramId), {
+        headers: {
+          'Origin': window.location.origin,
+          'X-Telegram-Init-Data': window.Telegram?.WebApp?.initData || ''
+        }
+      });
+      const data = await response.json();
+      console.log('Superlike status response:', data);
+      if (data.success) {
+        setSuperlikeStatus(data.data);
+      }
+    } catch (error) {
+      console.error('Error fetching superlike status:', error);
+    }
+  }, [userData?.telegramId]);
+
   // Initialize memes
   React.useEffect(() => {
     if (memes.length > 0 && !currentMeme) {
@@ -142,10 +180,30 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
     setIsMobile(!!window.Telegram?.WebApp);
   }, []);
 
+  React.useEffect(() => {
+    fetchSuperlikeStatus();
+  }, [fetchSuperlikeStatus]);
+
   const handleSwipe = async (direction) => {
     if (isAnimating || !currentMeme) return;
     
-    console.log('Handling swipe:', direction);
+    // Check superlike availability
+    if (direction === 'super') {
+      console.log('Attempting superlike with status:', superlikeStatus);
+      if (!superlikeStatus.canSuperlike) {
+        console.log('Superlike blocked: No superlikes remaining');
+        // TODO: Add user notification here
+        return;
+      }
+    }
+    
+    console.log('Processing swipe:', {
+      direction,
+      memeId: currentMeme.id,
+      userId: userData?.telegramId,
+      remainingSuperlikes: superlikeStatus.remainingSuperlikes
+    });
+
     console.log('Current meme before swipe:', {
       id: currentMeme.id,
       engagement: currentMeme.engagement
@@ -157,35 +215,84 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
     // Transition to next meme immediately
     transitionToNextMeme();
     
-    // Handle interaction in the background
     try {
-      const action = direction === 'right' ? 'like' : 
-                    direction === 'left' ? 'dislike' : 'superlike';
-  
-    const response = await fetch(ENDPOINTS.interactions.update, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Origin': window.location.origin,
-        'X-Telegram-Init-Data': window.Telegram?.WebApp?.initData || '' // Add this line
-      },
-      body: JSON.stringify({
-        action,
-        memeId: currentMeme.id,
-        telegramId: userData?.telegramId,
-        username: userData?.username
-      })
-    });
+      let response;
+      
+      if (direction === 'super') {
+        console.log('Making superlike API request for meme:', currentMeme.id);
+        // First use superlike endpoint to handle limits
+        response = await fetch(ENDPOINTS.superlikes.use, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Origin': window.location.origin,
+            'X-Telegram-Init-Data': window.Telegram?.WebApp?.initData || ''
+          },
+          body: JSON.stringify({
+            telegramId: userData?.telegramId,
+            memeId: currentMeme.id
+          })
+        });
+
+        const superlikeData = await response.json();
+        console.log('Superlike API response:', superlikeData);
+
+        if (superlikeData.success) {
+          // Then record the interaction as before
+          response = await fetch(ENDPOINTS.interactions.update, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Origin': window.location.origin,
+              'X-Telegram-Init-Data': window.Telegram?.WebApp?.initData || ''
+            },
+            body: JSON.stringify({
+              action: 'superlike',
+              memeId: currentMeme.id,
+              telegramId: userData?.telegramId,
+              username: userData?.username
+            })
+          });
+
+          // Update superlike status after successful use
+          await fetchSuperlikeStatus();
+        } else {
+          throw new Error(superlikeData.error || 'Superlike failed');
+        }
+      } else {
+        console.log('Making regular interaction API request:', {
+          action: direction === 'right' ? 'like' : 'dislike',
+          memeId: currentMeme.id
+        });
+        // Regular like/dislike
+        const action = direction === 'right' ? 'like' : 'dislike';
+        response = await fetch(ENDPOINTS.interactions.update, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Origin': window.location.origin,
+            'X-Telegram-Init-Data': window.Telegram?.WebApp?.initData || ''
+          },
+          body: JSON.stringify({
+            action,
+            memeId: currentMeme.id,
+            telegramId: userData?.telegramId,
+            username: userData?.username
+          })
+        });
+      }
   
       const data = await response.json();
-      console.log('Interaction response:', data);
-  
+      console.log('Final API response:', data);
+
       if (!data.success) {
+        console.error('API request failed:', data.error);
         throw new Error(data.error || 'Interaction failed');
       }
     } catch (error) {
       console.error('Interaction error:', error);
     } finally {
+      console.log('Finishing swipe interaction');
       setTimeout(() => {
         setLastSwipe(null);
         setIsAnimating(false);

@@ -10,7 +10,13 @@ const app = express();
 
 // CORS configuration
 app.use(cors({
-  origin: ['https://fynder-2h5q.vercel.app', 'https://fynder-production.up.railway.app'],
+  origin: [
+    'https://fynder-2h5q.vercel.app', 
+    'https://fynder-production.up.railway.app',
+    'http://localhost:3000',
+    'http://localhost:3001',
+    'http://localhost:5173'  // Vite's default port
+  ],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: [
