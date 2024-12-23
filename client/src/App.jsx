@@ -37,6 +37,7 @@ const LoadingScreen = () => (
 );
 
 function App() {
+  // State declarations
   const [isLoading, setIsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('memes');
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
@@ -45,6 +46,11 @@ function App() {
   const [initError, setInitError] = useState(null);
   const [isTelegram, setIsTelegram] = useState(false);
   const [userData, setUserData] = useState(null);
+  const [superlikeStatus, setSuperlikeStatus] = useState({
+    canSuperlike: true,
+    remainingSuperlikes: 3,
+    nextResetIn: 24
+  });
 
   const handleUserDataUpdate = async (telegramId) => {
     if (!telegramId) return;
@@ -68,6 +74,27 @@ function App() {
       }
     } catch (error) {
       console.error('Error updating user data:', error);
+    }
+  };
+
+  // Function to fetch superlike status
+  const fetchSuperlikeStatus = async (telegramId) => {
+    if (!telegramId) return;
+    
+    try {
+      console.log('Fetching superlike status for user:', telegramId);
+      const response = await fetch(ENDPOINTS.superlikes.status(telegramId), {
+        headers: getHeaders()
+      });
+      
+      const data = await response.json();
+      console.log('Superlike status response:', data);
+      
+      if (data.success) {
+        setSuperlikeStatus(data.data);
+      }
+    } catch (error) {
+      console.error('Error fetching superlike status:', error);
     }
   };
 
@@ -275,6 +302,7 @@ function App() {
     initializeApp();
   }, []);
 
+  // Effect for fetching memes periodically
   useEffect(() => {
     const refreshInterval = setInterval(() => {
       if (!isLoading && !initError) {
@@ -284,6 +312,13 @@ function App() {
 
     return () => clearInterval(refreshInterval);
   }, [isLoading, initError]);
+
+  // Effect for fetching initial superlike status
+  useEffect(() => {
+    if (userData?.telegramId) {
+      fetchSuperlikeStatus(userData.telegramId);
+    }
+  }, [userData?.telegramId]);
 
   if (initError) {
     return (
@@ -321,6 +356,8 @@ function App() {
                   onMemeChange={handleMemeChange}
                   currentMeme={currentMeme}
                   userData={userData}
+                  superlikeStatus={superlikeStatus}
+                  onSuperlikeUse={fetchSuperlikeStatus}
                 />
               </div>
             </div>
@@ -338,6 +375,7 @@ function App() {
         <ProfilePage 
           userData={userData} 
           onUserDataUpdate={() => handleUserDataUpdate(userData?.telegramId)}
+          superlikeStatus={superlikeStatus}
         />
       )}
       <div className="fixed bottom-0 left-0 right-0 z-[60]">

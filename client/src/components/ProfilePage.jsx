@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-const ProfilePage = ({ userData }) => {
+const ProfilePage = ({ userData, superlikeStatus }) => {
   const [shareStatus, setShareStatus] = useState('');
 
   const handleShare = async () => {
@@ -60,17 +60,30 @@ const ProfilePage = ({ userData }) => {
               {[
                 { label: 'Total Points', icon: '🏆', value: userData?.totalPoints || 0 },
                 { label: 'Referrals', icon: '👥', value: userData?.referralStats?.referredUsers?.length || 0 },
-                { label: 'Available Super Likes', icon: '⭐', value: 'X' },
+                {
+                  label: 'Available Super Likes',
+                  icon: '⭐',
+                  value: superlikeStatus?.remainingSuperlikes || 0,
+                  // Add a subtitle for reset time
+                  subtitle: superlikeStatus?.nextResetIn 
+                    ? `Resets in ${superlikeStatus.nextResetIn}h` 
+                    : undefined                  
+                },
                 { label: 'My Membership', icon: '👑', value: 'Free Tier' }
               ].map((item, index) => (
                 <div 
                   key={index} 
                   className="flex items-center justify-between p-3 bg-[#2A2A2E] rounded-lg hover:bg-[#2F2F33] transition-colors"
                 >
-                  <span className="text-gray-300 flex items-center gap-2">
-                    <span className="text-lg">{item.icon}</span>
-                    {item.label}
-                  </span>
+                  <div className="flex flex-col">
+                    <span className="text-gray-300 flex items-center gap-2">
+                      <span className="text-lg">{item.icon}</span>
+                      {item.label}
+                    </span>
+                    {item.subtitle && (
+                      <span className="text-sm text-gray-500 ml-7">{item.subtitle}</span>
+                    )}
+                  </div>
                   <span className="text-[#FFD700] font-serif">{item.value}</span>
                 </div>
               ))}

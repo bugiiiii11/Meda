@@ -5,24 +5,13 @@ import MemeCard from '../MemeCard/MemeCard';
 import { ENDPOINTS } from '../../config/api';
 
 // Initial state declarations
-const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData }) => {
+const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData, superlikeStatus, onSuperlikeUse }) => {
   const [currentMeme, setCurrentMeme] = React.useState(null);
   const [nextMeme, setNextMeme] = React.useState(null);
   const [lastSwipe, setLastSwipe] = React.useState(null);
   const [isAnimating, setIsAnimating] = React.useState(false);
   const [isMobile, setIsMobile] = React.useState(false);
   const [isDragging, setIsDragging] = React.useState(false);
-  const [superlikeStatus, setSuperlikeStatus] = React.useState({
-    canSuperlike: true,
-    remainingSuperlikes: 3,
-    nextResetIn: 24
-  });
-
-  // DEBUG - START
-  React.useEffect(() => {
-    console.log('Superlike status updated:', superlikeStatus);
-  }, [superlikeStatus]);
-  // DEBUG - END
 
   console.log('===== DEBUG: MemeStack Props =====');
   console.log('Received memes:', memes.map(m => ({
@@ -110,32 +99,6 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
     return fallbackMeme;
   }, [memes, currentMeme, nextMeme]);
 
-  // Function to fetch superlikes status
-  const fetchSuperlikeStatus = React.useCallback(async () => {
-    console.log('Fetching superlike status for user:', userData?.telegramId);
-    if (!userData?.telegramId) {
-      console.log('No telegram ID available, skipping fetch');
-      return;
-    }
-  
-    try {
-      console.log('Making superlike status request...');
-      const response = await fetch(ENDPOINTS.superlikes.status(userData.telegramId), {
-        headers: {
-          'Origin': window.location.origin,
-          'X-Telegram-Init-Data': window.Telegram?.WebApp?.initData || ''
-        }
-      });
-      const data = await response.json();
-      console.log('Superlike status response:', data);
-      if (data.success) {
-        setSuperlikeStatus(data.data);
-      }
-    } catch (error) {
-      console.error('Error fetching superlike status:', error);
-    }
-  }, [userData?.telegramId]);
-
   // Initialize memes
   React.useEffect(() => {
     if (memes.length > 0 && !currentMeme) {
@@ -179,10 +142,6 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
   React.useEffect(() => {
     setIsMobile(!!window.Telegram?.WebApp);
   }, []);
-
-  React.useEffect(() => {
-    fetchSuperlikeStatus();
-  }, [fetchSuperlikeStatus]);
 
   const handleSwipe = async (direction) => {
     if (isAnimating || !currentMeme) return;
@@ -255,7 +214,7 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
           });
 
           // Update superlike status after successful use
-          await fetchSuperlikeStatus();
+          await onSuperlikeUse(userData?.telegramId);
         } else {
           throw new Error(superlikeData.error || 'Superlike failed');
         }
