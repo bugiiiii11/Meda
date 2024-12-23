@@ -1,6 +1,6 @@
 // config/api.js
 const BASE_URL = import.meta.env.VITE_ENV === 'production'
-  ? 'https://fynder-production.up.railway.app'
+  ? 'https://meda-production.up.railway.app'
   : 'http://localhost:3001';
 
 export const ENDPOINTS = {
