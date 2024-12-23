@@ -26,7 +26,7 @@ const setupHandlers = (bot) => {
   
         await bot.sendMessage(
           chatId,
-          `Welcome to Fynder, ${firstName}! 🚀\n\nDiscover your favorite web3 gaming projects!🚀`,
+          `Welcome to Fynder, ${firstName}! 🚀\n\nDiscover and rate your favorite web3 gaming projects!🚀🚀🚀`,
           {
             reply_markup: {
               inline_keyboard: [
