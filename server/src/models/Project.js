@@ -23,8 +23,8 @@ const projectSchema = new mongoose.Schema({
   }],
   type: {
     type: String,
-    enum: ['Meme', 'Gaming', 'AI'],
-    default: 'Meme'
+    enum: ['Pre-Sale', 'Strategy', 'Shooter', 'Telegram App', 'Telegram Game', 'MMORPG', 'RPG'],
+    default: 'NFT Game'
   },
   status: {
     type: String,
