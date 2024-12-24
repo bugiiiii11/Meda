@@ -26,13 +26,13 @@ const setupHandlers = (bot) => {
   
         await bot.sendMessage(
           chatId,
-          `Welcome to Fynder, ${firstName}! 🚀\n\nDiscover your favorite web3 gaming projects!🚀🚀🚀`,
+          `Welcome to Meda Swipe, ${firstName}! \n\nDiscover your favorite web3 gaming projects!🚀`,
           {
             reply_markup: {
               inline_keyboard: [
                 [
                   {
-                    text: '🚀 Start App',
+                    text: '🚀 Start App 🚀',
                     web_app: { 
                       url: webAppUrl
                     }
