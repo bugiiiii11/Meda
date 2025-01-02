@@ -219,8 +219,12 @@ const TasksPage = ({ userData, onUserDataUpdate }) => {
   return (
     <div className="flex flex-col h-screen bg-[#0A0B0F]">
       {/* Header */}
-      <div className="fixed top-0 left-0 right-0 z-50 bg-gradient-to-b from-[#0A0B0F] to-transparent pb-6">
-        <div className="w-full py-6 border-b border-white/5">
+      <div className="fixed top-0 left-0 right-0 z-50">
+        {/* Enhanced blur overlay */}
+        <div className="absolute inset-0 bg-gradient-to-b from-[#0A0B0F] via-[#0A0B0F]/95 to-transparent backdrop-blur-xl"></div>
+        
+        {/* Content */}
+        <div className="relative w-full py-6">
           <div className="text-center">
             <h1 className="font-game-title text-3xl bg-gradient-to-r from-[#4B7BF5] to-[#8A2BE2] text-transparent bg-clip-text">
               Challenges
