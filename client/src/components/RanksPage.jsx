@@ -45,121 +45,125 @@ const RanksPage = () => {
   const getRankIcon = (index) => {
     switch (index) {
       case 0:
-        return <span className="text-[#FFD700] text-2xl">👑</span>;
+        return <div className="relative">
+          <span className="text-3xl">👑</span>
+          <div className="absolute inset-0 animate-glow-pulse"></div>
+        </div>;
       case 1:
-        return <span className="text-[#C0C0C0] text-2xl">🥈</span>;
+        return <span className="text-2xl">🥈</span>;
       case 2:
-        return <span className="text-[#CD7F32] text-2xl">🥉</span>;
+        return <span className="text-2xl">🥉</span>;
       default:
-        return <span className="text-gray-400 font-serif text-lg">#{index + 1}</span>;
+        return (
+          <div className="w-8 h-8 rounded-full bg-gradient-to-r from-[#2A1B3D] to-[#1A1B2E] 
+            flex items-center justify-center border border-white/10">
+            <span className="font-game-mono text-gray-400 text-sm">#{index + 1}</span>
+          </div>
+        );
     }
   };
 
-  return (
-    <div className="flex flex-col h-screen bg-[#121214]">
-      {/* Fixed Header */}
-      <div className="fixed top-0 left-0 right-0 z-50 bg-[#121214]">
-  <div className="w-full py-6 border-b border-[#FFD700]/10">
-    <div className="text-center">
-      <h1 className="text-2xl font-serif text-white">Leaderboard</h1>
-    </div>
-  </div>
+  const TabButton = ({ isActive, onClick, children }) => (
+    <button
+      onClick={onClick}
+      className={`flex-1 py-3 px-4 rounded-lg font-game-title transition-all duration-300 transform hover:scale-105 
+        ${isActive 
+          ? 'bg-gradient-to-r from-[#FFD700] to-[#FFA500] text-black shadow-lg shadow-[#FFD700]/20' 
+          : 'bg-gradient-to-r from-[#2A1B3D] to-[#1A1B2E] text-gray-400 hover:text-white border border-white/5'
+        }`}
+    >
+      {children}
+    </button>
+  );
 
-         {/* Tabs Section */}
-        <div className="px-4 py-4 pb-6 border-b border-[#FFD700]/10">
+  const RankCard = ({ rank, name, points }) => (
+    <div className="group relative">
+      {/* Glow effect */}
+      <div className="absolute inset-0 bg-gradient-to-r from-[#4B7BF5]/5 to-[#8A2BE2]/5 rounded-xl blur-lg group-hover:blur-xl transition-all duration-300"></div>
+      
+      {/* Card content */}
+      <div className="relative bg-gradient-to-r from-[#2A1B3D] to-[#1A1B2E] rounded-xl p-4 border border-white/5 
+        transform transition-all duration-300 hover:scale-[1.02] hover:border-white/10">
+        <div className="flex items-center gap-4">
+          <div className="w-12 flex items-center justify-center">
+            {getRankIcon(rank)}
+          </div>
+          
+          <div className="flex-1">
+            <h3 className="font-game-title text-white">
+              {name}
+            </h3>
+          </div>
+          
+          <div className="flex items-center gap-2">
+            <span className="font-game-mono text-[#FFD700] text-lg animate-glow-pulse">
+              {formatNumber(points)}
+            </span>
+            <span className="font-game-mono text-gray-400 text-sm">pts</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  return (
+    <div className="flex flex-col h-screen bg-[#0A0B0F]">
+      {/* Fixed Header */}
+      <div className="fixed top-0 left-0 right-0 z-50 bg-gradient-to-b from-[#0A0B0F] via-[#0A0B0F] to-transparent pb-6">
+        <div className="w-full py-6 border-b border-white/5">
+          <div className="text-center">
+            <h1 className="font-game-title text-3xl bg-gradient-to-r from-[#4B7BF5] to-[#8A2BE2] 
+              text-transparent bg-clip-text">Champions Hall</h1>
+          </div>
+        </div>
+
+        {/* Tabs Section */}
+        <div className="px-4 py-4 pb-6">
           <div className="flex gap-2 max-w-md mx-auto">
-            <button
+            <TabButton 
+              isActive={activeTab === 'users'} 
               onClick={() => setActiveTab('users')}
-              className={`flex-1 py-3 px-4 rounded-lg font-medium transition-all ${
-                activeTab === 'users'
-                  ? 'bg-[#FFD700] text-black'
-                  : 'bg-[#1E1E22] text-gray-400 hover:bg-[#2A2A2E]'
-              }`}
             >
-              Users
-            </button>
-            <button
+              Warriors
+            </TabButton>
+            <TabButton 
+              isActive={activeTab === 'projects'} 
               onClick={() => setActiveTab('projects')}
-              className={`flex-1 py-3 px-4 rounded-lg font-medium transition-all ${
-                activeTab === 'projects'
-                  ? 'bg-[#FFD700] text-black'
-                  : 'bg-[#1E1E22] text-gray-400 hover:bg-[#2A2A2E]'
-              }`}
             >
-              Projects
-            </button>
+              Kingdoms
+            </TabButton>
           </div>
         </div>
       </div>
 
-      {/* Scrollable Content with proper padding */}
+      {/* Scrollable Content */}
       <div className="flex-1 overflow-auto pt-[180px] pb-20 px-4">
         <div className="max-w-md mx-auto">
           {loading ? (
             <div className="flex justify-center items-center h-48">
-              <div className="animate-spin rounded-full h-8 w-8 border-2 border-[#FFD700] border-t-transparent"></div>
+              <div className="animate-spin rounded-full h-12 w-12 border-4 border-[#4B7BF5] border-t-transparent 
+                shadow-lg shadow-[#4B7BF5]/20"></div>
             </div>
           ) : (
             <div className="space-y-3">
-              {activeTab === 'users' ? (
-                leaderboardData.users.map((user, index) => (
-                  <div
-                    key={user.telegramId}
-                    className="bg-[#1E1E22] rounded-xl p-4 border border-[#FFD700]/10 hover:border-[#FFD700]/20 transition-all"
-                  >
-                    <div className="flex items-center gap-4">
-                      {/* Rank */}
-                      <div className="w-12 flex items-center justify-center">
-                        {getRankIcon(index)}
-                      </div>
-                      
-                      {/* Username */}
-                      <div className="flex-1">
-                        <h3 className="text-white font-medium">
-                          {user.username}
-                        </h3>
-                      </div>
-                      
-                      {/* Points */}
-                      <div className="flex items-center gap-2">
-                        <span className="text-[#FFD700] font-serif">
-                          {formatNumber(user.totalPoints)}
-                        </span>
-                        <span className="text-gray-400 text-sm">pts</span>
-                      </div>
-                    </div>
-                  </div>
-                ))
-              ) : (
-                leaderboardData.projects.map((project, index) => (
-                  <div
-                    key={project.name}
-                    className="bg-[#1E1E22] rounded-xl p-4 border border-[#FFD700]/10 hover:border-[#FFD700]/20 transition-all"
-                  >
-                    <div className="flex items-center gap-4">
-                      {/* Rank */}
-                      <div className="w-12 flex items-center justify-center">
-                        {getRankIcon(index)}
-                      </div>
-                      
-                      {/* Project Name */}
-                      <div className="flex-1">
-                        <h3 className="text-white font-medium">
-                          {project.name}
-                        </h3>
-                      </div>
-                      
-                      {/* Points */}
-                      <div className="flex items-center gap-2">
-                        <span className="text-[#FFD700] font-serif">
-                          {formatNumber(project.totalPoints)}
-                        </span>
-                        <span className="text-gray-400 text-sm">pts</span>
-                      </div>
-                    </div>
-                  </div>
-                ))
-              )}
+              {activeTab === 'users' 
+                ? leaderboardData.users.map((user, index) => (
+                    <RankCard
+                      key={user.telegramId}
+                      rank={index}
+                      name={user.username}
+                      points={user.totalPoints}
+                    />
+                  ))
+                : leaderboardData.projects.map((project, index) => (
+                    <RankCard
+                      key={project.name}
+                      rank={index}
+                      name={project.name}
+                      points={project.totalPoints}
+                    />
+                  ))
+              }
             </div>
           )}
         </div>
