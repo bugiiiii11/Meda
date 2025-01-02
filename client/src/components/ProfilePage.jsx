@@ -1,5 +1,40 @@
 import React, { useState } from 'react';
 
+const ProfileCard = ({ children, className = '' }) => (
+  <div className="relative group">
+    {/* Background glow effect */}
+    <div className="absolute inset-0 bg-gradient-to-r from-[#4B7BF5]/5 to-[#8A2BE2]/5 rounded-xl blur-lg group-hover:blur-xl transition-all duration-300"></div>
+    
+    {/* Card content */}
+    <div className={`relative bg-gradient-to-r from-[#2A1B3D] to-[#1A1B2E] rounded-xl p-6 border border-white/5 
+      transition-all duration-300 hover:border-white/10 ${className}`}>
+      {children}
+    </div>
+  </div>
+);
+
+const StatItem = ({ icon, label, value, subtitle }) => (
+  <div className="relative overflow-hidden group">
+    <div className="absolute inset-0 bg-gradient-to-r from-[#4B7BF5]/5 to-[#8A2BE2]/5 rounded-lg opacity-0 
+      group-hover:opacity-100 transition-opacity duration-300"></div>
+    <div className="p-3 rounded-lg bg-gradient-to-r from-[#1E1E22] to-[#2A2A2E] border border-white/5 
+      relative transition-all duration-300 group-hover:border-white/10">
+      <div className="flex items-center justify-between">
+        <div className="flex flex-col">
+          <span className="text-gray-300 flex items-center gap-2">
+            <span className="text-xl">{icon}</span>
+            <span className="font-game-body">{label}</span>
+          </span>
+          {subtitle && (
+            <span className="text-sm text-gray-500 ml-7 font-game-mono">{subtitle}</span>
+          )}
+        </div>
+        <span className="font-game-mono text-[#FFD700] animate-glow-pulse">{value}</span>
+      </div>
+    </div>
+  </div>
+);
+
 const ProfilePage = ({ userData, superlikeStatus }) => {
   const [shareStatus, setShareStatus] = useState('');
 
@@ -7,11 +42,11 @@ const ProfilePage = ({ userData, superlikeStatus }) => {
     if (!userData?.telegramId) return;
 
     const referralLink = `https://t.me/MedaPortalBot?start=${userData.telegramId}`;
-    const welcomeMessage = `Hello my friend, Join Meda Portal and discover exciting blockchain gaming projects! ${referralLink}`;
+    const welcomeMessage = `🎮 Join me on Meda Portal and discover exciting blockchain gaming projects! ${referralLink}`;
 
     try {
       await navigator.clipboard.writeText(welcomeMessage);
-      setShareStatus('Copied!');
+      setShareStatus('✨ Copied!');
 
       if (window.Telegram?.WebApp) {
         try {
@@ -25,27 +60,30 @@ const ProfilePage = ({ userData, superlikeStatus }) => {
       setTimeout(() => setShareStatus(''), 2000);
     } catch (error) {
       console.error('Share error:', error);
-      setShareStatus('Error');
+      setShareStatus('❌ Error');
       setTimeout(() => setShareStatus(''), 2000);
     }
   };
 
   if (!userData) {
     return (
-      <div className="flex justify-center items-center h-screen bg-[#121214]">
-        <div className="animate-spin rounded-full h-8 w-8 border-2 border-[#FFD700] border-t-transparent" />
+      <div className="flex justify-center items-center h-screen bg-[#0A0B0F]">
+        <div className="animate-spin rounded-full h-12 w-12 border-4 border-[#4B7BF5] border-t-transparent 
+          shadow-lg shadow-[#4B7BF5]/20"></div>
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col h-screen bg-[#121214]">
+    <div className="flex flex-col h-screen bg-[#0A0B0F]">
       {/* Fixed Header */}
-      <div className="fixed top-0 left-0 right-0 z-50 bg-[#121214]">
-        <div className="w-full py-6 border-b border-[#FFD700]/10">
+      <div className="fixed top-0 left-0 right-0 z-50 bg-gradient-to-b from-[#0A0B0F] via-[#0A0B0F] to-transparent">
+        <div className="w-full py-6 border-b border-white/5">
           <div className="text-center">
-            <h1 className="text-2xl font-serif text-white">My Profile</h1>
-            <p className="text-gray-400 text-sm">@{userData?.username || 'Anonymous'}</p>
+            <h1 className="font-game-title text-3xl bg-gradient-to-r from-[#4B7BF5] to-[#8A2BE2] text-transparent bg-clip-text">
+              Battle Profile
+            </h1>
+            <p className="font-game-mono text-gray-400 text-sm mt-1">@{userData?.username || 'Anonymous'}</p>
           </div>
         </div>
       </div>
@@ -54,90 +92,67 @@ const ProfilePage = ({ userData, superlikeStatus }) => {
       <div className="flex-1 overflow-auto pt-[100px] pb-20 px-4">
         <div className="max-w-md mx-auto space-y-6">
           {/* My Stats Section */}
-          <div className="bg-[#1E1E22] rounded-xl p-6 border border-[#FFD700]/10">
-            <h3 className="text-lg font-medium text-white mb-4">My Stats</h3>
+          <ProfileCard>
+            <h3 className="font-game-title text-xl text-white mb-4">Combat Stats</h3>
             <div className="space-y-3">
-              {[
-                { label: 'Total Points', icon: '🏆', value: userData?.totalPoints || 0 },
-                { label: 'Referrals', icon: '👥', value: userData?.referralStats?.referredUsers?.length || 0 },
-                {
-                  label: 'Available Super Likes',
-                  icon: '⭐',
-                  value: superlikeStatus?.remainingSuperlikes || 0,
-                  // Add a subtitle for reset time
-                  subtitle: superlikeStatus?.nextResetIn 
-                    ? `Resets in ${superlikeStatus.nextResetIn}h` 
-                    : undefined                  
-                },
-                { label: 'My Membership', icon: '👑', value: 'Free Tier' }
-              ].map((item, index) => (
-                <div 
-                  key={index} 
-                  className="flex items-center justify-between p-3 bg-[#2A2A2E] rounded-lg hover:bg-[#2F2F33] transition-colors"
-                >
-                  <div className="flex flex-col">
-                    <span className="text-gray-300 flex items-center gap-2">
-                      <span className="text-lg">{item.icon}</span>
-                      {item.label}
-                    </span>
-                    {item.subtitle && (
-                      <span className="text-sm text-gray-500 ml-7">{item.subtitle}</span>
-                    )}
-                  </div>
-                  <span className="text-[#FFD700] font-serif">{item.value}</span>
-                </div>
-              ))}
+              <StatItem 
+                icon="🏆" 
+                label="Total Power" 
+                value={userData?.totalPoints || 0} 
+              />
+              <StatItem 
+                icon="👥" 
+                label="Alliance Members" 
+                value={userData?.referralStats?.referredUsers?.length || 0} 
+              />
+              <StatItem 
+                icon="⚡" 
+                label="Energy Crystals" 
+                value={superlikeStatus?.remainingSuperlikes || 0}
+                subtitle={superlikeStatus?.nextResetIn ? `Recharges in ${superlikeStatus.nextResetIn}h` : undefined}
+              />
+              <StatItem 
+                icon="👑" 
+                label="Rank" 
+                value="Free Tier" 
+              />
             </div>
-          </div>
+          </ProfileCard>
 
           {/* Points Breakdown */}
-          <div className="bg-[#1E1E22] rounded-xl p-6 border border-[#FFD700]/10">
-            <h3 className="text-lg font-medium text-white mb-4">Points Breakdown</h3>
+          <ProfileCard>
+            <h3 className="font-game-title text-xl text-white mb-4">Battle Records</h3>
             <div className="space-y-3">
-              {[
-                { label: 'Likes', icon: '👍', points: userData?.pointsBreakdown?.likes || 0 },
-                { label: 'Dislikes', icon: '👎', points: userData?.pointsBreakdown?.dislikes || 0 },
-                { label: 'Super Likes', icon: '⭐', points: (userData?.pointsBreakdown?.superLikes || 0) * 3 },
-                { label: 'Tasks Completed', icon: '✅', points: userData?.pointsBreakdown?.tasks || 0 },
-                { label: 'Achievements', icon: '🏅', points: 0 },
-                { label: 'Referral Bonus', icon: '🎁', points: userData?.pointsBreakdown?.referrals || 0 }
-              ].map((item, index) => (
-                <div 
-                  key={index} 
-                  className="flex items-center justify-between p-3 bg-[#2A2A2E] rounded-lg hover:bg-[#2F2F33] transition-colors"
-                >
-                  <span className="text-gray-300 flex items-center gap-2">
-                    <span className="text-lg">{item.icon}</span>
-                    {item.label}
-                  </span>
-                  <span className="text-[#FFD700] font-serif">+{item.points}</span>
-                </div>
-              ))}
+              <StatItem icon="👍" label="Approvals" value={`+${userData?.pointsBreakdown?.likes || 0}`} />
+              <StatItem icon="👎" label="Rejections" value={`+${userData?.pointsBreakdown?.dislikes || 0}`} />
+              <StatItem icon="⚡" label="Power Strikes" value={`+${(userData?.pointsBreakdown?.superLikes || 0) * 3}`} />
+              <StatItem icon="✅" label="Quests Completed" value={`+${userData?.pointsBreakdown?.tasks || 0}`} />
+              <StatItem icon="🏅" label="Achievement Points" value="+0" />
+              <StatItem icon="🎁" label="Alliance Bonus" value={`+${userData?.pointsBreakdown?.referrals || 0}`} />
             </div>
-          </div>
+          </ProfileCard>
 
           {/* Referral Section */}
-          <div className="bg-[#1E1E22] rounded-xl p-6 border border-[#FFD700]/10">
-            <h3 className="text-lg font-medium text-white mb-2">Referral Program</h3>
-            <p className="text-gray-400 text-sm mb-4">
-              Invite friends and earn 20 points for each referral!
+          <ProfileCard>
+            <h3 className="font-game-title text-xl text-white mb-2">Alliance Program</h3>
+            <p className="font-game-body text-gray-400 text-sm mb-4">
+              Recruit warriors and earn 20 power points for each ally!
             </p>
 
-            {/* Referral Link and Share Button */}
-            <div className="bg-[#2A2A2E] p-4 rounded-lg space-y-3">
+            <div className="relative overflow-hidden rounded-lg bg-gradient-to-r from-[#1E1E22] to-[#2A2A2E] p-4">
               <button
                 onClick={handleShare}
                 disabled={!userData?.telegramId}
-                className={`w-full px-4 py-3 rounded-lg font-medium transition-all ${
-                  shareStatus ? 
-                  'bg-[#FFD700]/20 text-[#FFD700]' : 
-                  'bg-[#FFD700] text-black hover:bg-[#FFD700]/90'
-                } disabled:opacity-50 disabled:cursor-not-allowed`}
+                className={`w-full px-4 py-3 rounded-lg font-game-title transition-all duration-300 transform hover:scale-105
+                  ${shareStatus 
+                    ? 'bg-gradient-to-r from-[#4B7BF5]/20 to-[#8A2BE2]/20 text-[#FFD700]' 
+                    : 'bg-gradient-to-r from-[#FFD700] to-[#FFA500] text-black shadow-lg shadow-[#FFD700]/20'
+                  } disabled:opacity-50 disabled:cursor-not-allowed`}
               >
-                {shareStatus || 'Invite Friends'}
+                {shareStatus || 'Recruit Warriors'}
               </button>
             </div>
-          </div>
+          </ProfileCard>
         </div>
       </div>
     </div>
