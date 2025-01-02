@@ -260,7 +260,7 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
   };
 
   return (
-    <div className="relative max-w-[calc(100vw-32px)] mx-auto aspect-square bg-[#121214]">
+    <div className="relative max-w-[calc(100vw-32px)] mx-auto aspect-square bg-[#0A0B0F]">
       {/* Background Layer (Next Meme) - Always below */}
       <div className="absolute inset-0 z-10">
         {nextMeme && (
@@ -323,16 +323,15 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
   
       {/* Swipe Indicator Overlay - Always on top */}
           <AnimatePresence>
-      {lastSwipe && (
-        <motion.div 
-          className="absolute inset-0 flex items-center justify-center z-30 pointer-events-none"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-        >
+          {lastSwipe && (
+          <motion.div 
+            className="absolute inset-0 flex items-center justify-center z-30 pointer-events-none"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
           {lastSwipe === 'right' && (
           <>
-            {/* Background particles for LIKE */}
             <motion.div className="absolute inset-0 overflow-hidden">
               {[...Array(8)].map((_, i) => (
                 <motion.div
@@ -361,9 +360,9 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
               ))}
             </motion.div>
             
-            {/* Main LIKE indicator - keep your existing code */}
             <motion.div 
-              className="px-8 py-4 rounded-2xl border-4 border-green-500 shadow-xl backdrop-blur-sm bg-green-500/90"
+              className="px-8 py-4 rounded-2xl border-4 border-[#50FA7B] shadow-xl backdrop-blur-sm 
+                bg-gradient-to-r from-[#50FA7B]/90 to-[#38B259]/90"
               initial={{ x: -100, rotate: -45, scale: 0 }}
               animate={{ 
                 x: 0, 
@@ -380,38 +379,38 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
                 rotate: 45,
                 scale: 0,
                 transition: { duration: 0.2 }
-                }}
-              >
-                <div className="text-4xl font-bold text-white flex items-center gap-3">
-                  <motion.span
-                    initial={{ scale: 0 }}
-                    animate={{ 
-                      scale: [1, 1.2, 1],
-                      transition: {
-                        duration: 0.3,
-                        times: [0, 0.5, 1]
-                      }
-                    }}
-                  >
-                    👍 LIKE
-                  </motion.span>
-                </div>
-              </motion.div>
+              }}
+            >
+              <div className="font-game-title text-4xl text-white flex items-center gap-3">
+                <motion.span
+                  initial={{ scale: 0 }}
+                  animate={{ 
+                    scale: [1, 1.2, 1],
+                    transition: {
+                      duration: 0.3,
+                      times: [0, 0.5, 1]
+                    }
+                  }}
+                >
+                  👍 LIKE
+                </motion.span>
+              </div>
+            </motion.div>
             </>
           )}
 
           {lastSwipe === 'left' && (
             <>
-              {/* Background particles for NOPE */}
               <motion.div className="absolute inset-0 overflow-hidden">
                 {[...Array(6)].map((_, i) => (
                   <motion.div
                     key={`nope-particle-${i}`}
                     className="absolute w-8 h-8 text-2xl"
                     initial={{ 
-                      x: "50%", 
-                      y: "50%", 
-                      scale: 0 
+                      x: "50%",
+                      y: "50%",
+                      scale: 0,
+                      opacity: 0
                     }}
                     animate={{ 
                       x: `${50 + (Math.random() * 60 - 30)}%`,
@@ -431,7 +430,8 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
               </motion.div>
 
               <motion.div 
-                className="px-8 py-4 rounded-2xl border-4 border-red-500 shadow-xl backdrop-blur-sm bg-red-500/90"
+                className="px-8 py-4 rounded-2xl border-4 border-[#FF5555] shadow-xl backdrop-blur-sm 
+                  bg-gradient-to-r from-[#FF5555]/90 to-[#CC4444]/90"
                 initial={{ x: 100, rotate: 45, scale: 0 }}
                 animate={{ 
                   x: 0, 
@@ -450,7 +450,7 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
                   transition: { duration: 0.2 }
                 }}
               >
-                <div className="text-4xl font-bold text-white flex items-center gap-3">
+                <div className="font-game-title text-4xl text-white flex items-center gap-3">
                   <motion.span
                     initial={{ scale: 0 }}
                     animate={{ 
@@ -470,16 +470,16 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
 
           {lastSwipe === 'super' && (
             <>
-              {/* Background effects for SUPER */}
               <motion.div className="absolute inset-0 overflow-hidden">
                 {[...Array(8)].map((_, i) => (
                   <motion.div
                     key={`super-particle-${i}`}
                     className="absolute w-8 h-8 text-2xl"
                     initial={{ 
-                      x: "50%", 
-                      y: "50%", 
-                      scale: 0 
+                      x: "50%",
+                      y: "50%",
+                      scale: 0,
+                      opacity: 0
                     }}
                     animate={{ 
                       x: `${50 + (Math.random() * 60 - 30)}%`,
@@ -499,7 +499,8 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
               </motion.div>
 
               <motion.div 
-                className="px-8 py-4 rounded-2xl border-4 border-blue-500 shadow-xl backdrop-blur-sm bg-blue-500/90"
+                className="px-8 py-4 rounded-2xl border-4 border-[#4B7BF5] shadow-xl backdrop-blur-sm 
+                  bg-gradient-to-r from-[#4B7BF5]/90 to-[#8A2BE2]/90"
                 initial={{ y: 100, scale: 0 }}
                 animate={{ 
                   y: 0, 
@@ -516,7 +517,7 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
                   transition: { duration: 0.2 }
                 }}
               >
-                <div className="text-4xl font-bold text-white flex items-center gap-3">
+                <div className="font-game-title text-4xl text-white flex items-center gap-3">
                   <motion.div
                     initial={{ scale: 0 }}
                     animate={{ 
@@ -528,7 +529,7 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
                       }
                     }}
                   >
-                    ⭐ SUPER
+                    ⚡ SUPER
                   </motion.div>
                 </div>
               </motion.div>

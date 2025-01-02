@@ -1,7 +1,7 @@
+//TopBar.jsx
 import React, { useEffect, useState } from 'react';
 import { priceService } from '../../services/priceService';
 
-// Add AnimatedButton component
 const AnimatedButton = ({ onClick, children, className }) => {
   const [isFlashing, setIsFlashing] = React.useState(false);
 
@@ -9,22 +9,29 @@ const AnimatedButton = ({ onClick, children, className }) => {
     if (!isFlashing) {
       setIsFlashing(true);
       onClick?.();
-      setTimeout(() => {
-        setIsFlashing(false);
-      }, 300);
+      setTimeout(() => setIsFlashing(false), 300);
     }
   };
 
   return (
     <button
       onClick={handleClick}
-      className={`relative overflow-hidden ${className}`}
+      className={`relative transform transition-all duration-300 hover:scale-105 ${className}`}
     >
+      {/* Glow effect */}
+      <div className="absolute inset-0 bg-gradient-to-r from-[#4B7BF5]/10 to-[#8A2BE2]/10 rounded-xl blur-xl"></div>
+      
+      {/* Main content */}
       <div className="relative z-10 w-full h-full">{children}</div>
+      
+      {/* Flash effect */}
       {isFlashing && (
         <div 
-          className="absolute inset-0 bg-[#FFD700] animate-flash"
-          style={{ opacity: 0.3 }}
+          className="absolute inset-0 bg-[#FFD700] rounded-xl"
+          style={{
+            opacity: 0.3,
+            animation: 'flashAnimation 0.3s ease-out forwards'
+          }}
         />
       )}
     </button>
@@ -36,7 +43,7 @@ const TopBar = ({ meme, onDetailsClick, isDetailsOpen }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isButtonLoading, setIsButtonLoading] = useState(false);
-
+  
   useEffect(() => {
     let isMounted = true;
     let retryCount = 0;
@@ -127,103 +134,107 @@ const TopBar = ({ meme, onDetailsClick, isDetailsOpen }) => {
 
   return (
     <div className="w-full px-4">
-      <div className="max-w-md mx-auto bg-[#1E1E22] border border-[#FFD700]/10 rounded-xl overflow-hidden">
-        {process.env.NODE_ENV === 'development' && (
-          <div className="text-xs text-gray-500 p-2 border-b border-gray-800">
-            Debug: MemeID: {meme?.id} | Loading: {loading.toString()} | 
-            Error: {error || 'none'} | 
-            Price: {priceData?.price || 'N/A'}
-          </div>
-        )}
-  
-        <div className="p-4">
-          {/* Top Section: Project Info and Buy Button */}
-          <div className="flex justify-between items-center mb-4">
-          <div className="flex items-center gap-3">
-            {meme?.logo && (
-              <img
-                src={meme.logo}
-                alt={meme.projectName || ''}
-                className="w-10 h-10 rounded-full bg-[#2A2A2E] object-cover"
-              />
-            )}
-            <div>
-              <h1 className="text-xl font-medium text-white">
-                {meme?.projectName || ''}
-              </h1>
-              <p className="text-sm text-gray-400">
-                {meme?.projectDetails?.network || ''}
-              </p>
-            </div>
-          </div>
-
-          <button
-            onClick={handleBuyClick}
-            disabled={loading || isButtonLoading}
-            className="px-4 py-2 bg-[#FFD700] hover:bg-[#FFD700]/90 text-black font-medium rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {isButtonLoading ? (
-              <div className="h-4 w-4 border-2 border-black border-t-transparent rounded-full animate-spin" />
-            ) : (
-              'Buy Here'
-            )}
-          </button>
-        </div>
-
-        {/* Middle Section: Price Information */}
-        <div className="grid grid-cols-3 gap-4 mb-4">
-          <div>
-            <div className="text-sm text-gray-400">Price</div>
-            {loading ? (
-              <div className="h-6 w-24 bg-[#2A2A2E] animate-pulse rounded" />
-            ) : (
-              <div className="font-medium text-white">
-                {formatPrice(priceData?.price || meme?.projectDetails?.price)}
-              </div>
-            )}
-          </div>
-          <div>
-            <div className="text-sm text-gray-400">24h</div>
-            {loading ? (
-              <div className="h-6 w-20 bg-[#2A2A2E] animate-pulse rounded" />
-            ) : (
-              <div className={`font-medium ${
-                Number(priceData?.priceChange24h || meme?.projectDetails?.priceChange24h || 0) >= 0 
-                  ? 'text-[#00DC82]' 
-                  : 'text-red-400'
-              }`}>
-                {Number(priceData?.priceChange24h || meme?.projectDetails?.priceChange24h || 0) >= 0 ? '+' : ''}
-                {Number(priceData?.priceChange24h || meme?.projectDetails?.priceChange24h || 0).toFixed(2)}%
-              </div>
-            )}
-          </div>
-            <div className="text-right">
-              <div className="text-sm text-gray-400">Market Cap</div>
-              {loading ? (
-                <div className="h-6 w-24 ml-auto bg-[#2A2A2E] animate-pulse rounded" />
-              ) : (
-                <div className="font-medium text-white">
-                  {formatMarketCap(priceData?.marketCap || meme?.projectDetails?.marketCap)}
+      <div className="max-w-md mx-auto relative">
+        {/* Glow effect */}
+        <div className="absolute inset-0 bg-gradient-to-r from-[#4B7BF5]/5 to-[#8A2BE2]/5 rounded-xl blur-lg"></div>
+        
+        {/* Main content */}
+        <div className="relative bg-gradient-to-r from-[#2A1B3D] to-[#1A1B2E] rounded-xl overflow-hidden border border-white/5">
+          <div className="p-4 space-y-4">
+            {/* Project Info and Buy Button */}
+            <div className="flex justify-between items-center">
+              <div className="flex items-center gap-3">
+                {meme?.logo && (
+                  <div className="relative w-12 h-12">
+                    <div className="absolute inset-0 bg-gradient-to-r from-[#4B7BF5]/30 to-[#8A2BE2]/30 rounded-full blur-md"></div>
+                    <img
+                      src={meme.logo}
+                      alt={meme.projectName || ''}
+                      className="relative w-12 h-12 rounded-full object-cover border border-white/10"
+                    />
+                  </div>
+                )}
+                <div>
+                  <h1 className="font-game-title text-xl text-white">
+                    {meme?.projectName || ''}
+                  </h1>
+                  <p className="font-game-mono text-sm text-gray-400">
+                    {meme?.projectDetails?.network || ''}
+                  </p>
                 </div>
-              )}
-            </div>
-        </div>
+              </div>
 
-        {/* Bottom Section: Details Button */}
-        <AnimatedButton
-          onClick={onDetailsClick}
-          className={`w-full rounded-lg font-medium transition-all ${
-            isDetailsOpen
-              ? 'bg-[#2A2A2E] text-[#FFD700] border border-[#FFD700]/20'
-              : 'bg-[#2A2A2E] text-gray-300 hover:text-white hover:bg-[#363639]'
-          }`}
-        >
-          <div className="py-3 px-4">
-            {isDetailsOpen ? 'Close Details' : 'View Details'}
+              <AnimatedButton
+                onClick={handleBuyClick}
+                disabled={loading || isButtonLoading}
+                className="px-6 py-2.5 bg-gradient-to-r from-[#FFD700] to-[#FFA500] text-black 
+                  font-game-title rounded-lg shadow-lg shadow-[#FFD700]/20 
+                  disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isButtonLoading ? (
+                  <div className="h-5 w-5 border-2 border-black border-t-transparent rounded-full animate-spin" />
+                ) : (
+                  'Buy Now'
+                )}
+              </AnimatedButton>
+            </div>
+
+            {/* Price Information */}
+            <div className="grid grid-cols-3 gap-4">
+              {[
+                {
+                  label: 'Price',
+                  value: formatPrice(priceData?.price || meme?.projectDetails?.price),
+                  loading
+                },
+                {
+                  label: '24h',
+                  value: `${Number(priceData?.priceChange24h || meme?.projectDetails?.priceChange24h || 0) >= 0 ? '+' : ''}${Number(priceData?.priceChange24h || meme?.projectDetails?.priceChange24h || 0).toFixed(2)}%`,
+                  loading,
+                  isChange: true
+                },
+                {
+                  label: 'Market Cap',
+                  value: formatMarketCap(priceData?.marketCap || meme?.projectDetails?.marketCap),
+                  loading,
+                  align: 'text-right'
+                }
+              ].map((item, index) => (
+                <div key={index} className={item.align || ''}>
+                  <div className="font-game-mono text-sm text-gray-400">{item.label}</div>
+                  {item.loading ? (
+                    <div className="h-6 w-24 bg-white/5 animate-pulse rounded" />
+                  ) : (
+                    <div className={`font-game-mono font-medium ${
+                      item.isChange
+                        ? Number(priceData?.priceChange24h || meme?.projectDetails?.priceChange24h || 0) >= 0
+                          ? 'text-[#50FA7B]'
+                          : 'text-[#FF5555]'
+                        : 'text-white'
+                    }`}>
+                      {item.value}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+
+            {/* Details Button */}
+            <AnimatedButton
+              onClick={onDetailsClick}
+              className={`w-full rounded-lg font-game-title transition-all ${
+                isDetailsOpen
+                  ? 'bg-gradient-to-r from-[#4B7BF5]/20 to-[#8A2BE2]/20 text-[#FFD700] border border-[#FFD700]/20'
+                  : 'bg-gradient-to-r from-[#1E1E22] to-[#2A2A2E] text-gray-300 border border-white/5 hover:border-white/10'
+              }`}
+            >
+              <div className="py-3 px-4">
+                {isDetailsOpen ? 'Close Details' : 'View Details'}
+              </div>
+            </AnimatedButton>
           </div>
-        </AnimatedButton>
+        </div>
       </div>
-    </div>
     </div>
   );
 };

@@ -1,3 +1,4 @@
+//DetailsPage.jsx
 import React, { useState } from 'react';
 
 const CopyIcon = () => (
@@ -17,7 +18,6 @@ const CopyIcon = () => (
   </svg>
 );
 
-// Reusable animated button component
 const AnimatedButton = ({ onClick, children, className }) => {
   const [isFlashing, setIsFlashing] = React.useState(false);
 
@@ -25,29 +25,35 @@ const AnimatedButton = ({ onClick, children, className }) => {
     if (!isFlashing) {
       setIsFlashing(true);
       onClick?.();
-      setTimeout(() => {
-        setIsFlashing(false);
-      }, 300);
+      setTimeout(() => setIsFlashing(false), 300);
     }
   };
 
   return (
     <button
       onClick={handleClick}
-      className={`relative overflow-hidden ${className}`}
+      className={`relative transform transition-all duration-300 hover:scale-105 ${className}`}
     >
-      <div className="relative z-10">{children}</div>
+      {/* Glow effect */}
+      <div className="absolute inset-0 bg-gradient-to-r from-[#4B7BF5]/10 to-[#8A2BE2]/10 rounded-xl blur-lg"></div>
+      
+      {/* Main content */}
+      <div className="relative z-10 w-full h-full">{children}</div>
+      
+      {/* Flash effect */}
       {isFlashing && (
         <div 
-          className="absolute inset-0 bg-[#FFD700] animate-flash"
-          style={{ opacity: 0.3 }}
+          className="absolute inset-0 bg-[#FFD700] rounded-xl"
+          style={{
+            opacity: 0.3,
+            animation: 'flashAnimation 0.3s ease-out forwards'
+          }}
         />
       )}
     </button>
   );
 };
 
-// Copy button with notification
 const CopyButton = ({ text }) => {
   const [showCopied, setShowCopied] = useState(false);
 
@@ -64,17 +70,17 @@ const CopyButton = ({ text }) => {
   return (
     <div className="relative">
       <div className={`
-        absolute -top-8 left-1/2 -translate-x-1/2 
-        text-[#FFD700] text-sm font-medium
+        absolute -top-8 left-1/2 -translate-x-1/2
+        font-game-mono text-[#FFD700] text-sm
         transition-all duration-200
         ${showCopied ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-1'}
       `}>
-        Copied
+        Copied!
       </div>
-      
       <AnimatedButton
         onClick={handleCopy}
-        className="text-gray-400 hover:text-[#FFD700] transition-colors p-1.5 rounded-md hover:bg-[#FFD700]/10"
+        className="text-gray-400 hover:text-[#FFD700] transition-colors p-1.5 rounded-md 
+          hover:bg-gradient-to-r hover:from-[#4B7BF5]/10 hover:to-[#8A2BE2]/10"
       >
         <CopyIcon />
       </AnimatedButton>
@@ -83,41 +89,47 @@ const CopyButton = ({ text }) => {
 };
 
 const DetailsPage = ({ isOpen, meme }) => {
-  const buttonBaseClass = "w-full px-4 py-3 bg-[#1E1E22] text-gray-200 rounded-xl font-medium border border-[#FFD700]/10 hover:border-[#FFD700]/30 transition-all";
-
   return (
-    <div className={`fixed left-0 right-0 bg-[#121214] z-50 transition-transform duration-300 ${
-      isOpen ? 'translate-y-0' : 'translate-y-[-120%]'
-    }`}
-    style={{
-      top: '240px',
-      bottom: '60px',
-      borderTop: '1px solid rgba(255, 255, 255, 0.1)',
-    }}>
+    <div 
+      className={`fixed left-0 right-0 bg-[#0A0B0F] z-50 transition-transform duration-300 
+        ${isOpen ? 'translate-y-0' : 'translate-y-[-120%]'}`}
+      style={{
+        top: '240px',
+        bottom: '60px',
+        borderTop: '1px solid rgba(255, 255, 255, 0.05)',
+      }}
+    >
       <div className="max-w-md mx-auto p-4 h-full overflow-y-auto">
         <div className="space-y-4">
           {/* Contract Section */}
           {meme?.projectDetails?.contract && (
-            <div className="bg-[#1E1E22] rounded-xl p-4 border border-[#FFD700]/10">
-              <div className="text-sm text-gray-400 mb-2 text-center">Contract Address</div>
-              <div className="flex items-center gap-2 bg-[#2A2A2E] rounded-lg px-3 py-2">
-                <div className="text-gray-200 text-sm truncate flex-1">
-                  {meme.projectDetails.contract}
+            <div className="relative">
+              <div className="absolute inset-0 bg-gradient-to-r from-[#4B7BF5]/5 to-[#8A2BE2]/5 rounded-xl blur-lg"></div>
+              <div className="relative bg-gradient-to-r from-[#2A1B3D] to-[#1A1B2E] rounded-xl p-4 
+                border border-white/5">
+                <div className="font-game-title text-center text-gray-400 mb-3">Contract Address</div>
+                <div className="flex items-center gap-2 bg-[#1A1B2E] rounded-lg px-3 py-2 border border-white/5">
+                  <div className="font-game-mono text-gray-200 text-sm truncate flex-1">
+                    {meme.projectDetails.contract}
+                  </div>
+                  <CopyButton text={meme.projectDetails.contract} />
                 </div>
-                <CopyButton text={meme.projectDetails.contract} />
               </div>
             </div>
           )}
 
-          {/* Dynamic Action Buttons */}
+          {/* Action Buttons */}
           <div className="space-y-2">
             {meme?.projectDetails?.buttons?.map((button, index) => (
               <AnimatedButton
                 key={index}
                 onClick={() => window.open(button.url, '_blank')}
-                className={buttonBaseClass}
+                className="w-full"
               >
-                {button.label}
+                <div className="px-4 py-3 bg-gradient-to-r from-[#2A1B3D] to-[#1A1B2E] 
+                  text-gray-200 rounded-xl font-game-title border border-white/5">
+                  {button.label}
+                </div>
               </AnimatedButton>
             ))}
           </div>

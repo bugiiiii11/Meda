@@ -1,3 +1,4 @@
+//MemeCard.jsx
 import React from 'react';
 import { motion, useMotionValue, useTransform } from 'framer-motion';
 
@@ -11,14 +12,12 @@ const MemeCard = ({ meme, onSwipe, isTop, isMobile, onDragStart, onDragEnd }) =>
     [0, 0.5, 0.8, 1, 0.8, 0.5, 0]
   );
 
-  // Ensure engagement data is properly initialized
   const engagementData = React.useMemo(() => ({
     likes: parseInt(meme.engagement?.likes || 0),
     superLikes: parseInt(meme.engagement?.superLikes || 0),
     dislikes: parseInt(meme.engagement?.dislikes || 0)
   }), [meme.engagement]);
 
-  // Add keyboard handlers for web testing
   React.useEffect(() => {
     if (!isTop) return;
     const handleKeyPress = (e) => {
@@ -42,46 +41,55 @@ const MemeCard = ({ meme, onSwipe, isTop, isMobile, onDragStart, onDragEnd }) =>
       dragTransition={{ bounceStiffness: 600, bounceDamping: 20 }}
       initial={false}
     >
-      <div className="card rounded-xl overflow-hidden shadow-xl">
-        <img
-          src={meme.content}
-          alt={meme.projectName}
-          className="w-full aspect-square object-cover"
-        />
-        <div className="bg-[#1E1E22] border-t border-[#FFD700]/10 px-4 py-2">
-          <div className="flex justify-between items-center">
-            <div className="flex items-center gap-4">
-              <div className="flex items-center gap-1.5">
-                <span className="text-lg">👍</span>
-                <span className="text-white font-medium">
-                  {engagementData.likes.toLocaleString()}
-                </span>
+      <div className="relative">
+        {/* Glow effect */}
+        <div className="absolute inset-0 bg-gradient-to-r from-[#4B7BF5]/10 to-[#8A2BE2]/10 rounded-xl blur-lg"></div>
+        
+        {/* Card content */}
+        <div className="relative rounded-xl overflow-hidden shadow-2xl border border-white/5">
+          <img
+            src={meme.content}
+            alt={meme.projectName}
+            className="w-full aspect-square object-cover"
+          />
+          
+          <div className="bg-gradient-to-r from-[#2A1B3D] to-[#1A1B2E] border-t border-white/5 px-4 py-3">
+            <div className="flex justify-between items-center">
+              <div className="flex items-center gap-4">
+                <div className="flex items-center gap-2">
+                  <span className="text-lg">👍</span>
+                  <span className="font-game-mono text-white">
+                    {engagementData.likes.toLocaleString()}
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-lg animate-glow-pulse">⚡</span>
+                  <span className="font-game-mono text-white">
+                    {engagementData.superLikes.toLocaleString()}
+                  </span>
+                </div>
               </div>
-              <div className="flex items-center gap-1.5">
-                <span className="text-lg">⭐</span>
-                <span className="text-white font-medium">
-                  {engagementData.superLikes.toLocaleString()}
-                </span>
-              </div>
+              
+              <motion.div
+                className="flex items-center"
+                initial={{ scale: 0.9 }}
+                animate={{
+                  scale: 1,
+                  transition: {
+                    repeat: Infinity,
+                    repeatType: "reverse",
+                    duration: 1.5
+                  }
+                }}
+              >
+                <div className="px-3 py-1 rounded-lg bg-gradient-to-r from-[#4B7BF5]/20 to-[#8A2BE2]/20 
+                  border border-white/5">
+                  <span className="font-game-title text-[#FFD700]">
+                    {meme.projectDetails?.sector || 'GameFi'}
+                  </span>
+                </div>
+              </motion.div>
             </div>
-            <motion.div 
-              className="flex items-center"
-              initial={{ scale: 0.9 }}
-              animate={{ 
-                scale: 1,
-                transition: {
-                  repeat: Infinity,
-                  repeatType: "reverse",
-                  duration: 1.5
-                }
-              }}
-            >
-              <div className="px-3 py-1 rounded-lg bg-[#FFD700]/10">
-                <span className="text-lg font-bold text-[#FFD700]">
-                  {meme.projectDetails?.sector || 'Meme'}
-                </span>
-              </div>
-            </motion.div>
           </div>
         </div>
       </div>
