@@ -1,3 +1,4 @@
+//Navigation.jsx
 import React from 'react';
 
 const Navigation = ({ activeTab, onTabChange }) => {

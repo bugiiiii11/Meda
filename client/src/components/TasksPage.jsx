@@ -1,3 +1,4 @@
+//TasksPage.jsx
 import React, { useState, useEffect } from 'react';
 import { ENDPOINTS, getHeaders } from '../config/api';
 
@@ -73,19 +74,8 @@ const TasksPage = ({ userData, onUserDataUpdate }) => {
       points: 10
     },
     */
-    { 
-      id: 'telegram', 
-      label: 'Join Telegram Chat', 
-      link: 'https://t.me/cryptomeda', 
-      points: 10
-    },
-    { 
-      id: 'twitter', 
-      label: 'Follow X', 
-      link: 'https://x.com/cryptomedatech', 
-      points: 10
-    },
-    /*
+
+        /*
     { 
       id: 'instagram', 
       label: 'Follow Instagram', 
@@ -93,11 +83,28 @@ const TasksPage = ({ userData, onUserDataUpdate }) => {
       points: 10
     },
     */
+
+
+    { 
+      id: 'telegram', 
+      label: 'Join Telegram Chat', 
+      link: 'https://t.me/cryptomeda', 
+      points: 10,
+      icon: '🌟'
+    },
+    { 
+      id: 'twitter', 
+      label: 'Follow X', 
+      link: 'https://x.com/cryptomedatech', 
+      points: 10,
+      icon: '🎯'
+    },
     { 
       id: 'news-1', 
       label: 'Read the Latest News', 
       link: 'https://x.com/cryptomedatech/status/1867623339931680995', 
-      points: 10
+      points: 10,
+      icon: '📜'
     }
   ];
 
@@ -143,167 +150,155 @@ const TasksPage = ({ userData, onUserDataUpdate }) => {
     }
   };
 
-  const TaskButton = ({ task, completed }) => {
-    const handleClick = async () => {
-      try {
-        // If task is not completed and it's the Telegram task, handle it first
-        if (!completed && task.id === 'telegram') {
-          // Complete the task before opening the link
-          await handleTaskCompletion(task.id);
-          
-          // Small delay to ensure task completion is processed
-          await new Promise(resolve => setTimeout(resolve, 100));
-          
-          // Check if we're on desktop Telegram
-          const isDesktopTelegram = window.Telegram?.WebApp?.platform === 'tdesktop';
-          
-          if (isDesktopTelegram) {
-            // For desktop, open in new tab to prevent immediate webapp closure
-            window.open(task.link, '_blank', 'noopener');
-          } else {
-            // For mobile, use regular link opening
-            window.open(task.link, '_blank');
-          }
-        } else {
-          // For non-Telegram tasks or already completed tasks, maintain original behavior
-          if (task.link) {
-            window.open(task.link, '_blank');
-          }
-          if (!completed) {
-            await handleTaskCompletion(task.id);
-          }
-        }
-      } catch (error) {
-        console.error('Error handling task:', error);
-      }
-    };
-  
-    return (
-      <AnimatedButton
-        onClick={handleClick}
-        className={`w-full ${
-          completed
-            ? 'bg-[#1E1E22] border border-[#FFD700]/20 text-[#FFD700]'
-            : 'bg-[#1E1E22] border border-[#FFD700]/10 text-gray-300 hover:border-[#FFD700]/30'
-        } rounded-xl`}
-      >
-        <div className="p-4 flex items-center justify-between">
-          <span className="font-medium">{task.label}</span>
-          <div className="flex items-center gap-2">
+  const TaskButton = ({ task, completed }) => (
+    <AnimatedButton
+      onClick={async () => {
+        if (task.link) window.open(task.link, '_blank');
+        if (!completed) await handleTaskCompletion(task.id);
+      }}
+      className="w-full"
+    >
+      <div className="p-4 flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <span className="text-2xl">{task.icon}</span>
+          <span className="font-game-title text-white">{task.label}</span>
+        </div>
+        <div className="flex items-center gap-3">
+          {!completed && (
+            <span className="font-game-mono text-[#FFD700] text-lg">+{task.points}</span>
+          )}
+          {completed && <CheckIcon />}
+        </div>
+      </div>
+    </AnimatedButton>
+  );
+
+  const AchievementTask = ({ label, current, target, points, completed, icon = '🏆' }) => (
+    <div className="w-full p-4 rounded-xl bg-gradient-to-r from-[#2A1B3D] to-[#1A1B2E] border border-white/5 relative overflow-hidden">
+      {/* Achievement header */}
+      <div className="flex justify-between items-center mb-4">
+        <div className="flex items-center gap-3">
+          <span className="text-2xl">{icon}</span>
+          <div>
+            <span className="font-game-title text-white">{label}</span>
             {!completed && (
-              <span className="text-[#FFD700] font-serif">+{task.points}</span>
+              <div className="text-sm text-[#FFD700] font-game-mono mt-1">
+                +{points} points
+              </div>
             )}
-            {completed && <CheckIcon />}
           </div>
         </div>
-      </AnimatedButton>
-    );
-  };
-  
+        {completed && <CheckIcon />}
+      </div>
 
-  const AchievementTask = ({ label, current, target, points, completed, taskId }) => (
-    <div className={`w-full p-4 rounded-xl border ${
-      completed ? 'border-[#FFD700]/20' : 'border-[#FFD700]/10'
-    } bg-[#1E1E22]`}>
-      <div className="flex justify-between items-center mb-3">
-        <div className="flex items-center gap-2">
-          <span className="text-gray-300 font-medium">{label}</span>
-        </div>
-        {!completed && <span className="text-[#FFD700] font-serif">+{points}</span>}
-        {completed && <CheckIcon className="text-[#FFD700]" />}
-      </div>
-      <div className="w-full bg-[#2A2A2E] rounded-full h-2 overflow-hidden">
+      {/* Progress bar */}
+      <div className="w-full h-3 bg-[#1E1E22] rounded-full overflow-hidden relative">
         <div 
-          className="h-full bg-[#FFD700] transition-all duration-500"
-          style={{ width: `${Math.min((current / target) * 100, 100)}%` }}
-        />
+          className="h-full rounded-full relative overflow-hidden transition-all duration-500 flex items-center"
+          style={{ 
+            width: `${Math.min((current / target) * 100, 100)}%`,
+            background: 'linear-gradient(90deg, #4B7BF5, #8A2BE2)'
+          }}
+        >
+          {/* Shine effect */}
+          <div 
+            className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent"
+            style={{ animation: 'progressShine 2s infinite' }}
+          />
+        </div>
       </div>
-      <div className="flex justify-between mt-2 text-sm">
-        <span className="text-[#FFD700] font-serif">{current.toLocaleString()}</span>
-        <span className="text-gray-400">{target.toLocaleString()}</span>
+
+      {/* Progress numbers */}
+      <div className="flex justify-between mt-2">
+        <span className="font-game-mono text-[#4B7BF5]">{current.toLocaleString()}</span>
+        <span className="font-game-mono text-gray-400">{target.toLocaleString()}</span>
       </div>
     </div>
   );
 
   return (
-    <div className="flex flex-col h-screen bg-[#121214]">
-      <div className="fixed top-0 left-0 right-0 z-50 bg-[#121214]">
-        <div className="w-full py-6 border-b border-[#FFD700]/10">
+    <div className="flex flex-col h-screen bg-[#0A0B0F]">
+      {/* Header */}
+      <div className="fixed top-0 left-0 right-0 z-50 bg-gradient-to-b from-[#0A0B0F] to-transparent pb-6">
+        <div className="w-full py-6 border-b border-white/5">
           <div className="text-center">
-            <h1 className="text-2xl font-serif text-white">Challenges</h1>
+            <h1 className="font-game-title text-3xl bg-gradient-to-r from-[#4B7BF5] to-[#8A2BE2] text-transparent bg-clip-text">
+              Challenges
+            </h1>
           </div>
         </div>
       </div>
 
+      {/* Main content */}
       <div className="flex-1 overflow-auto pt-[100px] pb-20 px-4">
-        <div className="max-w-md mx-auto">
+        <div className="max-w-md mx-auto space-y-8">
           {error && (
-            <div className="mb-4 p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400">
+            <div className="mb-4 p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 font-game-mono">
               {error}
             </div>
           )}
 
-          <div className="space-y-6">
-            <div>
-              <h2 className="text-lg font-medium text-white mb-3">Quick Tasks</h2>
-              <div className="space-y-2">
-                {quickTasks.map((task) => (
-                  <TaskButton
-                    key={task.id}
-                    task={task}
-                    completed={completedTasks.has(task.id)}
-                  />
-                ))}
-              </div>
+          {/* Quick Tasks Section */}
+          <div className="space-y-4">
+            <h2 className="font-game-title text-xl text-white px-2">Quick Tasks</h2>
+            <div className="space-y-2">
+              {quickTasks.map((task) => (
+                <TaskButton
+                  key={task.id}
+                  task={task}
+                  completed={completedTasks.has(task.id)}
+                />
+              ))}
             </div>
+          </div>
 
-            <div>
-              <h2 className="text-lg font-medium text-white mb-3">Achievements</h2>
-              <div className="space-y-3">
+          {/* Achievements Section */}
+          <div className="space-y-4">
+            <h2 className="font-game-title text-xl text-white px-2">Achievements</h2>
+            <div className="space-y-3">
+              <AchievementTask
+                label="Like Collector (Tier 1)"
+                current={userData?.pointsBreakdown?.likes || 0}
+                target={1000}
+                points={1000}
+                completed={completedTasks.has('achievement-likes')}
+                icon="❤️"
+              />
+              <AchievementTask
+                label="Hater Slayer (Tier 1)"
+                current={userData?.pointsBreakdown?.dislikes || 0}
+                target={1000}
+                points={1000}
+                completed={completedTasks.has('achievement-dislikes')}
+                icon="👊"
+              />
+              {userData?.pointsBreakdown?.superLikes >= 100 ? (
                 <AchievementTask
-                  label="Like Collector (Tier 1)"
-                  current={userData?.pointsBreakdown?.likes || 0}
-                  target={1000}
-                  points={1000}
-                  completed={completedTasks.has('achievement-likes')}
-                  taskId="achievement-likes"
+                  label="Super Swiper (Tier 2)"
+                  current={userData?.pointsBreakdown?.superLikes || 0}
+                  target={500}
+                  points={5000}
+                  completed={completedTasks.has('achievement-superlikes-2')}
+                  icon="⚡"
                 />
+              ) : (
                 <AchievementTask
-                  label="Hater Slayer (Tier 1)"
-                  current={userData?.pointsBreakdown?.dislikes || 0}
-                  target={1000}
+                  label="Super Swiper (Tier 1)"
+                  current={userData?.pointsBreakdown?.superLikes || 0}
+                  target={100}
                   points={1000}
-                  completed={completedTasks.has('achievement-dislikes')}
-                  taskId="achievement-dislikes"
+                  completed={completedTasks.has('achievement-superlikes')}
+                  icon="⚡"
                 />
-                {userData?.pointsBreakdown?.superLikes >= 100 ? (
-                  <AchievementTask
-                    label="Super Swiper (Tier 2)"
-                    current={userData?.pointsBreakdown?.superLikes || 0}
-                    target={500}
-                    points={5000}
-                    completed={completedTasks.has('achievement-superlikes-2')}
-                    taskId="achievement-superlikes-2"
-                  />
-                ) : (
-                  <AchievementTask
-                    label="Super Swiper (Tier 1)"
-                    current={userData?.pointsBreakdown?.superLikes || 0}
-                    target={100}
-                    points={1000}
-                    completed={completedTasks.has('achievement-superlikes')}
-                    taskId="achievement-superlikes"
-                  />
-                )}
-                <AchievementTask
-                  label="Network Ninja (Tier 1)"
-                  current={userData?.referralStats?.referredUsers?.length || 0}
-                  target={20}
-                  points={1000}
-                  completed={completedTasks.has('achievement-referrals')}
-                  taskId="achievement-referrals"
-                />
-              </div>
+              )}
+              <AchievementTask
+                label="Network Ninja (Tier 1)"
+                current={userData?.referralStats?.referredUsers?.length || 0}
+                target={20}
+                points={1000}
+                completed={completedTasks.has('achievement-referrals')}
+                icon="🥷"
+              />
             </div>
           </div>
         </div>

@@ -2,8 +2,27 @@
 @import 'tailwindcss/components';
 @import 'tailwindcss/utilities';
 
+:root {
+  --color-space-black: #0A0B0F;
+  --color-cosmic-purple: #2A1B3D;
+  --color-electric-blue: #4B7BF5;
+  --color-vibrant-purple: #8A2BE2;
+  --color-gold: #FFD700;
+  --color-neon-green: #50FA7B;
+  --color-cyber-red: #FF5555;
+}
+
 body {
-  font-family: 'Inter', sans-serif;
+  font-family: 'Chakra Petch', sans-serif;
+  background: var(--color-space-black);
+}
+
+.font-game-title {
+  font-family: 'Russo One', sans-serif;
+}
+
+.font-game-mono {
+  font-family: 'Share Tech Mono', monospace;
 }
 
 @keyframes flashAnimation {
@@ -16,6 +35,20 @@ body {
   100% {
     opacity: 0;
   }
+}
+
+@keyframes glowPulse {
+  0%, 100% { opacity: 0.8; }
+  50% { opacity: 1; }
+}
+
+@keyframes progressShine {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+.animate-glow {
+  animation: glowPulse 2s infinite;
 }
 
 /* Remove any conflicting animation classes */
