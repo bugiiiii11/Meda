@@ -26,7 +26,7 @@ const schemas = {
     content: Joi.string().required(),
     weight: Joi.number().default(1),
     projectDetails: Joi.object({
-      type: Joi.string().valid('Meme', 'Gaming', 'AI').default('Meme'),
+      type: Joi.string().valid('GameFi', 'Gaming Blockchain', 'NFT Game', 'Game Hub', 'Telegram Game').default('GameFi'),
       network: Joi.string().required(),
       price: Joi.string().required(),
       marketCap: Joi.number(),

@@ -23,7 +23,7 @@ const projectSchema = new mongoose.Schema({
   }],
   type: {
     type: String,
-    enum: ['Pre-Sale', 'Strategy', 'Shooter', 'Telegram App', 'Telegram Game', 'MMORPG', 'RPG', 'Game Hub', 'GameFi'],
+    enum: ['Pre-Sale', 'Gaming Blockchain', 'Strategy', 'Shooter', 'Telegram App', 'Telegram Game', 'MMORPG', 'RPG', 'Game Hub', 'GameFi', 'NFT Game'],
     default: 'NFT Game'
   },
   status: {
