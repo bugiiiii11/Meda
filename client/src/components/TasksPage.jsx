@@ -69,34 +69,34 @@ const TasksPage = ({ userData, onUserDataUpdate }) => {
     { 
       id: 'website', 
       label: 'Browse Our Web', 
-      link: 'https://cryptomeme.me', 
+      link: 'https://cryptomeda.tech', 
       points: 10
     },
     */
     { 
       id: 'telegram', 
       label: 'Join Telegram Chat', 
-      link: 'https://t.me/fynderapp', 
+      link: 'https://t.me/cryptomeda', 
       points: 10
     },
     { 
       id: 'twitter', 
       label: 'Follow X', 
-      link: 'https://x.com/fynder_app', 
+      link: 'https://x.com/cryptomedatech', 
       points: 10
     },
     /*
     { 
       id: 'instagram', 
       label: 'Follow Instagram', 
-      link: 'https://instagram.com/fynderapp', 
+      link: 'https://instagram.com/cryptomedatech', 
       points: 10
     },
     */
     { 
       id: 'news-1', 
       label: 'Read the Latest News', 
-      link: 'https://x.com/Fynder_app/status/1870148097092849780', 
+      link: 'https://x.com/cryptomedatech/status/1867623339931680995', 
       points: 10
     }
   ];
