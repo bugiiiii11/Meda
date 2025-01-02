@@ -204,7 +204,7 @@ const dummyMemes = [
   projectName: "Axie Infinity",
   content: "/assets/memes/game6.png",
   weight: 1,
-  logo: "/assets/logo_axie.png",
+  logo: "/assets/logos/logo_axie.png",
   engagement: {
     likes: 0,
     superLikes: 0,
@@ -243,7 +243,7 @@ const dummyMemes = [
   projectName: "Axie Infinity",
   content: "/assets/memes/game7.png",
   weight: 1,
-  logo: "/assets/logo_axie.png",
+  logo: "/assets/logos/logo_axie.png",
   engagement: {
     likes: 0,
     superLikes: 0,
