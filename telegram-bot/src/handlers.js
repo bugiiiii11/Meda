@@ -26,7 +26,7 @@ const setupHandlers = (bot) => {
   
         await bot.sendMessage(
           chatId,
-          `Welcome to Meda Swipe, ${firstName}! \n\nDiscover your favorite web3 gaming projects!🚀`,
+          `Welcome to Meda Portal, ${firstName}! \n\nDiscover your favorite web3 gaming projects!🚀`,
           {
             reply_markup: {
               inline_keyboard: [
