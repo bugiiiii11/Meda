@@ -447,7 +447,7 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
                   x: -100,
                   rotate: -45,
                   scale: 0,
-                  transition: { duration: 0.2 }
+                  transition: { duration: 0.1 }
                 }}
               >
                 <div className="font-game-title text-4xl text-white flex items-center gap-3">
@@ -456,7 +456,7 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
                     animate={{ 
                       scale: [1, 1.2, 1],
                       transition: {
-                        duration: 0.3,
+                        duration: 0.1,
                         times: [0, 0.5, 1]
                       }
                     }}
