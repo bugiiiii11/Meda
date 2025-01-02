@@ -6,8 +6,8 @@ const ProfilePage = ({ userData, superlikeStatus }) => {
   const handleShare = async () => {
     if (!userData?.telegramId) return;
 
-    const referralLink = `https://t.me/medaswipebot?start=${userData.telegramId}`;
-    const welcomeMessage = `Hello my friend, Join Meda Swipe and find your crypto crush! ${referralLink}`;
+    const referralLink = `https://t.me/MedaPortalBot?start=${userData.telegramId}`;
+    const welcomeMessage = `Hello my friend, Join Meda Portal and discover exciting blockchain gaming projects! ${referralLink}`;
 
     try {
       await navigator.clipboard.writeText(welcomeMessage);
