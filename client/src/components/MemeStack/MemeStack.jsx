@@ -255,7 +255,7 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
       setTimeout(() => {
         setLastSwipe(null);
         setIsAnimating(false);
-      }, 200); // Reduced from default timing
+      }, lastSwipe === 'super' ? 1200 : 700); 
     }
   };
 
@@ -321,215 +321,244 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
         )}
       </AnimatePresence>
   
-      {/* Swipe Indicator Overlay - Always on top */}
-          <AnimatePresence>
-          {lastSwipe && (
+      {/* Swipe Indicator Overlay - Enhanced Gaming Theme */}
+      <AnimatePresence>
+        {lastSwipe && (
           <motion.div 
             className="absolute inset-0 flex items-center justify-center z-30 pointer-events-none"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
           >
-          {lastSwipe === 'right' && (
-          <>
-            <motion.div className="absolute inset-0 overflow-hidden">
-              {[...Array(8)].map((_, i) => (
-                <motion.div
-                  key={`like-particle-${i}`}
-                  className="absolute w-8 h-8 text-2xl"
-                  initial={{ 
-                    x: "50%",
-                    y: "50%",
-                    scale: 0,
-                    opacity: 0
-                  }}
-                  animate={{ 
-                    x: `${50 + (Math.random() * 60 - 30)}%`,
-                    y: `${50 + (Math.random() * 60 - 30)}%`,
-                    scale: [0, 1.5, 0],
-                    opacity: [0, 1, 0],
-                  }}
-                  transition={{
-                    duration: 0.5,
-                    delay: i * 0.05,
-                    ease: "easeOut"
-                  }}
-                >
-                  {["🎯", "🔥", "⚡", "✨"][i % 4]}
+            {lastSwipe === 'right' && (
+              <>
+                {/* Power Up Background Effect */}
+                <motion.div 
+                  className="absolute inset-0 bg-gradient-to-r from-[#50FA7B]/0 to-[#50FA7B]/20"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: [0, 0.2, 0] }}
+                  transition={{ duration: 0.7, times: [0, 0.2, 1] }}
+                />
+                
+                {/* Power Surge Particles */}
+                <motion.div className="absolute inset-0 overflow-hidden">
+                  {[...Array(12)].map((_, i) => (
+                    <motion.div
+                      key={`power-particle-${i}`}
+                      className="absolute w-6 h-6 text-xl"
+                      initial={{ 
+                        x: "50%",
+                        y: "50%",
+                        scale: 0,
+                        opacity: 0
+                      }}
+                      animate={{ 
+                        x: `${50 + (Math.random() * 100 - 50)}%`,
+                        y: `${50 + (Math.random() * 100 - 50)}%`,
+                        scale: [0, 1.5, 0],
+                        opacity: [0, 1, 0],
+                      }}
+                      transition={{
+                        duration: 0.5,
+                        delay: i * 0.03,
+                        ease: "easeOut"
+                      }}
+                    >
+                      {["⚡", "✨", "💫", "🔥"][i % 4]}
+                    </motion.div>
+                  ))}
                 </motion.div>
-              ))}
-            </motion.div>
-            
-            <motion.div 
-              className="px-8 py-4 rounded-2xl border-4 border-[#50FA7B] shadow-xl backdrop-blur-sm 
-                bg-gradient-to-r from-[#50FA7B]/90 to-[#38B259]/90"
-              initial={{ x: -100, rotate: -90, scale: 0 }}
-              animate={{ 
-                x: 0, 
-                rotate: 0, 
-                scale: 1,
-                transition: {
-                  type: "spring",
-                  stiffness: 300,
-                  damping: 15
-                }
-              }}
-              exit={{ 
-                x: 100,
-                rotate: 90,
-                scale: 0,
-                transition: { duration: 0.1 }
-              }}
-            >
-              <div className="font-game-title text-4xl text-white flex items-center gap-3">
-                <motion.span
-                  initial={{ scale: 0 }}
+
+                {/* Main Power Up Indicator */}
+                <motion.div 
+                  className="relative px-8 py-4 rounded-2xl border-4 border-[#50FA7B] shadow-xl backdrop-blur-md
+                    bg-gradient-to-r from-[#50FA7B]/90 to-[#38B259]/90"
+                  initial={{ scale: 0, y: 50 }}
                   animate={{ 
-                    scale: [1, 1.2, 1],
+                    scale: 1,
+                    y: 0,
                     transition: {
-                      duration: 0.1,
-                      times: [0, 0.5, 1]
+                      type: "spring",
+                      stiffness: 400,
+                      damping: 20
                     }
                   }}
+                  exit={{ 
+                    scale: 0,
+                    y: -50,
+                    transition: { duration: 0.2 }
+                  }}
                 >
-                  👍 LIKE
-                </motion.span>
-              </div>
-            </motion.div>
-            </>
-          )}
+                  <div className="font-game-title text-4xl text-white flex items-center gap-3">
+                    <motion.div
+                      animate={{ 
+                        scale: [1, 1.2, 1],
+                        transition: {
+                          duration: 0.3,
+                          repeat: 1
+                        }
+                      }}
+                    >
+                      POWER UP!
+                    </motion.div>
+                  </div>
+                </motion.div>
+              </>
+            )}
 
-          {lastSwipe === 'left' && (
-            <>
-              <motion.div className="absolute inset-0 overflow-hidden">
-                {[...Array(6)].map((_, i) => (
-                  <motion.div
-                    key={`nope-particle-${i}`}
-                    className="absolute w-8 h-8 text-2xl"
-                    initial={{ 
-                      x: "50%",
-                      y: "50%",
-                      scale: 0,
-                      opacity: 0
-                    }}
-                    animate={{ 
-                      x: `${50 + (Math.random() * 60 - 30)}%`,
-                      y: `${50 + (Math.random() * 60 - 30)}%`,
-                      scale: [0, 1.5, 0],
-                      opacity: [0, 1, 0],
-                    }}
-                    transition={{
-                      duration: 0.5,
-                      delay: i * 0.2,
-                      ease: "easeOut"
-                    }}
-                  >
-                    {["💢", "❌", "🚫", "💢"][i % 4]}
-                  </motion.div>
-                ))}
-              </motion.div>
+            {lastSwipe === 'left' && (
+              <>
+                {/* Critical Hit Background Effect */}
+                <motion.div 
+                  className="absolute inset-0 bg-gradient-to-r from-[#FF5555]/20 to-[#FF5555]/0"
+                  initial={{ opacity: 0 }}
+                  animate={{ 
+                    opacity: [0, 0.3, 0],
+                    x: [0, -10, 10, -5, 5, 0] // Screen shake
+                  }}
+                  transition={{ 
+                    duration: 0.5,
+                    times: [0, 0.2, 1],
+                    x: { duration: 0.3, times: [0, 0.2, 0.4, 0.6, 0.8, 1] }
+                  }}
+                />
 
-              <motion.div 
-                className="px-8 py-4 rounded-2xl border-4 border-[#FF5555] shadow-xl backdrop-blur-sm 
-                  bg-gradient-to-r from-[#FF5555]/90 to-[#CC4444]/90"
-                initial={{ x: 100, rotate: 45, scale: 0 }}
-                animate={{ 
-                  x: 0,
-                  rotate: 0, 
-                  scale: 1,
-                  transition: {
-                    type: "spring",
-                    stiffness: 400,
-                    damping: 30
-                  }
-                }}
-                exit={{ 
-                  x: -100,
-                  rotate: -45,
-                  scale: 0,
-                  transition: { duration: 0.2 }
-                }}
-              >
-                <div className="font-game-title text-4xl text-white flex items-center gap-3">
-                  <motion.span
-                    initial={{ scale: 0 }}
-                    animate={{ 
-                      scale: [1, 0.5, 1],
-                      transition: {
-                        duration: 0.5,
-                        ease: "easeInOut"
-                      }
-                    }}
-                  >
-                    👎 NOPE
-                  </motion.span>
-                </div>
-              </motion.div>
-            </>
-          )}
+                {/* Warning Symbols */}
+                <motion.div className="absolute inset-0 overflow-hidden">
+                  {[...Array(8)].map((_, i) => (
+                    <motion.div
+                      key={`critical-particle-${i}`}
+                      className="absolute w-6 h-6 text-xl"
+                      initial={{ 
+                        x: "50%",
+                        y: "50%",
+                        scale: 0,
+                        opacity: 0
+                      }}
+                      animate={{ 
+                        x: `${50 + (Math.random() * 80 - 40)}%`,
+                        y: `${50 + (Math.random() * 80 - 40)}%`,
+                        scale: [0, 1.2, 0],
+                        opacity: [0, 1, 0],
+                      }}
+                      transition={{
+                        duration: 0.4,
+                        delay: i * 0.03,
+                        ease: "easeOut"
+                      }}
+                    >
+                      {["⚠️", "❌", "💢", "⛔"][i % 4]}
+                    </motion.div>
+                  ))}
+                </motion.div>
 
-          {lastSwipe === 'super' && (
-            <>
-              <motion.div className="absolute inset-0 overflow-hidden">
-                {[...Array(8)].map((_, i) => (
-                  <motion.div
-                    key={`super-particle-${i}`}
-                    className="absolute w-8 h-8 text-2xl"
-                    initial={{ 
-                      x: "50%",
-                      y: "50%",
-                      scale: 0,
-                      opacity: 0
-                    }}
-                    animate={{ 
-                      x: `${50 + (Math.random() * 60 - 30)}%`,
-                      y: `${50 + (Math.random() * 60 - 30)}%`,
-                      scale: [0, 1.5, 0],
-                      opacity: [0, 1, 0],
-                    }}
-                    transition={{
-                      duration: 0.5,
-                      delay: i * 0.1,
-                      ease: "easeOut"
-                    }}
-                  >
-                    {["⚡", "💫", "🌟", "💥"][i % 4]}
-                  </motion.div>
-                ))}
-              </motion.div>
+                {/* Main Critical Hit Indicator */}
+                <motion.div 
+                  className="relative px-8 py-4 rounded-2xl border-4 border-[#FF5555] shadow-xl backdrop-blur-md
+                    bg-gradient-to-r from-[#FF5555]/90 to-[#CC4444]/90"
+                  initial={{ scale: 0, rotate: -10 }}
+                  animate={{ 
+                    scale: 1,
+                    rotate: 0,
+                    transition: {
+                      type: "spring",
+                      stiffness: 400,
+                      damping: 20
+                    }
+                  }}
+                  exit={{ 
+                    scale: 0,
+                    rotate: 10,
+                    transition: { duration: 0.2 }
+                  }}
+                >
+                  <div className="font-game-title text-4xl text-white flex items-center gap-3">
+                    <motion.div
+                      animate={{ 
+                        scale: [1, 1.2, 1],
+                        transition: { duration: 0.3 }
+                      }}
+                    >
+                      CRITICAL HIT!
+                    </motion.div>
+                  </div>
+                </motion.div>
+              </>
+            )}
 
-              <motion.div 
-                className="px-8 py-4 rounded-2xl border-4 border-[#4B7BF5] shadow-xl backdrop-blur-sm 
-                  bg-gradient-to-r from-[#4B7BF5]/90 to-[#8A2BE2]/90"
-                initial={{ y: 100, rotate: 180, scale: 0 }}
-                animate={{ 
-                  y: 0, 
-                  scale: 1,
-                  transition: {
-                    type: "spring",
-                    stiffness: 300,
-                    damping: 15
-                  }
-                }}
-                exit={{ 
-                  y: -100,
-                  scale: 0,
-                  transition: { duration: 0.5 }
-                }}
-              >
-                <div className="font-game-title text-4xl text-white flex items-center gap-3">
-                  <motion.div
-                    initial={{ scale: 0 }}
-                    animate={{ 
-                      scale: [1, 1.5, 1],
-                      rotate: [0, 180, 360],
-                      transition: {
-                        duration: 0.5,
-                        ease: "easeInOut"
-                      }
-                    }}
-                  >
-                    ⚡ SUPER
+            {lastSwipe === 'super' && (
+              <>
+                {/* Legendary Background Effects */}
+                <motion.div 
+                  className="absolute inset-0 bg-gradient-radial from-[#4B7BF5]/30 via-[#8A2BE2]/20 to-transparent"
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ 
+                    opacity: [0, 0.5, 0],
+                    scale: [0.8, 1.1, 1.2]
+                  }}
+                  transition={{ duration: 1.2, times: [0, 0.3, 1] }}
+                />
+
+                {/* Digital Rain Effect */}
+                <motion.div className="absolute inset-0 overflow-hidden">
+                  {[...Array(16)].map((_, i) => (
+                    <motion.div
+                      key={`legendary-particle-${i}`}
+                      className="absolute w-6 h-6 text-xl"
+                      initial={{ 
+                        x: `${Math.random() * 100}%`,
+                        y: "-20%",
+                        opacity: 0
+                      }}
+                      animate={{ 
+                        y: "120%",
+                        opacity: [0, 1, 0],
+                      }}
+                      transition={{
+                        duration: 0.8,
+                        delay: i * 0.05,
+                        ease: "linear"
+                      }}
+                    >
+                      {["⚡", "💫", "🌟", "✨"][i % 4]}
+                    </motion.div>
+                  ))}
+                </motion.div>
+
+                {/* Main Legendary Indicator */}
+                <motion.div 
+                  className="relative px-8 py-4 rounded-2xl border-4 border-[#4B7BF5] shadow-xl backdrop-blur-md
+                    bg-gradient-to-r from-[#4B7BF5]/90 to-[#8A2BE2]/90"
+                  initial={{ scale: 0, y: 50 }}
+                  animate={{ 
+                    scale: 1,
+                    y: 0,
+                    transition: {
+                      type: "spring",
+                      stiffness: 400,
+                      damping: 20,
+                      duration: 0.8
+                    }
+                  }}
+                  exit={{ 
+                    scale: 0,
+                    y: -50,
+                    transition: { duration: 0.3 }
+                  }}
+                >
+                  <div className="font-game-title text-5xl text-white flex items-center gap-3">
+                    <motion.div
+                      animate={{ 
+                        scale: [1, 1.3, 1],
+                        rotate: [0, 5, -5, 0],
+                        transition: {
+                          duration: 0.8,
+                          times: [0, 0.4, 0.8, 1],
+                          repeat: 1
+                        }
+                      }}
+                    >
+                      LEGENDARY!
                   </motion.div>
                 </div>
               </motion.div>
