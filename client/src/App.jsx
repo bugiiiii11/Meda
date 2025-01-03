@@ -15,23 +15,46 @@ import dummyMemes from './data/dummyMemes';
 import './styles/globals.css';
 
 const LoadingScreen = () => (
-  <div className="fixed inset-0 bg-[#1a1b1e] flex flex-col items-center justify-between p-0 overflow-hidden">
-    <div className="w-full flex-1 flex items-center justify-center p-0">
+  <div className="fixed inset-0 bg-[#0A0B0F] flex flex-col items-center justify-between p-0 overflow-hidden">
+    {/* Background particles */}
+    <div className="absolute inset-0 overflow-hidden">
+      {[...Array(10)].map((_, i) => (
+        <div
+          key={i}
+          className="absolute w-1 h-1 bg-[#4B7BF5] rounded-full animate-pulse"
+          style={{
+            top: `${Math.random() * 100}%`,
+            left: `${Math.random() * 100}%`,
+            animationDelay: `${Math.random() * 2}s`,
+            opacity: 0.3
+          }}
+        />
+      ))}
+    </div>
+
+    {/* Main content */}
+    <div className="w-full flex-1 flex items-center justify-center p-0 relative">
       <img
         src="/loading.png"
         alt="Loading"
-        className="w-full h-auto block m-0 p-0"
+        className="w-full h-auto block m-0 p-0 animate-pulse"
         onError={(e) => {
           console.error('Loading image error:', e);
           e.target.src = 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg"/>';
         }}
       />
     </div>
-    <div className="w-full px-6 mb-20">
-      <div className="w-full h-2 bg-gray-800 rounded-full overflow-hidden">
-        <div className="h-full bg-yellow-500 animate-load-progress" />
+
+    {/* Loading bar section */}
+    <div className="relative w-full px-6 mb-20">
+      <div className="w-full h-3 bg-[#1A1B2E] rounded-full overflow-hidden border border-white/5">
+        <div className="relative h-full bg-gradient-to-r from-[#4B7BF5] to-[#8A2BE2] animate-load-progress">
+          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-progress-shine" />
+        </div>
       </div>
-      <p className="text-gray-400 mt-4 text-center text-lg">Loading market data...</p>
+      <p className="font-game-mono text-gray-400 mt-4 text-center">
+        Initializing Battle System...
+      </p>
     </div>
   </div>
 );
@@ -322,10 +345,17 @@ function App() {
 
   if (initError) {
     return (
-      <div className="fixed inset-0 bg-[#1a1b1e] flex items-center justify-center">
-        <div className="text-red-500 text-center">
-          <h2 className="text-xl mb-2">Failed to initialize app</h2>
-          <p>{initError}</p>
+      <div className="fixed inset-0 bg-[#0A0B0F] flex items-center justify-center">
+        <div className="relative">
+          {/* Error glow effect */}
+          <div className="absolute inset-0 bg-gradient-to-r from-[#FF5555]/20 to-[#CC4444]/20 rounded-xl blur-xl"></div>
+          
+          {/* Error content */}
+          <div className="relative bg-gradient-to-r from-[#2A1B3D] to-[#1A1B2E] border border-[#FF5555]/20 
+            rounded-xl p-6 text-center">
+            <h2 className="font-game-title text-2xl text-[#FF5555] mb-3">Battle System Error</h2>
+            <p className="font-game-mono text-red-400">{initError}</p>
+          </div>
         </div>
       </div>
     );
@@ -336,18 +366,18 @@ function App() {
   }
 
   return (
-    <div className="fixed inset-0 bg-[#121214] overflow-hidden">
+    <div className="fixed inset-0 bg-[#0A0B0F] overflow-hidden">
       {activeTab === 'memes' ? (
         <>
-          <div className="fixed top-0 left-0 right-0 z-[70]">
-            <div className="w-full bg-[#121214] py-4">
-              <TopBar
-                meme={currentMeme}
-                onDetailsClick={() => setIsDetailsOpen(!isDetailsOpen)}
-                isDetailsOpen={isDetailsOpen}
-              />
-            </div>
+        <div className="fixed top-0 left-0 right-0 z-[70]">
+          <div className="w-full bg-[#0A0B0F] py-4">
+            <TopBar
+              meme={currentMeme}
+              onDetailsClick={() => setIsDetailsOpen(!isDetailsOpen)}
+              isDetailsOpen={isDetailsOpen}
+            />
           </div>
+        </div>
           <div className="absolute inset-0 pt-[240px] pb-[80px]">
             <div className="h-full flex items-start justify-center">
               <div className="w-full px-4">
