@@ -350,7 +350,7 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
                     opacity: [0, 1, 0],
                   }}
                   transition={{
-                    duration: 0.5,
+                    duration: 0.3,
                     delay: i * 0.05,
                     ease: "easeOut"
                   }}
@@ -361,24 +361,31 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
             </motion.div>
             
             <motion.div 
-              className="px-8 py-4 rounded-2xl border-4 border-[#50FA7B] shadow-xl backdrop-blur-sm 
-                bg-gradient-to-r from-[#50FA7B]/90 to-[#38B259]/90"
-              initial={{ x: -100, rotate: -45, scale: 0 }}
+              className="px-8 py-4 rounded-2xl border-4 border-[appropriate-color] shadow-xl backdrop-blur-sm 
+                bg-gradient-to-r from-[color]/90 to-[color]/90"
+              initial={{ 
+                x: type === 'right' ? -100 : type === 'left' ? 100 : 0,
+                y: type === 'super' ? 100 : 0,
+                rotate: type === 'right' ? -45 : type === 'left' ? 45 : 0,
+                scale: 0 
+              }}
               animate={{ 
-                x: 0, 
-                rotate: 0, 
+                x: 0,
+                y: 0,
+                rotate: 0,
                 scale: 1,
                 transition: {
                   type: "spring",
-                  stiffness: 300,
-                  damping: 15
+                  stiffness: 400, // Increased stiffness
+                  damping: 15,
+                  duration: 0.4 // Faster main animation
                 }
               }}
               exit={{ 
-                x: 100,
-                rotate: 45,
                 scale: 0,
-                transition: { duration: 0.2 }
+                x: type === 'right' ? 100 : type === 'left' ? -100 : 0,
+                y: type === 'super' ? -100 : 0,
+                transition: { duration: 0.2 } // Faster exit
               }}
             >
               <div className="font-game-title text-4xl text-white flex items-center gap-3">
@@ -387,7 +394,7 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
                   animate={{ 
                     scale: [1, 1.2, 1],
                     transition: {
-                      duration: 0.3,
+                      duration: 0.3, // Faster text scale
                       times: [0, 0.5, 1]
                     }
                   }}
@@ -430,24 +437,31 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
               </motion.div>
 
               <motion.div 
-                className="px-8 py-4 rounded-2xl border-4 border-[#FF5555] shadow-xl backdrop-blur-sm 
-                  bg-gradient-to-r from-[#FF5555]/90 to-[#CC4444]/90"
-                initial={{ x: 100, rotate: 45, scale: 0 }}
+                className="px-8 py-4 rounded-2xl border-4 border-[appropriate-color] shadow-xl backdrop-blur-sm 
+                  bg-gradient-to-r from-[color]/90 to-[color]/90"
+                initial={{ 
+                  x: type === 'right' ? -100 : type === 'left' ? 100 : 0,
+                  y: type === 'super' ? 100 : 0,
+                  rotate: type === 'right' ? -45 : type === 'left' ? 45 : 0,
+                  scale: 0 
+                }}
                 animate={{ 
-                  x: 0, 
-                  rotate: 0, 
+                  x: 0,
+                  y: 0,
+                  rotate: 0,
                   scale: 1,
                   transition: {
                     type: "spring",
-                    stiffness: 300,
-                    damping: 15
+                    stiffness: 400, // Increased stiffness
+                    damping: 15,
+                    duration: 0.4 // Faster main animation
                   }
                 }}
                 exit={{ 
-                  x: -100,
-                  rotate: -45,
                   scale: 0,
-                  transition: { duration: 0.1 }
+                  x: type === 'right' ? 100 : type === 'left' ? -100 : 0,
+                  y: type === 'super' ? -100 : 0,
+                  transition: { duration: 0.2 } // Faster exit
                 }}
               >
                 <div className="font-game-title text-4xl text-white flex items-center gap-3">
@@ -456,7 +470,7 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
                     animate={{ 
                       scale: [1, 1.2, 1],
                       transition: {
-                        duration: 0.1,
+                        duration: 0.3, // Faster text scale
                         times: [0, 0.5, 1]
                       }
                     }}
@@ -499,33 +513,42 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
               </motion.div>
 
               <motion.div 
-                className="px-8 py-4 rounded-2xl border-4 border-[#4B7BF5] shadow-xl backdrop-blur-sm 
-                  bg-gradient-to-r from-[#4B7BF5]/90 to-[#8A2BE2]/90"
-                initial={{ y: 100, scale: 0 }}
+                className="px-8 py-4 rounded-2xl border-4 border-[appropriate-color] shadow-xl backdrop-blur-sm 
+                  bg-gradient-to-r from-[color]/90 to-[color]/90"
+                initial={{ 
+                  x: type === 'right' ? -100 : type === 'left' ? 100 : 0,
+                  y: type === 'super' ? 100 : 0,
+                  rotate: type === 'right' ? -45 : type === 'left' ? 45 : 0,
+                  scale: 0 
+                }}
                 animate={{ 
-                  y: 0, 
+                  x: 0,
+                  y: 0,
+                  rotate: 0,
                   scale: 1,
                   transition: {
                     type: "spring",
-                    stiffness: 300,
-                    damping: 15
+                    stiffness: 400, // Increased stiffness
+                    damping: 15,
+                    duration: 0.4 // Faster main animation
                   }
                 }}
                 exit={{ 
-                  y: -100,
                   scale: 0,
-                  transition: { duration: 0.2 }
+                  x: type === 'right' ? 100 : type === 'left' ? -100 : 0,
+                  y: type === 'super' ? -100 : 0,
+                  transition: { duration: 0.2 } // Faster exit
                 }}
               >
                 <div className="font-game-title text-4xl text-white flex items-center gap-3">
                   <motion.div
                     initial={{ scale: 0 }}
                     animate={{ 
-                      scale: [1, 1.5, 1],
+                      scale: [1, 1.2, 1],
                       rotate: [0, 180, 360],
                       transition: {
-                        duration: 0.5,
-                        ease: "easeInOut"
+                        duration: 0.3,
+                        times: [0, 0.5, 1]
                       }
                     }}
                   >
