@@ -255,7 +255,7 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
       setTimeout(() => {
         setLastSwipe(null);
         setIsAnimating(false);
-      }, 200); // Reduced from default timing
+      }, 500); // Reduced from default timing
     }
   };
 
