@@ -366,47 +366,30 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
           >
             {lastSwipe === 'right' && (
               <>
+                {/* Enhanced Corner Effects */}
+                <motion.div className="absolute top-4 left-4">
+                  {[...Array(6)].map((_, i) => (
+                    <motion.div
+                      key={`corner-effect-${i}`}
+                      className="absolute w-16 h-16"
+                      initial={{ opacity: 0, scale: 0 }}
+                      animate={{
+                        opacity: [0, 1, 0],
+                        scale: [0.5, 1.5, 2],
+                        rotate: [0, 90, 180]
+                      }}
+                      transition={{
+                        duration: 0.7,
+                        delay: i * 0.1,
+                        ease: "easeOut"
+                      }}
+                    >
+                      <div className="w-full h-full border-t-4 border-l-4 border-[#50FA7B] rounded-tl-lg" />
+                    </motion.div>
+                  ))}
+                </motion.div>
 
-              {/* Enhanced Corner Effects */}
-              <motion.div className="absolute top-4 left-4">
-                {[...Array(6)].map((_, i) => (
-                  <motion.div
-                    key={`corner-effect-${i}`}
-                    className="absolute w-16 h-16"
-                    initial={{ opacity: 0, scale: 0 }}
-                    animate={{
-                      opacity: [0, 1, 0],
-                      scale: [0.5, 1.5, 2],
-                      rotate: [0, 90, 180]
-                    }}
-                    transition={{
-                      duration: 0.7,
-                      delay: i * 0.1,
-                      ease: "easeOut"
-                    }}
-                  >
-                    <div className="w-full h-full border-t-4 border-l-4 border-[#50FA7B] rounded-tl-lg" />
-                  </motion.div>
-                ))}
-              </motion.div>
-              
-                {/* Neon Energy Pulse Effect */}
-                <motion.div
-                  className="absolute inset-0"
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{
-                    opacity: [0, 0.3, 0],
-                    scale: [0.8, 1.2, 1.4],
-                    background: [
-                      'radial-gradient(circle, rgba(80, 250, 123, 0) 0%, rgba(80, 250, 123, 0) 100%)',
-                      'radial-gradient(circle, rgba(80, 250, 123, 0.3) 0%, rgba(80, 250, 123, 0) 70%)',
-                      'radial-gradient(circle, rgba(80, 250, 123, 0) 0%, rgba(80, 250, 123, 0) 100%)',
-                    ]
-                  }}
-                  transition={{ duration: 0.7, times: [0, 0.5, 1] }}
-                />
-
-                 {/* Thicker Energy Lines */}
+                {/* Thicker Energy Lines */}
                 <motion.div className="absolute inset-0">
                   {[...Array(12)].map((_, i) => (
                     <motion.div
@@ -432,61 +415,36 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
                   ))}
                 </motion.div>
 
-                {/* Floating Pixels */}
-                <motion.div className="absolute inset-0">
-                  {[...Array(20)].map((_, i) => (
-                    <motion.div
-                      key={`pixel-${i}`}
-                      className="absolute"
-                      initial={{
-                        x: "50%",
-                        y: "50%",
-                      }}
-                      animate={{
-                        x: `${50 + (Math.random() * 60 - 30)}%`,
-                        y: `${50 + (Math.random() * 60 - 30)}%`,
-                        opacity: [0, 1, 0],
-                      }}
-                      transition={{
-                        duration: 0.5,
-                        delay: i * 0.02,
-                      }}
-                    >
-                      <PixelParticle color="bg-[#50FA7B]" />
-                    </motion.div>
-                  ))}
+                {/* Main Power Up Indicator with enhanced glow */}
+                <motion.div 
+                  className="px-8 py-4 rounded-2xl border-4 border-[#50FA7B] bg-black/80 backdrop-blur-sm"
+                  initial={{ scale: 0, y: 50 }}
+                  animate={{ 
+                    scale: 1,
+                    y: 0,
+                    boxShadow: [
+                      '0 0 20px rgba(80, 250, 123, 0.4)',
+                      '0 0 40px rgba(80, 250, 123, 0.6)',
+                      '0 0 60px rgba(80, 250, 123, 0.4)'
+                    ]
+                  }}
+                  transition={{ duration: 0.7 }}
+                  exit={{ scale: 0, y: -50, transition: { duration: 0.2 } }}
+                >
+                  <GlitchText>
+                    <div className="font-game-title text-4xl text-white">
+                      POWER UP!
+                    </div>
+                  </GlitchText>
                 </motion.div>
-
-          {/* Main Power Up Indicator with enhanced glow */}
-          <motion.div 
-                className="px-8 py-4 rounded-2xl border-4 border-[#50FA7B]"
-                initial={{ scale: 0, y: 50 }}
-                animate={{ 
-                  scale: 1,
-                  y: 0,
-                  boxShadow: [
-                    '0 0 20px rgba(80, 250, 123, 0.4)',
-                    '0 0 40px rgba(80, 250, 123, 0.6)',
-                    '0 0 60px rgba(80, 250, 123, 0.4)'
-                  ]
-                }}
-                transition={{ duration: 0.7 }}
-                exit={{ scale: 0, y: -50, transition: { duration: 0.2 } }}
-              >
-                <GlitchText>
-                  <div className="font-game-title text-4xl text-white">
-                    POWER UP!
-                  </div>
-                </GlitchText>
-              </motion.div>
               </>
             )}
 
-
+            {/* Critical Hit - Enhanced Glow and Text Animation */}
             {lastSwipe === 'left' && (
               <>
-              {/* Enhanced Red Glow Background */}
-              <motion.div
+                {/* Enhanced Red Glow Background */}
+                <motion.div
                   className="absolute inset-0"
                   initial={{ opacity: 0 }}
                   animate={{
@@ -502,7 +460,7 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
 
                 {/* Enhanced Critical Hit Indicator */}
                 <motion.div 
-                  className="px-8 py-4 rounded-2xl border-4 border-[#FF5555]"
+                  className="px-8 py-4 rounded-2xl border-4 border-[#FF5555] bg-black/80 backdrop-blur-sm"
                   initial={{ scale: 0 }}
                   animate={{ 
                     scale: [0.8, 1.1, 1],
@@ -541,36 +499,35 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
                 </motion.div>
               </>
             )}
-            
 
+            {/* Legendary - Enhanced Matrix Rain and Light Effects */}
             {lastSwipe === 'super' && (
               <>
                 {/* Enhanced Matrix Rain */}
-              <motion.div className="absolute inset-0 overflow-hidden">
-                {[...Array(50)].map((_, i) => (
-                  <motion.div
-                    key={`matrix-${i}`}
-                    className="absolute text-sm font-mono text-[#4B7BF5]"
-                    initial={{
-                      x: `${Math.random() * 100}%`,
-                      y: -20,
-                      opacity: 0,
-                    }}
-                    animate={{
-                      y: ['0%', '120%'],
-                      opacity: [0, 0.8, 0],
-                    }}
-                    transition={{
-                      duration: 1.5,
-                      delay: i * 0.02,
-                      ease: 'linear',
-                    }}
-                  >
-                    {String.fromCharCode(0x30A0 + Math.random() * 96)}
-                  </motion.div>
-                ))}
-              </motion.div>
-
+                <motion.div className="absolute inset-0 overflow-hidden">
+                  {[...Array(50)].map((_, i) => (
+                    <motion.div
+                      key={`matrix-${i}`}
+                      className="absolute text-sm font-mono text-[#4B7BF5]"
+                      initial={{
+                        x: `${Math.random() * 100}%`,
+                        y: -20,
+                        opacity: 0,
+                      }}
+                      animate={{
+                        y: ['0%', '120%'],
+                        opacity: [0, 0.8, 0],
+                      }}
+                      transition={{
+                        duration: 1.5,
+                        delay: i * 0.02,
+                        ease: 'linear',
+                      }}
+                    >
+                      {String.fromCharCode(0x30A0 + Math.random() * 96)}
+                    </motion.div>
+                  ))}
+                </motion.div>
 
                 {/* Enhanced Light Effects */}
                 <motion.div
@@ -614,9 +571,9 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
                   ))}
                 </motion.div>
 
-                   {/* Main Legendary Indicator */}
+                {/* Main Legendary Indicator */}
                 <motion.div 
-                  className="px-8 py-4 rounded-2xl border-4 border-[#4B7BF5]"
+                  className="px-8 py-4 rounded-2xl border-4 border-[#4B7BF5] bg-black/80 backdrop-blur-sm"
                   initial={{ scale: 0 }}
                   animate={{ 
                     scale: [0.9, 1.1, 1],
