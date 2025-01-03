@@ -19,16 +19,25 @@ const LoadingScreen = ({ error }) => {
   // If there's an error, show error screen
   if (error) {
     return (
-      <div className="fixed inset-0 bg-[#1a1b1e] flex flex-col items-center justify-center">
-        <div className="text-red-500 text-center p-4 max-w-md">
-          <h2 className="text-xl mb-2">Initialization Error</h2>
-          <p className="text-sm opacity-90">{error}</p>
-          <button 
-            onClick={() => window.location.reload()}
-            className="mt-4 px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
-          >
-            Retry
-          </button>
+      <div className="fixed inset-0 bg-[#0A0B0F] flex flex-col items-center justify-center">
+        <div className="relative">
+          {/* Error glow effect */}
+          <div className="absolute inset-0 bg-gradient-to-r from-[#FF5555]/20 to-[#CC4444]/20 rounded-xl blur-xl"></div>
+          
+          {/* Error content */}
+          <div className="relative bg-gradient-to-r from-[#2A1B3D] to-[#1A1B2E] border border-[#FF5555]/20 
+            rounded-xl p-6 text-center max-w-md">
+            <h2 className="font-game-title text-2xl text-[#FF5555] mb-3">Battle System Error</h2>
+            <p className="font-game-mono text-gray-400 text-sm mb-4">{error}</p>
+            <button
+              onClick={() => window.location.reload()}
+              className="px-6 py-3 bg-gradient-to-r from-[#FF5555] to-[#CC4444] rounded-lg 
+                font-game-title text-white shadow-lg shadow-[#FF5555]/20 
+                transform transition-all duration-300 hover:scale-105"
+            >
+              Recharge System
+            </button>
+          </div>
         </div>
       </div>
     );
@@ -36,8 +45,25 @@ const LoadingScreen = ({ error }) => {
 
   // Normal loading screen
   return (
-    <div className="fixed inset-0 bg-[#1a1b1e] flex flex-col">
-      <div className="flex-1 flex items-center justify-center overflow-hidden">
+    <div className="fixed inset-0 bg-[#0A0B0F] flex flex-col">
+      {/* Background particles */}
+      <div className="absolute inset-0 overflow-hidden">
+        {[...Array(10)].map((_, i) => (
+          <div
+            key={i}
+            className="absolute w-1 h-1 bg-[#4B7BF5] rounded-full animate-pulse"
+            style={{
+              top: `${Math.random() * 100}%`,
+              left: `${Math.random() * 100}%`,
+              animationDelay: `${Math.random() * 2}s`,
+              opacity: 0.3
+            }}
+          />
+        ))}
+      </div>
+
+      {/* Main content */}
+      <div className="relative flex-1 flex items-center justify-center overflow-hidden">
         <img
           src="/loading.png"
           alt="Loading"
@@ -54,11 +80,19 @@ const LoadingScreen = ({ error }) => {
           }}
         />
       </div>
-      <div className="w-full px-6 mb-20">
-        <div className="w-full h-2 bg-gray-800 rounded-full overflow-hidden">
-          <div className="h-full bg-green-500 animate-load-progress" />
+
+      {/* Loading bar section */}
+      <div className="relative w-full px-6 mb-20">
+        <div className="w-full h-3 bg-[#1A1B2E] rounded-full overflow-hidden border border-white/5">
+          {/* Loading bar with shine effect */}
+          <div className="relative h-full bg-gradient-to-r from-[#4B7BF5] to-[#8A2BE2] animate-load-progress">
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent 
+              animate-progress-shine"></div>
+          </div>
         </div>
-        <p className="text-gray-400 mt-4 text-center text-lg">Loading market data...</p>
+        <p className="font-game-mono text-gray-400 mt-4 text-center">
+          Initializing Battle System...
+        </p>
       </div>
     </div>
   );
