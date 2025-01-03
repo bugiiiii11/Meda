@@ -255,7 +255,7 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
       setTimeout(() => {
         setLastSwipe(null);
         setIsAnimating(false);
-      }, 300); // Reduced from default timing
+      }, 200); // Reduced from default timing
     }
   };
 
@@ -324,78 +324,78 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
       {/* Swipe Indicator Overlay - Always on top */}
           <AnimatePresence>
           {lastSwipe && (
-          <motion.div 
-            className="absolute inset-0 flex items-center justify-center z-30 pointer-events-none"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-          >
+        <motion.div 
+          className="absolute inset-0 flex items-center justify-center z-30 pointer-events-none"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+        >
           {lastSwipe === 'right' && (
-          <>
-            <motion.div className="absolute inset-0 overflow-hidden">
-              {[...Array(8)].map((_, i) => (
-                <motion.div
-                  key={`like-particle-${i}`}
-                  className="absolute w-8 h-8 text-2xl"
-                  initial={{ 
-                    x: "50%",
-                    y: "50%",
-                    scale: 0,
-                    opacity: 0
-                  }}
-                  animate={{ 
-                    x: `${50 + (Math.random() * 60 - 30)}%`,
-                    y: `${50 + (Math.random() * 60 - 30)}%`,
-                    scale: [0, 1.5, 0],
-                    opacity: [0, 1, 0],
-                  }}
-                  transition={{
-                    duration: 0.5,
-                    delay: i * 0.05,
-                    ease: "easeOut"
-                  }}
-                >
-                  {["🎯", "🔥", "⚡", "✨"][i % 4]}
-                </motion.div>
-              ))}
-            </motion.div>
-            
-            <motion.div 
-              className="px-8 py-4 rounded-2xl border-4 border-[#50FA7B] shadow-xl backdrop-blur-sm 
-                bg-gradient-to-r from-[#50FA7B]/90 to-[#38B259]/90"
-              initial={{ x: -100, rotate: -45, scale: 0 }}
-              animate={{ 
-                x: 0, 
-                rotate: 0, 
-                scale: 1,
-                transition: {
-                  type: "spring",
-                  stiffness: 300,
-                  damping: 15
-                }
-              }}
-              exit={{ 
-                x: 100,
-                rotate: 45,
-                scale: 0,
-                transition: { duration: 0.1 }
-              }}
-            >
-              <div className="font-game-title text-4xl text-white flex items-center gap-3">
-                <motion.span
-                  initial={{ scale: 0 }}
-                  animate={{ 
-                    scale: [1, 1.2, 1],
-                    transition: {
-                      duration: 0.3,
-                      times: [0, 0.5, 1]
-                    }
-                  }}
-                >
-                  👍 LIKE
-                </motion.span>
-              </div>
-            </motion.div>
+            <>
+              <motion.div className="absolute inset-0 overflow-hidden">
+                {[...Array(8)].map((_, i) => (
+                  <motion.div
+                    key={`like-particle-${i}`}
+                    className="absolute w-8 h-8 text-2xl"
+                    initial={{ 
+                      x: "50%",
+                      y: "50%",
+                      scale: 0,
+                      opacity: 0
+                    }}
+                    animate={{ 
+                      x: `${50 + (Math.random() * 60 - 30)}%`,
+                      y: `${50 + (Math.random() * 60 - 30)}%`,
+                      scale: [0, 1.2, 0],
+                      opacity: [0, 1, 0],
+                    }}
+                    transition={{
+                      duration: 0.2,
+                      delay: i * 0.02,
+                      ease: "easeOut"
+                    }}
+                  >
+                    {["🎯", "🔥", "⚡", "✨"][i % 4]}
+                  </motion.div>
+                ))}
+              </motion.div>
+              
+              <motion.div 
+                className="px-8 py-4 rounded-2xl border-4 border-[#50FA7B] shadow-xl backdrop-blur-sm 
+                  bg-gradient-to-r from-[#50FA7B]/90 to-[#38B259]/90"
+                initial={{ x: -50, rotate: -10, scale: 0 }}
+                animate={{ 
+                  x: 0, 
+                  rotate: 0, 
+                  scale: 1,
+                  transition: {
+                    type: "spring",
+                    stiffness: 400,
+                    damping: 30,
+                    duration: 0.2
+                  }
+                }}
+                exit={{ 
+                  x: 50,
+                  rotate: 10,
+                  scale: 0,
+                  transition: { duration: 0.1 }
+                }}
+              >
+                <div className="font-game-title text-4xl text-white flex items-center gap-3">
+                  <motion.span
+                    initial={{ scale: 0 }}
+                    animate={{ 
+                      scale: [1, 1.1, 1],
+                      transition: {
+                        duration: 0.2
+                      }
+                    }}
+                  >
+                    👍 LIKE
+                  </motion.span>
+                </div>
+              </motion.div>
             </>
           )}
 
@@ -415,12 +415,12 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
                     animate={{ 
                       x: `${50 + (Math.random() * 60 - 30)}%`,
                       y: `${50 + (Math.random() * 60 - 30)}%`,
-                      scale: [0, 1.5, 0],
+                      scale: [0, 1.2, 0],
                       opacity: [0, 1, 0],
                     }}
                     transition={{
-                      duration: 0.5,
-                      delay: i * 0.05,
+                      duration: 0.2,
+                      delay: i * 0.02,
                       ease: "easeOut"
                     }}
                   >
@@ -432,20 +432,21 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
               <motion.div 
                 className="px-8 py-4 rounded-2xl border-4 border-[#FF5555] shadow-xl backdrop-blur-sm 
                   bg-gradient-to-r from-[#FF5555]/90 to-[#CC4444]/90"
-                initial={{ x: 100, rotate: 45, scale: 0 }}
+                initial={{ x: 50, rotate: 10, scale: 0 }}
                 animate={{ 
-                  x: 0, 
+                  x: 0,
                   rotate: 0, 
                   scale: 1,
                   transition: {
                     type: "spring",
-                    stiffness: 300,
-                    damping: 15
+                    stiffness: 400,
+                    damping: 30,
+                    duration: 0.2
                   }
                 }}
                 exit={{ 
-                  x: -100,
-                  rotate: -45,
+                  x: -50,
+                  rotate: -10,
                   scale: 0,
                   transition: { duration: 0.1 }
                 }}
@@ -454,10 +455,9 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
                   <motion.span
                     initial={{ scale: 0 }}
                     animate={{ 
-                      scale: [1, 1.2, 1],
+                      scale: [1, 1.1, 1],
                       transition: {
-                        duration: 0.3,
-                        times: [0, 0.5, 1]
+                        duration: 0.2
                       }
                     }}
                   >
@@ -484,12 +484,12 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
                     animate={{ 
                       x: `${50 + (Math.random() * 60 - 30)}%`,
                       y: `${50 + (Math.random() * 60 - 30)}%`,
-                      scale: [0, 1.5, 0],
+                      scale: [0, 1.2, 0],
                       opacity: [0, 1, 0],
                     }}
                     transition={{
-                      duration: 0.5,
-                      delay: i * 0.05,
+                      duration: 0.2,
+                      delay: i * 0.02,
                       ease: "easeOut"
                     }}
                   >
@@ -501,18 +501,19 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
               <motion.div 
                 className="px-8 py-4 rounded-2xl border-4 border-[#4B7BF5] shadow-xl backdrop-blur-sm 
                   bg-gradient-to-r from-[#4B7BF5]/90 to-[#8A2BE2]/90"
-                initial={{ y: 100, scale: 0 }}
+                initial={{ y: 50, scale: 0 }}
                 animate={{ 
                   y: 0, 
                   scale: 1,
                   transition: {
                     type: "spring",
-                    stiffness: 300,
-                    damping: 15
+                    stiffness: 400,
+                    damping: 30,
+                    duration: 0.2
                   }
                 }}
                 exit={{ 
-                  y: -100,
+                  y: -50,
                   scale: 0,
                   transition: { duration: 0.1 }
                 }}
@@ -521,11 +522,10 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
                   <motion.div
                     initial={{ scale: 0 }}
                     animate={{ 
-                      scale: [1, 1.2, 1],
+                      scale: [1, 1.1, 1],
                       rotate: [0, 180, 360],
                       transition: {
-                        duration: 0.3,
-                        ease: "easeInOut"
+                        duration: 0.2
                       }
                     }}
                   >
