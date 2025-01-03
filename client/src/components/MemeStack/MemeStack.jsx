@@ -344,18 +344,18 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
                     opacity: 0
                   }}
                   animate={{ 
-                    x: `${50 + (Math.random() * 80 - 40)}%`,
-                    y: `${50 + (Math.random() * 80 - 40)}%`,
-                    scale: [0, 2, 0],
+                    x: `${50 + (Math.random() * 60 - 30)}%`,
+                    y: `${50 + (Math.random() * 60 - 30)}%`,
+                    scale: [0, 1.5, 0],
                     opacity: [0, 1, 0],
                   }}
                   transition={{
-                    duration: 1,
-                    delay: i * 0.1,
+                    duration: 0.5,
+                    delay: i * 0.05,
                     ease: "easeOut"
                   }}
                 >
-                  {["👍", "💖", "✨", "💚"][i % 4]}
+                  {["🎯", "🔥", "⚡", "✨"][i % 4]}
                 </motion.div>
               ))}
             </motion.div>
@@ -419,12 +419,12 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
                       opacity: [0, 1, 0],
                     }}
                     transition={{
-                      duration: 0.8,
-                      delay: i * 0.1,
+                      duration: 0.5,
+                      delay: i * 0.05,
                       ease: "easeOut"
                     }}
                   >
-                    {["👎", "❌", "💢"][i % 3]}
+                    {["❌", "🚫", "💢"][i % 3]}
                   </motion.div>
                 ))}
               </motion.div>
@@ -488,12 +488,12 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
                       opacity: [0, 1, 0],
                     }}
                     transition={{
-                      duration: 1,
-                      delay: i * 0.1,
+                      duration: 0.5,
+                      delay: i * 0.05,
                       ease: "easeOut"
                     }}
                   >
-                    {["⭐", "✨", "💫", "🌟"][i % 4]}
+                    {["⚡", "💫", "🌟", "💥"][i % 4]}
                   </motion.div>
                 ))}
               </motion.div>
