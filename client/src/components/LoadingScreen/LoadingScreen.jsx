@@ -47,7 +47,7 @@ const LoadingScreen = ({ error }) => {
         {[...Array(10)].map((_, i) => (
           <div
             key={i}
-            className="absolute w-1 h-1 bg-[#4B7BF5] rounded-full animate-pulse"
+            className="absolute w-1 h-1 bg-[#4B7BF5] rounded-full"
             style={{
               top: `${Math.random() * 100}%`,
               left: `${Math.random() * 100}%`,
