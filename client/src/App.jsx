@@ -21,7 +21,7 @@ const LoadingScreen = () => (
       {[...Array(10)].map((_, i) => (
         <div
           key={i}
-          className="absolute w-1 h-1 bg-[#4B7BF5] rounded-full animate-pulse"
+          className="absolute w-1 h-1 bg-[#4B7BF5] rounded-full"
           style={{
             top: `${Math.random() * 100}%`,
             left: `${Math.random() * 100}%`,
@@ -37,7 +37,11 @@ const LoadingScreen = () => (
       <img
         src="/loading.png"
         alt="Loading"
-        className="w-full h-auto block m-0 p-0 animate-pulse"
+        className="w-full h-auto block m-0 p-0"
+        style={{
+          opacity: 1,
+          filter: 'none'
+        }}
         onError={(e) => {
           console.error('Loading image error:', e);
           e.target.src = 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg"/>';
