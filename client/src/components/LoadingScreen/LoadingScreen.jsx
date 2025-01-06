@@ -1,3 +1,4 @@
+// src/components/LoadingScreen/LoadingScreen.jsx
 import React from 'react';
 
 const LoadingScreen = ({ error }) => {
@@ -66,9 +67,7 @@ const LoadingScreen = ({ error }) => {
           style={{
             width: '100vw',
             height: 'auto',
-            maxHeight: '90vh',
-            opacity: 1,
-            filter: 'none'
+            maxHeight: '90vh'
           }}
           draggable="false"
           onError={(e) => {
