@@ -1,26 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 
 const LoadingScreen = ({ error }) => {
-  const [isMobile, setIsMobile] = useState(true);
-
-  useEffect(() => {
-    // Check if we're in Telegram and detect platform
-    if (window.Telegram?.WebApp) {
-      // Telegram WebApp provides platform info
-      const platform = window.Telegram.WebApp.platform;
-      // Consider these platforms as mobile
-      const mobilePatterns = ['android', 'ios', 'android_x', 'ios_x'];
-      setIsMobile(mobilePatterns.includes(platform.toLowerCase()));
-      console.log('Telegram platform:', platform);
-    } else {
-      // Fallback to user agent check if Telegram WebApp is not available
-      const userAgent = navigator.userAgent.toLowerCase();
-      setIsMobile(/mobile|iphone|ipad|android/.test(userAgent));
-      console.log('User Agent fallback:', userAgent);
-    }
-  }, []);
-
-  useEffect(() => {
+  React.useEffect(() => {
     const img = document.querySelector('.loading-image');
     if (img) {
       console.log('Image dimensions:', {
@@ -65,7 +46,7 @@ const LoadingScreen = ({ error }) => {
         {[...Array(10)].map((_, i) => (
           <div
             key={i}
-            className="absolute w-1 h-1 bg-[#4B7BF5] rounded-full"
+            className="absolute w-1 h-1 bg-[#4B7BF5] rounded-full animate-pulse"
             style={{
               top: `${Math.random() * 100}%`,
               left: `${Math.random() * 100}%`,
@@ -76,24 +57,21 @@ const LoadingScreen = ({ error }) => {
         ))}
       </div>
 
-      {/* Main content - conditional image source */}
+      {/* Main content - removed animate-pulse class */}
       <div className="relative flex-1 flex items-center justify-center overflow-hidden">
         <img
-          src={isMobile ? "/loading-mobile.png" : "/loading-desktop.png"}
+          src="/loading.png"
           alt="Loading"
           className="loading-image w-screen"
           style={{
             width: '100vw',
             height: 'auto',
-            maxHeight: '90vh',
-            opacity: 1,
-            filter: 'none'
+            maxHeight: '90vh'
           }}
           draggable="false"
           onError={(e) => {
             console.error('Loading image error:', e);
-            // Fallback to default loading.png if the platform-specific image fails to load
-            e.target.src = '/loading.png';
+            e.target.src = 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg"/>';
           }}
         />
       </div>

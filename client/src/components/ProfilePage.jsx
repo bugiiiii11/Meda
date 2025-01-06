@@ -106,14 +106,14 @@ const ProfilePage = ({ userData, superlikeStatus }) => {
               />
               <StatItem 
                 icon="👥" 
-                label="Alliance Members" 
+                label="Recruited Warriors" 
                 value={userData?.referralStats?.referredUsers?.length || 0} 
               />
               <StatItem 
                 icon="⚡" 
-                label="Energy Crystals" 
+                label="Legendary Strikes Available" 
                 value={superlikeStatus?.remainingSuperlikes || 0}
-                subtitle={superlikeStatus?.nextResetIn ? `Recharges in ${superlikeStatus.nextResetIn}h` : undefined}
+                subtitle={superlikeStatus?.nextResetIn ? ` Recharges in ${superlikeStatus.nextResetIn}h` : undefined}
               />
               <StatItem 
                 icon="👑" 
@@ -127,11 +127,11 @@ const ProfilePage = ({ userData, superlikeStatus }) => {
           <ProfileCard>
             <h3 className="font-game-title text-xl text-white mb-4">Battle Records</h3>
             <div className="space-y-3">
-              <StatItem icon="👍" label="Approvals" value={`+${userData?.pointsBreakdown?.likes || 0}`} />
-              <StatItem icon="👎" label="Rejections" value={`+${userData?.pointsBreakdown?.dislikes || 0}`} />
-              <StatItem icon="⚡" label="Power Strikes" value={`+${(userData?.pointsBreakdown?.superLikes || 0) * 3}`} />
+              <StatItem icon="👍" label="Power Ups" value={`+${userData?.pointsBreakdown?.likes || 0}`} />
+              <StatItem icon="👎" label="Critical Hits" value={`+${userData?.pointsBreakdown?.dislikes || 0}`} />
+              <StatItem icon="⚡" label="Legendary Strikes" value={`+${(userData?.pointsBreakdown?.superLikes || 0) * 3}`} />
               <StatItem icon="✅" label="Quests Completed" value={`+${userData?.pointsBreakdown?.tasks || 0}`} />
-              <StatItem icon="🏅" label="Achievement Points" value="+0" />
+              <StatItem icon="🏅" label="Achievements" value="+0" />
               <StatItem icon="🎁" label="Alliance Bonus" value={`+${userData?.pointsBreakdown?.referrals || 0}`} />
             </div>
           </ProfileCard>
