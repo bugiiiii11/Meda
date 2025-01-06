@@ -1,8 +1,26 @@
-// src/components/LoadingScreen/LoadingScreen.jsx
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 
 const LoadingScreen = ({ error }) => {
-  React.useEffect(() => {
+  const [isMobile, setIsMobile] = useState(true);
+
+  useEffect(() => {
+    // Check if we're in Telegram and detect platform
+    if (window.Telegram?.WebApp) {
+      // Telegram WebApp provides platform info
+      const platform = window.Telegram.WebApp.platform;
+      // Consider these platforms as mobile
+      const mobilePatterns = ['android', 'ios', 'android_x', 'ios_x'];
+      setIsMobile(mobilePatterns.includes(platform.toLowerCase()));
+      console.log('Telegram platform:', platform);
+    } else {
+      // Fallback to user agent check if Telegram WebApp is not available
+      const userAgent = navigator.userAgent.toLowerCase();
+      setIsMobile(/mobile|iphone|ipad|android/.test(userAgent));
+      console.log('User Agent fallback:', userAgent);
+    }
+  }, []);
+
+  useEffect(() => {
     const img = document.querySelector('.loading-image');
     if (img) {
       console.log('Image dimensions:', {
@@ -58,21 +76,24 @@ const LoadingScreen = ({ error }) => {
         ))}
       </div>
 
-      {/* Main content - removed animate-pulse class */}
+      {/* Main content - conditional image source */}
       <div className="relative flex-1 flex items-center justify-center overflow-hidden">
         <img
-          src="/loading.png"
+          src={isMobile ? "/loading-mobile.png" : "/loading-desktop.png"}
           alt="Loading"
           className="loading-image w-screen"
           style={{
             width: '100vw',
             height: 'auto',
-            maxHeight: '90vh'
+            maxHeight: '90vh',
+            opacity: 1,
+            filter: 'none'
           }}
           draggable="false"
           onError={(e) => {
             console.error('Loading image error:', e);
-            e.target.src = 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg"/>';
+            // Fallback to default loading.png if the platform-specific image fails to load
+            e.target.src = '/loading.png';
           }}
         />
       </div>
