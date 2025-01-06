@@ -14,54 +14,69 @@ import { priceService } from './services/priceService';
 import dummyMemes from './data/dummyMemes';
 import './styles/globals.css';
 
-const LoadingScreen = () => (
-  <div className="fixed inset-0 bg-[#0A0B0F] flex flex-col items-center justify-between p-0 overflow-hidden">
-    {/* Background particles */}
-    <div className="absolute inset-0 overflow-hidden">
-      {[...Array(10)].map((_, i) => (
-        <div
-          key={i}
-          className="absolute w-1 h-1 bg-[#4B7BF5] rounded-full"
+const LoadingScreen = () => {
+  // Platform detection
+  const isMobile = React.useMemo(() => {
+    if (window.Telegram?.WebApp) {
+      const platform = window.Telegram.WebApp.platform;
+      return ['android', 'ios', 'android_x', 'ios_x'].includes(platform.toLowerCase());
+    }
+    return /mobile|iphone|ipad|android/.test(navigator.userAgent.toLowerCase());
+  }, []);
+
+  // Get the appropriate image based on platform
+  const loadingImage = isMobile ? '/loading-mobile.png' : '/loading-desktop.png';
+
+  return (
+    <div className="fixed inset-0 bg-[#0A0B0F] flex flex-col items-center justify-between p-0 overflow-hidden">
+      {/* Background particles */}
+      <div className="absolute inset-0 overflow-hidden">
+        {[...Array(10)].map((_, i) => (
+          <div
+            key={i}
+            className="absolute w-1 h-1 bg-[#4B7BF5] rounded-full"
+            style={{
+              top: `${Math.random() * 100}%`,
+              left: `${Math.random() * 100}%`,
+              animationDelay: `${Math.random() * 2}s`,
+              opacity: 0.3
+            }}
+          />
+        ))}
+      </div>
+
+      {/* Main content */}
+      <div className="w-full flex-1 flex items-center justify-center p-0 relative">
+        <img
+          src={loadingImage}
+          alt="Loading"
+          className="w-full h-auto block m-0 p-0"
           style={{
-            top: `${Math.random() * 100}%`,
-            left: `${Math.random() * 100}%`,
-            animationDelay: `${Math.random() * 2}s`,
-            opacity: 0.3
+            opacity: 1,
+            filter: 'none'
+          }}
+          onError={(e) => {
+            console.error('Loading image error:', e);
+            // Fallback to default loading.png if platform-specific image fails
+            e.target.src = '/loading.png';
           }}
         />
-      ))}
-    </div>
-
-    {/* Main content */}
-    <div className="w-full flex-1 flex items-center justify-center p-0 relative">
-      <img
-        src="/loading.png"
-        alt="Loading"
-        className="w-full h-auto block m-0 p-0"
-        style={{
-          opacity: 1,
-          filter: 'none'
-        }}
-        onError={(e) => {
-          console.error('Loading image error:', e);
-          e.target.src = 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg"/>';
-        }}
-      />
-    </div>
-
-    {/* Loading bar section */}
-    <div className="relative w-full px-6 mb-20">
-      <div className="w-full h-3 bg-[#1A1B2E] rounded-full overflow-hidden border border-white/5">
-        <div className="relative h-full bg-gradient-to-r from-[#4B7BF5] to-[#8A2BE2] animate-load-progress">
-          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-progress-shine" />
-        </div>
       </div>
-      <p className="font-game-mono text-gray-400 mt-4 text-center">
-        Initializing Battle System...
-      </p>
+
+      {/* Loading bar section */}
+      <div className="relative w-full px-6 mb-20">
+        <div className="w-full h-3 bg-[#1A1B2E] rounded-full overflow-hidden border border-white/5">
+          <div className="relative h-full bg-gradient-to-r from-[#4B7BF5] to-[#8A2BE2] animate-load-progress">
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-progress-shine" />
+          </div>
+        </div>
+        <p className="font-game-mono text-gray-400 mt-4 text-center">
+          Initializing Battle System...
+        </p>
+      </div>
     </div>
-  </div>
-);
+  );
+};
 
 function App() {
   // State declarations
