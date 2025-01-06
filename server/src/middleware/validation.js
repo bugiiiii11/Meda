@@ -32,6 +32,10 @@ const schemas = {
       marketCap: Joi.number(),
       priceChange24h: Joi.number(),
       contract: Joi.string(),
+      description: Joi.string().max(500), // Added description validation
+      projectType: Joi.string(), // Added projectType validation
+      sector: Joi.string(),
+      sectorUrl: Joi.string().uri(), // Added sectorUrl validation
       website: Joi.string().uri().optional(),
       twitter: Joi.string().optional(),
       telegram: Joi.string().optional()

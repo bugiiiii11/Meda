@@ -21,6 +21,14 @@ const projectSchema = new mongoose.Schema({
     superLikes: { type: Number, default: 0 },
     views: { type: Number, default: 0 }
   }],
+  description: { 
+    type: String,
+    maxLength: 500 // Limiting description length
+  },
+  projectType: {
+    type: String,
+    default: 'GameFi'
+  },
   type: {
     type: String,
     enum: ['Pre-Sale', 'Gaming Blockchain', 'Strategy', 'Shooter', 'Telegram App', 'Telegram Game', 'MMORPG', 'RPG', 'Game Hub', 'GameFi', 'NFT Game'],

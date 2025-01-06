@@ -8,7 +8,7 @@ const dummyMemes = [
   id: 1,
   projectName: "Pixels",
   content: "/assets/memes/game1.png",
-  weight: 3,
+  weight: 1,
   logo: "/assets/logos/logo_pixels.png",
   engagement: {
     likes: 0,
@@ -22,7 +22,9 @@ const dummyMemes = [
     priceChange24h: -1,
     contract: "0x7eae20d11ef8c779433eb24503def900b9d28ad7",
     buyLink: "https://www.binance.com/en/trade/PIXEL_USDT?ref=37754157",
-    sector: "GameFi", 
+    sector: "Play", 
+    sectorUrl: "https://play.pixels.xyz/",
+    projectType: "GameFi",
     buttons: [
       {
         label: "Website",
@@ -61,7 +63,9 @@ const dummyMemes = [
     priceChange24h: -1,
     contract: "0xd1d2eb1b1e90b638588728b4130137d262c87cae",
     buyLink: "https://www.binance.com/en/trade/GALA_USDT?ref=37754157&type=spot",
-    sector: "Game Hub", 
+    sector: "Play", 
+    sectorUrl: "https://games.gala.com/",
+    projectType: "Game Hub",
     buttons: [
       {
         label: "Website",
@@ -100,7 +104,9 @@ const dummyMemes = [
     priceChange24h: -1,
     contract: "0xf57e7e7c23978c3caec3c3548e3d615c346e79ff",
     buyLink: "https://www.binance.com/en/trade/IMX_USDT?ref=37754157&type=spot",
-    sector: "Gaming Blockchain", 
+    sector: "Play", 
+    sectorUrl: "https://play.immutable.com/games/",
+    projectType: "Gaming Blockchain",
     buttons: [
       {
         label: "Website",
@@ -139,7 +145,9 @@ const dummyMemes = [
     priceChange24h: -1,
     contract: "0xf57e7e7c23978c3caec3c3548e3d615c346e79ff",
     buyLink: "https://www.binance.com/en/trade/IMX_USDT?ref=37754157&type=spot",
-    sector: "Gaming Blockchain", 
+    sector: "Play", 
+    sectorUrl: "https://play.immutable.com/games/",
+    projectType: "Gaming Blockchain",
     buttons: [
       {
         label: "Website",
@@ -178,7 +186,9 @@ const dummyMemes = [
     priceChange24h: -1,
     contract: "0xf57e7e7c23978c3caec3c3548e3d615c346e79ff",
     buyLink: "https://www.binance.com/en/trade/IMX_USDT?ref=37754157&type=spot",
-    sector: "Gaming Blockchain", 
+    sector: "Play", 
+    sectorUrl: "https://play.immutable.com/games/",
+    projectType: "Gaming Blockchain",
     buttons: [
       {
         label: "Website",
@@ -217,7 +227,9 @@ const dummyMemes = [
     priceChange24h: -1,
     contract: "0x97a9107c1793bc407d6f527b77e7fff4d812bece",
     buyLink: "https://www.binance.com/en/trade/AXS_USDT?ref=37754157",
-    sector: "GameFi", 
+    sector: "Play", 
+    sectorUrl: "https://welcome.skymavis.com/download/",
+    projectType: "Gaming Blockchain",
     buttons: [
       {
         label: "Website",
@@ -256,7 +268,9 @@ const dummyMemes = [
     priceChange24h: -1,
     contract: "0x97a9107c1793bc407d6f527b77e7fff4d812bece",
     buyLink: "https://www.binance.com/en/trade/AXS_USDT?ref=37754157",
-    sector: "GameFi", 
+    sector: "Play", 
+    sectorUrl: "https://welcome.skymavis.com/download/",
+    projectType: "Gaming Blockchain",
     buttons: [
       {
         label: "Website",
@@ -295,7 +309,9 @@ const dummyMemes = [
     priceChange24h: -1,
     contract: "0xe53ec727dbdeb9e2d5456c3be40cff031ab40a55",
     buyLink: "https://www.binance.com/en/trade/SUPER_USDT?ref=37754157&type=spot",
-    sector: "GameFi", 
+    sector: "Play", 
+    sectorUrl: "https://superverse.co/integrations",
+    projectType: "Gaming Blockchain",
     buttons: [
       {
         label: "Website",
@@ -334,7 +350,9 @@ const dummyMemes = [
     priceChange24h: -1,
     contract: "0xe53ec727dbdeb9e2d5456c3be40cff031ab40a55",
     buyLink: "https://www.binance.com/en/trade/SUPER_USDT?ref=37754157&type=spot",
-    sector: "GameFi", 
+    sector: "Play", 
+    sectorUrl: "https://superverse.co/integrations",
+    projectType: "Gaming Blockchain",
     buttons: [
       {
         label: "Website",
@@ -373,7 +391,9 @@ const dummyMemes = [
     priceChange24h: -1,
     contract: "0xe53ec727dbdeb9e2d5456c3be40cff031ab40a55",
     buyLink: "https://www.binance.com/en/trade/SUPER_USDT?ref=37754157&type=spot",
-    sector: "GameFi", 
+    sector: "Play", 
+    sectorUrl: "https://superverse.co/integrations",
+    projectType: "Gaming Blockchain",
     buttons: [
       {
         label: "Website",
@@ -412,7 +432,9 @@ const dummyMemes = [
     priceChange24h: -1,
     contract: "0x767fe9edc9e0df98e07454847909b5e959d7ca0e",
     buyLink: "https://www.binance.com/en/trade/ILV_USDT?ref=37754157&type=spot",
-    sector: "GameFi", 
+    sector: "Play", 
+    sectorUrl: "https://store.epicgames.com/en-US/p/illuvium-60064c",
+    projectType: "GameFi",
     buttons: [
       {
         label: "Website",
@@ -451,7 +473,9 @@ const dummyMemes = [
     priceChange24h: -1,
     contract: "0x767fe9edc9e0df98e07454847909b5e959d7ca0e",
     buyLink: "https://www.binance.com/en/trade/ILV_USDT?ref=37754157&type=spot",
-    sector: "GameFi", 
+    sector: "Play", 
+    sectorUrl: "https://store.epicgames.com/en-US/p/illuvium-60064c",
+    projectType: "GameFi",
     buttons: [
       {
         label: "Website",
@@ -490,7 +514,9 @@ const dummyMemes = [
     priceChange24h: -1,
     contract: "0x767fe9edc9e0df98e07454847909b5e959d7ca0e",
     buyLink: "https://www.binance.com/en/trade/ILV_USDT?ref=37754157&type=spot",
-    sector: "GameFi", 
+    sector: "Play", 
+    sectorUrl: "https://store.epicgames.com/en-US/p/illuvium-60064c",
+    projectType: "GameFi",
     buttons: [
       {
         label: "Website",
@@ -529,7 +555,9 @@ const dummyMemes = [
     priceChange24h: -1,
     contract: "0x7eae20d11ef8c779433eb24503def900b9d28ad7",
     buyLink: "https://www.binance.com/en/trade/PIXEL_USDT?ref=37754157",
-    sector: "GameFi", 
+    sector: "Play", 
+    sectorUrl: "https://play.pixels.xyz/",
+    projectType: "GameFi",
     buttons: [
       {
         label: "Website",

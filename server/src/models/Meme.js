@@ -36,7 +36,10 @@ const memeSchema = new mongoose.Schema({
     marketCap: { type: String, required: true },
     priceChange24h: { type: Number, required: true },
     contract: { type: String, required: true },
+    description: { type: String }, // Added description field
+    projectType: { type: String }, // Added projectType field
     sector: { type: String },
+    sectorUrl: { type: String }, // Added sectorUrl field
     buyLink: { type: String, required: true },
     buttons: [{
       label: { type: String, required: true },
@@ -47,7 +50,8 @@ const memeSchema = new mongoose.Schema({
     linkClicks: {
       website: { type: Number, default: 0 },
       telegram: { type: Number, default: 0 },
-      twitter: { type: Number, default: 0 }
+      twitter: { type: Number, default: 0 },
+      sector: { type: Number, default: 0 } // Added sector link clicks tracking
     },
     taskCompletions: { type: Number, default: 0 },
     viewCount: { type: Number, default: 0 },
