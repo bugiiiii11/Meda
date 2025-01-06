@@ -23,17 +23,13 @@ const LoadingScreen = ({ error }) => {
         <div className="relative">
           {/* Error glow effect */}
           <div className="absolute inset-0 bg-gradient-to-r from-[#FF5555]/20 to-[#CC4444]/20 rounded-xl blur-xl"></div>
-          
           {/* Error content */}
-          <div className="relative bg-gradient-to-r from-[#2A1B3D] to-[#1A1B2E] border border-[#FF5555]/20 
-            rounded-xl p-6 text-center max-w-md">
+          <div className="relative bg-gradient-to-r from-[#2A1B3D] to-[#1A1B2E] border border-[#FF5555]/20 rounded-xl p-6 text-center max-w-md">
             <h2 className="font-game-title text-2xl text-[#FF5555] mb-3">Battle System Error</h2>
             <p className="font-game-mono text-gray-400 text-sm mb-4">{error}</p>
             <button
               onClick={() => window.location.reload()}
-              className="px-6 py-3 bg-gradient-to-r from-[#FF5555] to-[#CC4444] rounded-lg 
-                font-game-title text-white shadow-lg shadow-[#FF5555]/20 
-                transform transition-all duration-300 hover:scale-105"
+              className="px-6 py-3 bg-gradient-to-r from-[#FF5555] to-[#CC4444] rounded-lg font-game-title text-white shadow-lg shadow-[#FF5555]/20 transform transition-all duration-300 hover:scale-105"
             >
               Recharge System
             </button>
@@ -62,12 +58,12 @@ const LoadingScreen = ({ error }) => {
         ))}
       </div>
 
-      {/* Main content */}
+      {/* Main content - removed animate-pulse class */}
       <div className="relative flex-1 flex items-center justify-center overflow-hidden">
         <img
           src="/loading.png"
           alt="Loading"
-          className="loading-image w-screen animate-pulse"
+          className="loading-image w-screen"
           style={{
             width: '100vw',
             height: 'auto',
@@ -86,8 +82,7 @@ const LoadingScreen = ({ error }) => {
         <div className="w-full h-3 bg-[#1A1B2E] rounded-full overflow-hidden border border-white/5">
           {/* Loading bar with shine effect */}
           <div className="relative h-full bg-gradient-to-r from-[#4B7BF5] to-[#8A2BE2] animate-load-progress">
-            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent 
-              animate-progress-shine"></div>
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-progress-shine"></div>
           </div>
         </div>
         <p className="font-game-mono text-gray-400 mt-4 text-center">
