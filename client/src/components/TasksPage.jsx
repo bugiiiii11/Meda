@@ -6,14 +6,14 @@ import { ENDPOINTS, getHeaders } from '../config/api';
 const TelegramIcon = () => (
   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
     <path d="M20.665 3.717l-17.73 6.837c-1.21.486-1.203 1.161-.222 1.462l4.552 1.42l10.532-6.645c.498-.303.953-.14.579.192l-8.533 7.701l-.321 4.796c.47 0 .678-.216.94-.47l2.26-2.196l4.696 3.466c.866.477 1.489.232 1.706-.803l3.098-14.59c.317-1.269-.485-1.843-1.557-1.37z" 
-          fill="#2A1B3D"/>
+          fill="#229ED9"/>
   </svg>
 );
 
 const TwitterIcon = () => (
   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
     <path d="M23.643 4.937c-.835.37-1.732.62-2.675.733a4.67 4.67 0 0 0 2.048-2.578 9.3 9.3 0 0 1-2.958 1.13 4.66 4.66 0 0 0-7.938 4.25 13.229 13.229 0 0 1-9.602-4.868c-.4.69-.63 1.49-.63 2.342A4.66 4.66 0 0 0 3.96 9.824a4.647 4.647 0 0 1-2.11-.583v.06a4.66 4.66 0 0 0 3.737 4.568 4.692 4.692 0 0 1-2.104.08 4.661 4.661 0 0 0 4.352 3.234 9.348 9.348 0 0 1-5.786 1.995 9.5 9.5 0 0 1-1.112-.065 13.175 13.175 0 0 0 7.14 2.093c8.57 0 13.255-7.098 13.255-13.254 0-.2-.005-.402-.014-.602a9.47 9.47 0 0 0 2.323-2.41z" 
-          fill="#2A1B3D"/>
+          fill="#1DA1F2"/>
   </svg>
 );
 
@@ -174,7 +174,7 @@ const TasksPage = ({ userData, onUserDataUpdate }) => {
     >
       <div className="p-4 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="w-6 h-6 flex items-center justify-center">{task.icon}</div>
+          <span className="text-2xl">{task.icon}</span>
           <span className="font-game-title text-white">{task.label}</span>
         </div>
         <div className="flex items-center gap-3">
@@ -234,7 +234,10 @@ const TasksPage = ({ userData, onUserDataUpdate }) => {
     <div className="flex flex-col h-screen bg-[#0A0B0F]">
       {/* Header */}
       <div className="fixed top-0 left-0 right-0 z-50">
+        {/* Enhanced blur overlay */}
         <div className="absolute inset-0 bg-gradient-to-b from-[#0A0B0F] via-[#0A0B0F]/95 to-transparent backdrop-blur-xl"></div>
+        
+        {/* Content */}
         <div className="relative w-full py-6">
           <div className="text-center">
             <h1 className="font-game-title text-3xl bg-gradient-to-r from-[#4B7BF5] to-[#8A2BE2] text-transparent bg-clip-text">
