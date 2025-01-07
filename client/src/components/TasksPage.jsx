@@ -114,9 +114,9 @@ const TasksPage = ({ userData, onUserDataUpdate }) => {
       icon: <TwitterIcon />
     },
     { 
-      id: 'news-2', 
+      id: 'news-1', 
       label: 'The Latest News', 
-      link: 'https://x.com/cryptomedatech/status/1846620559179702758', 
+      link: 'https://x.com/cryptomedatech/status/1867623339931680995', 
       points: 10,
       icon: <TwitterIcon />
     }
