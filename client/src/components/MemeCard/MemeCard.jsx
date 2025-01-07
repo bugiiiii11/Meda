@@ -6,10 +6,12 @@ const MemeCard = ({ meme, onSwipe, isTop, isMobile, onDragStart, onDragEnd }) =>
   const x = useMotionValue(0);
   const y = useMotionValue(0);
   const rotate = useTransform(x, [-100, 0, 100], [-15, 0, 15]);
+  
+  // Simplified opacity transform
   const opacity = useTransform(
     x,
-    [-200, -150, -100, 0, 100, 150, 200],
-    [0, 0.5, 0.8, 1, 0.8, 0.5, 0]
+    [-200, -100, 0, 100, 200],
+    [0, 1, 1, 1, 0]
   );
 
   const engagementData = React.useMemo(() => ({
