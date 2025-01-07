@@ -249,12 +249,16 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
       engagement: currentMeme.engagement
     });
     
-    // Set animation states first
     setIsAnimating(true);
     setLastSwipe(direction);
   
     // Set animation duration based on swipe type
     const animationDuration = direction === 'super' ? 1500 : 800;
+  
+    // Transition to next meme with delay
+    setTimeout(() => {
+      transitionToNextMeme();
+    }, animationDuration / 2);  // Transition halfway through the animation
     
     try {
       let response;
@@ -333,22 +337,10 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
     } catch (error) {
       console.error('Interaction error:', error);
     } finally {
-      // After API calls, handle the animation and transition sequence
-      setTimeout(async () => {
-        // First, clear the animation
+      console.log('Finishing swipe interaction');
+      setTimeout(() => {
         setLastSwipe(null);
-        
-        // Small delay before transitioning to ensure animation is complete
-        setTimeout(() => {
-          // Then transition to next meme
-          transitionToNextMeme();
-          
-          // Finally, reset animation state
-          setTimeout(() => {
-            setIsAnimating(false);
-          }, 200);
-        }, 100);
-        
+        setIsAnimating(false);
       }, animationDuration);
     }
   };
@@ -387,24 +379,28 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
               }
             }}
           >
-            <MemeCard
-              meme={currentMeme}
-              onSwipe={handleSwipe}
-              isTop={true}
-              isMobile={isMobile}
-              userData={userData}
-              onDragStart={() => setIsDragging(true)}
-              onDragEnd={(e, info) => {
-                setIsDragging(false);
-                const xOffset = info.offset.x;
-                const yOffset = info.offset.y;
-                
-                if (Math.abs(info.velocity.y) > Math.abs(info.velocity.x) && yOffset < -50) {
-                  handleSwipe('super');
-                } else if (xOffset > 50) {
-                  handleSwipe('right');
-                } else if (xOffset < -50) {
-                  handleSwipe('left');
+          <MemeCard
+            meme={currentMeme}
+            onSwipe={handleSwipe}
+            isTop={true}
+            isMobile={isMobile}
+            userData={userData}
+            isAnimating={isAnimating}  // Add this prop
+            onDragStart={() => setIsDragging(true)}
+            onDragEnd={(e, info) => {
+              setIsDragging(false);
+              if (isAnimating) return;  // Add early return if animating
+              const xVel = info.velocity.x;
+              const yVel = info.velocity.y;
+              const xOffset = info.offset.x;
+              const yOffset = info.offset.y;
+              
+              if (Math.abs(yVel) > Math.abs(xVel) && yOffset < -50) {
+                handleSwipe('super');
+              } else if (xOffset > 50) {
+                handleSwipe('right');
+              } else if (xOffset < -50) {
+                handleSwipe('left');
                 }
               }}
             />

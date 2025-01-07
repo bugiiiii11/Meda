@@ -1,7 +1,8 @@
+//MemeCard.jsx
 import React from 'react';
 import { motion, useMotionValue, useTransform } from 'framer-motion';
 
-const MemeCard = ({ meme, onSwipe, isTop, isMobile, onDragStart, onDragEnd, isAnimating }) => {
+const MemeCard = ({ meme, onSwipe, isTop, isMobile, onDragStart, onDragEnd, isAnimating }) => {  // Add isAnimating prop
   const x = useMotionValue(0);
   const y = useMotionValue(0);
   const rotate = useTransform(x, [-100, 0, 100], [-15, 0, 15]);
@@ -38,7 +39,7 @@ const MemeCard = ({ meme, onSwipe, isTop, isMobile, onDragStart, onDragEnd, isAn
   };
 
   React.useEffect(() => {
-    if (!isTop || isAnimating) return;
+    if (!isTop || isAnimating) return;  // Add isAnimating check
     const handleKeyPress = (e) => {
       if (e.key === 'ArrowLeft') onSwipe('left');
       if (e.key === 'ArrowRight') onSwipe('right');
@@ -46,17 +47,17 @@ const MemeCard = ({ meme, onSwipe, isTop, isMobile, onDragStart, onDragEnd, isAn
     };
     window.addEventListener('keydown', handleKeyPress);
     return () => window.removeEventListener('keydown', handleKeyPress);
-  }, [isTop, onSwipe, isAnimating]);
+  }, [isTop, onSwipe, isAnimating]);  // Add isAnimating to dependencies
 
   return (
     <motion.div
       className="absolute w-full"
       style={{ x, y, rotate, opacity }}
-      drag={isTop && !isAnimating}
+      drag={isTop && !isAnimating}  // Add isAnimating check
       dragConstraints={{ left: 0, right: 0, top: 0, bottom: 0 }}
       dragElastic={1}
-      onDragStart={() => !isAnimating && onDragStart?.()}
-      onDragEnd={(e, info) => !isAnimating && onDragEnd?.(e, info)}
+      onDragStart={onDragStart}
+      onDragEnd={onDragEnd}
       dragTransition={{ bounceStiffness: 600, bounceDamping: 20 }}
       initial={false}
     >
@@ -88,7 +89,7 @@ const MemeCard = ({ meme, onSwipe, isTop, isMobile, onDragStart, onDragEnd, isAn
                 </div>
               </div>
               
-              {/* Sector button with click handler */}
+              {/* Updated sector button with click handler */}
               <motion.div
                 className="flex items-center cursor-pointer"
                 initial={{ scale: 0.9 }}
