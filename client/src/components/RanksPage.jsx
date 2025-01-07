@@ -128,13 +128,13 @@ const RanksPage = () => {
               isActive={activeTab === 'users'} 
               onClick={() => setActiveTab('users')}
             >
-              Warriors
+              Meda Heroes
             </TabButton>
             <TabButton 
               isActive={activeTab === 'projects'} 
               onClick={() => setActiveTab('projects')}
             >
-              Kingdoms
+              Games
             </TabButton>
           </div>
         </div>

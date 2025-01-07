@@ -117,7 +117,7 @@ const ProfilePage = ({ userData, superlikeStatus }) => {
               />
               <StatItem 
                 icon="👑" 
-                label="Rank" 
+                label="Membership" 
                 value="Free Tier" 
               />
             </div>
@@ -140,7 +140,7 @@ const ProfilePage = ({ userData, superlikeStatus }) => {
           <ProfileCard>
             <h3 className="font-game-title text-xl text-white mb-2">Alliance Program</h3>
             <p className="font-game-body text-gray-400 text-sm mb-4">
-              Recruit warriors and earn 20 power points for each ally!
+              Invite friends into the Meda Portal and earn 20 power points for recruited Meda Warriors!
             </p>
 
             <div className="relative overflow-hidden rounded-lg bg-gradient-to-r from-[#1E1E22] to-[#2A2A2E] p-4">

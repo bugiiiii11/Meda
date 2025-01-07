@@ -88,7 +88,7 @@ const TasksPage = ({ userData, onUserDataUpdate }) => {
     { 
       id: 'telegram', 
       label: 'Join Telegram Chat', 
-      link: 'https://t.me/cryptomeda', 
+      link: 'https://t.me/medaportal', 
       points: 10,
       icon: '🌟'
     },
@@ -100,9 +100,9 @@ const TasksPage = ({ userData, onUserDataUpdate }) => {
       icon: '🎯'
     },
     { 
-      id: 'news-1', 
+      id: 'news-2', 
       label: 'Read the Latest News', 
-      link: 'https://x.com/cryptomedatech/status/1867623339931680995', 
+      link: 'https://x.com/cryptomedatech/status/1846620559179702758', 
       points: 10,
       icon: '📜'
     }
@@ -261,7 +261,7 @@ const TasksPage = ({ userData, onUserDataUpdate }) => {
             <h2 className="font-game-title text-xl text-white px-2">Achievements</h2>
             <div className="space-y-3">
               <AchievementTask
-                label="Like Collector (Tier 1)"
+                label="Power-Up Collector (Tier 1)"
                 current={userData?.pointsBreakdown?.likes || 0}
                 target={1000}
                 points={1000}
@@ -269,7 +269,7 @@ const TasksPage = ({ userData, onUserDataUpdate }) => {
                 icon="❤️"
               />
               <AchievementTask
-                label="Hater Slayer (Tier 1)"
+                label="Critical Slayer (Tier 1)"
                 current={userData?.pointsBreakdown?.dislikes || 0}
                 target={1000}
                 points={1000}
@@ -278,7 +278,7 @@ const TasksPage = ({ userData, onUserDataUpdate }) => {
               />
               {userData?.pointsBreakdown?.superLikes >= 100 ? (
                 <AchievementTask
-                  label="Super Swiper (Tier 2)"
+                  label="Ultra Striker (Tier 2)"
                   current={userData?.pointsBreakdown?.superLikes || 0}
                   target={500}
                   points={5000}
@@ -287,7 +287,7 @@ const TasksPage = ({ userData, onUserDataUpdate }) => {
                 />
               ) : (
                 <AchievementTask
-                  label="Super Swiper (Tier 1)"
+                  label="Legendary Striker (Tier 1)"
                   current={userData?.pointsBreakdown?.superLikes || 0}
                   target={100}
                   points={1000}
