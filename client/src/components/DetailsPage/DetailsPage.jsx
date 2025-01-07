@@ -106,7 +106,7 @@ const DetailsPage = ({ isOpen, meme }) => {
                   Description
                 </div>
                 <div className="bg-[#1A1B2E] rounded-lg px-3 py-2 border border-white/5">
-                  <div className="font-game-mono text-gray-200 text-sm">
+                  <div className="font-game-mono text-gray-200 text-sm text-center">
                     {meme.projectDetails.description}
                   </div>
                 </div>
@@ -115,12 +115,12 @@ const DetailsPage = ({ isOpen, meme }) => {
           )}
 
           {/* Contract Section */}
-          {meme?.projectDetails?.contract && (
+          {meme?.projectDetails?.contract && meme?.projectDetails?.network && (
             <div className="relative">
               <div className="relative bg-gradient-to-r from-[#2A1B3D] to-[#1A1B2E] rounded-xl p-4 
                 border border-white/5">
                 <div className="font-game-title text-center text-gray-400 mb-3">
-                  Contract Address
+                  Contract Address On {meme.projectDetails.network}
                 </div>
                 <div className="flex items-center gap-2 bg-[#1A1B2E] rounded-lg px-3 py-2 border border-white/5">
                   <div className="font-game-mono text-gray-200 text-sm truncate flex-1">
