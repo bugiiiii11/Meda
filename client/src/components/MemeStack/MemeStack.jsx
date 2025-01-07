@@ -225,31 +225,86 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
   }, []);
 
   const handleSwipe = async (direction) => {
-    if (!currentMeme) return;
+    if (isAnimating || !currentMeme) return;
     
     // Check superlike availability
-    if (direction === 'super' && !superlikeStatus.canSuperlike) {
-      console.log('Superlike blocked: No superlikes remaining');
-      return;
+    if (direction === 'super') {
+      console.log('Attempting superlike with status:', superlikeStatus);
+      if (!superlikeStatus.canSuperlike) {
+        console.log('Superlike blocked: No superlikes remaining');
+        // TODO: Add user notification here
+        return;
+      }
     }
     
     console.log('Processing swipe:', {
       direction,
       memeId: currentMeme.id,
       userId: userData?.telegramId,
+      remainingSuperlikes: superlikeStatus.remainingSuperlikes
     });
-
-    setLastSwipe(direction);
+  
+    console.log('Current meme before swipe:', {
+      id: currentMeme.id,
+      engagement: currentMeme.engagement
+    });
     
-    // Transition to next meme immediately but smoothly
-    transitionToNextMeme();
+    setIsAnimating(true);
+    setLastSwipe(direction);
+  
+    // Set animation duration based on swipe type
+    const animationDuration = direction === 'super' ? 1500 : 800;
     
     try {
       let response;
       
       if (direction === 'super') {
-        // Superlike handling remains the same...
+        console.log('Making superlike API request for meme:', currentMeme.id);
+        // First use superlike endpoint to handle limits
+        response = await fetch(ENDPOINTS.superlikes.use, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Origin': window.location.origin,
+            'X-Telegram-Init-Data': window.Telegram?.WebApp?.initData || ''
+          },
+          body: JSON.stringify({
+            telegramId: userData?.telegramId,
+            memeId: currentMeme.id
+          })
+        });
+  
+        const superlikeData = await response.json();
+        console.log('Superlike API response:', superlikeData);
+  
+        if (superlikeData.success) {
+          // Then record the interaction as before
+          response = await fetch(ENDPOINTS.interactions.update, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Origin': window.location.origin,
+              'X-Telegram-Init-Data': window.Telegram?.WebApp?.initData || ''
+            },
+            body: JSON.stringify({
+              action: 'superlike',
+              memeId: currentMeme.id,
+              telegramId: userData?.telegramId,
+              username: userData?.username
+            })
+          });
+  
+          // Update superlike status after successful use
+          await onSuperlikeUse(userData?.telegramId);
+        } else {
+          throw new Error(superlikeData.error || 'Superlike failed');
+        }
       } else {
+        console.log('Making regular interaction API request:', {
+          action: direction === 'right' ? 'like' : 'dislike',
+          memeId: currentMeme.id
+        });
+        // Regular like/dislike
         const action = direction === 'right' ? 'like' : 'dislike';
         response = await fetch(ENDPOINTS.interactions.update, {
           method: 'POST',
@@ -266,17 +321,33 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
           })
         });
       }
-
+  
       const data = await response.json();
+      console.log('Final API response:', data);
+  
       if (!data.success) {
+        console.error('API request failed:', data.error);
         throw new Error(data.error || 'Interaction failed');
       }
     } catch (error) {
       console.error('Interaction error:', error);
     } finally {
+      console.log('Finishing swipe interaction');
+      
+      // Wait for the animation to complete before transitioning
       setTimeout(() => {
+        // First clear the animation
         setLastSwipe(null);
-      }, lastSwipe === 'super' ? 1200 : 700);
+        
+        // Then transition to next meme
+        transitionToNextMeme();
+        
+        // Finally, allow new swipes
+        setTimeout(() => {
+          setIsAnimating(false);
+        }, 200); // Small additional delay to ensure smooth transition
+        
+      }, animationDuration);
     }
   };
 
