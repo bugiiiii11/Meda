@@ -14,6 +14,7 @@ import { priceService } from './services/priceService';
 import dummyMemes from './data/dummyMemes';
 import './styles/globals.css';
 
+//last update LoadingScreen to prevent blinking
 const LoadingScreen = () => (
   <div className="fixed inset-0 bg-[#0A0B0F] flex flex-col items-center justify-between p-0 overflow-hidden">
     {/* Background particles */}
