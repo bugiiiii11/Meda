@@ -249,6 +249,7 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
       engagement: currentMeme.engagement
     });
     
+    // Set animation states first
     setIsAnimating(true);
     setLastSwipe(direction);
   
@@ -332,20 +333,21 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
     } catch (error) {
       console.error('Interaction error:', error);
     } finally {
-      console.log('Finishing swipe interaction');
-      
-      // Wait for the animation to complete before transitioning
-      setTimeout(() => {
-        // First clear the animation
+      // After API calls, handle the animation and transition sequence
+      setTimeout(async () => {
+        // First, clear the animation
         setLastSwipe(null);
         
-        // Then transition to next meme
-        transitionToNextMeme();
-        
-        // Finally, allow new swipes
+        // Small delay before transitioning to ensure animation is complete
         setTimeout(() => {
-          setIsAnimating(false);
-        }, 200); // Small additional delay to ensure smooth transition
+          // Then transition to next meme
+          transitionToNextMeme();
+          
+          // Finally, reset animation state
+          setTimeout(() => {
+            setIsAnimating(false);
+          }, 200);
+        }, 100);
         
       }, animationDuration);
     }

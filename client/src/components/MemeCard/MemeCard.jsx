@@ -1,21 +1,7 @@
 import React from 'react';
 import { motion, useMotionValue, useTransform } from 'framer-motion';
 
-// Utility function to handle URLs
-const handleUrlClick = (url) => {
-  if (!url) return;
-  
-  // Check if it's a Telegram URL
-  if (url.toLowerCase().includes('t.me/') || url.toLowerCase().includes('telegram.me/')) {
-    // For Telegram links, we'll use window.location to trigger the telegram app
-    window.location.href = url;
-  } else {
-    // For other URLs, open in new tab/window
-    window.open(url, '_blank', 'noopener,noreferrer');
-  }
-};
-
-const MemeCard = ({ meme, onSwipe, isTop, isMobile, onDragStart, onDragEnd }) => {
+const MemeCard = ({ meme, onSwipe, isTop, isMobile, onDragStart, onDragEnd, isAnimating }) => {
   const x = useMotionValue(0);
   const y = useMotionValue(0);
   const rotate = useTransform(x, [-100, 0, 100], [-15, 0, 15]);
@@ -31,8 +17,28 @@ const MemeCard = ({ meme, onSwipe, isTop, isMobile, onDragStart, onDragEnd }) =>
     dislikes: parseInt(meme.engagement?.dislikes || 0)
   }), [meme.engagement]);
 
+  // Handle sector click
+  const handleSectorClick = (e) => {
+    e.stopPropagation();
+    const sectorUrl = meme.projectDetails?.sectorUrl;
+    if (sectorUrl) {
+      // Check if it's a Telegram link
+      if (sectorUrl.startsWith('https://t.me/') || sectorUrl.startsWith('tg://')) {
+        // Handle Telegram deep linking
+        if (window.Telegram?.WebApp?.openTelegramLink) {
+          window.Telegram.WebApp.openTelegramLink(sectorUrl);
+        } else {
+          window.open(sectorUrl, '_blank');
+        }
+      } else {
+        // Open regular URLs in new tab
+        window.open(sectorUrl, '_blank');
+      }
+    }
+  };
+
   React.useEffect(() => {
-    if (!isTop) return;
+    if (!isTop || isAnimating) return;
     const handleKeyPress = (e) => {
       if (e.key === 'ArrowLeft') onSwipe('left');
       if (e.key === 'ArrowRight') onSwipe('right');
@@ -40,31 +46,25 @@ const MemeCard = ({ meme, onSwipe, isTop, isMobile, onDragStart, onDragEnd }) =>
     };
     window.addEventListener('keydown', handleKeyPress);
     return () => window.removeEventListener('keydown', handleKeyPress);
-  }, [isTop, onSwipe]);
-
-  // Updated handler for sector click
-  const handleSectorClick = (e) => {
-    e.stopPropagation(); // Prevent drag interaction
-    const sectorUrl = meme.projectDetails?.sectorUrl;
-    if (sectorUrl) {
-      handleUrlClick(sectorUrl);
-    }
-  };
+  }, [isTop, onSwipe, isAnimating]);
 
   return (
     <motion.div
       className="absolute w-full"
       style={{ x, y, rotate, opacity }}
-      drag={isTop}
+      drag={isTop && !isAnimating}
       dragConstraints={{ left: 0, right: 0, top: 0, bottom: 0 }}
       dragElastic={1}
-      onDragStart={onDragStart}
-      onDragEnd={onDragEnd}
+      onDragStart={() => !isAnimating && onDragStart?.()}
+      onDragEnd={(e, info) => !isAnimating && onDragEnd?.(e, info)}
       dragTransition={{ bounceStiffness: 600, bounceDamping: 20 }}
       initial={false}
     >
       <div className="relative">
+        {/* Glow effect */}
         <div className="absolute inset-0 bg-gradient-to-r from-[#4B7BF5]/10 to-[#8A2BE2]/10 rounded-xl blur-lg"></div>
+        
+        {/* Card content */}
         <div className="relative rounded-xl overflow-hidden shadow-2xl border border-white/5">
           <img
             src={meme.content}
@@ -87,8 +87,10 @@ const MemeCard = ({ meme, onSwipe, isTop, isMobile, onDragStart, onDragEnd }) =>
                   </span>
                 </div>
               </div>
-              <motion.button
-                className="flex items-center cursor-pointer transition-transform hover:scale-105 active:scale-95"
+              
+              {/* Sector button with click handler */}
+              <motion.div
+                className="flex items-center cursor-pointer"
                 initial={{ scale: 0.9 }}
                 animate={{
                   scale: 1,
@@ -99,15 +101,24 @@ const MemeCard = ({ meme, onSwipe, isTop, isMobile, onDragStart, onDragEnd }) =>
                   }
                 }}
                 onClick={handleSectorClick}
-                title={meme.projectDetails?.sectorUrl || ''}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
               >
-                <div className="px-3 py-1 rounded-lg bg-gradient-to-r from-[#4B7BF5]/20 to-[#8A2BE2]/20 border border-white/5 hover:from-[#4B7BF5]/30 hover:to-[#8A2BE2]/30">
+                <div className="px-3 py-1 rounded-lg bg-gradient-to-r from-[#4B7BF5]/20 to-[#8A2BE2]/20 
+                  border border-white/5 hover:border-white/20 transition-all duration-300">
                   <span className="font-game-title text-[#FFD700]">
                     {meme.projectDetails?.sector || 'GameFi'}
                   </span>
                 </div>
-              </motion.button>
+              </motion.div>
             </div>
+            
+            {/* Description (if exists) */}
+            {meme.projectDetails?.description && (
+              <div className="mt-2 text-sm text-gray-300 font-game-mono">
+                {meme.projectDetails.description}
+              </div>
+            )}
           </div>
         </div>
       </div>
