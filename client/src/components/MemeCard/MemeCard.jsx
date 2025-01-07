@@ -18,6 +18,26 @@ const MemeCard = ({ meme, onSwipe, isTop, isMobile, onDragStart, onDragEnd }) =>
     dislikes: parseInt(meme.engagement?.dislikes || 0)
   }), [meme.engagement]);
 
+  // Handle sector click
+  const handleSectorClick = (e) => {
+    e.stopPropagation();
+    const sectorUrl = meme.projectDetails?.sectorUrl;
+    if (sectorUrl) {
+      // Check if it's a Telegram link
+      if (sectorUrl.startsWith('https://t.me/') || sectorUrl.startsWith('tg://')) {
+        // Handle Telegram deep linking
+        if (window.Telegram?.WebApp?.openTelegramLink) {
+          window.Telegram.WebApp.openTelegramLink(sectorUrl);
+        } else {
+          window.open(sectorUrl, '_blank');
+        }
+      } else {
+        // Open regular URLs in new tab
+        window.open(sectorUrl, '_blank');
+      }
+    }
+  };
+
   React.useEffect(() => {
     if (!isTop) return;
     const handleKeyPress = (e) => {
@@ -52,7 +72,6 @@ const MemeCard = ({ meme, onSwipe, isTop, isMobile, onDragStart, onDragEnd }) =>
             alt={meme.projectName}
             className="w-full aspect-square object-cover"
           />
-          
           <div className="bg-gradient-to-r from-[#2A1B3D] to-[#1A1B2E] border-t border-white/5 px-4 py-3">
             <div className="flex justify-between items-center">
               <div className="flex items-center gap-4">
@@ -70,8 +89,9 @@ const MemeCard = ({ meme, onSwipe, isTop, isMobile, onDragStart, onDragEnd }) =>
                 </div>
               </div>
               
+              {/* Updated sector button with click handler */}
               <motion.div
-                className="flex items-center"
+                className="flex items-center cursor-pointer"
                 initial={{ scale: 0.9 }}
                 animate={{
                   scale: 1,
@@ -81,15 +101,25 @@ const MemeCard = ({ meme, onSwipe, isTop, isMobile, onDragStart, onDragEnd }) =>
                     duration: 1.5
                   }
                 }}
+                onClick={handleSectorClick}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
               >
                 <div className="px-3 py-1 rounded-lg bg-gradient-to-r from-[#4B7BF5]/20 to-[#8A2BE2]/20 
-                  border border-white/5">
+                  border border-white/5 hover:border-white/20 transition-all duration-300">
                   <span className="font-game-title text-[#FFD700]">
                     {meme.projectDetails?.sector || 'GameFi'}
                   </span>
                 </div>
               </motion.div>
             </div>
+            
+            {/* Description (if exists) */}
+            {meme.projectDetails?.description && (
+              <div className="mt-2 text-sm text-gray-300 font-game-mono">
+                {meme.projectDetails.description}
+              </div>
+            )}
           </div>
         </div>
       </div>

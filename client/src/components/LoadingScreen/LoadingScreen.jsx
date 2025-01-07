@@ -1,3 +1,4 @@
+// src/components/LoadingScreen/LoadingScreen.jsx
 import React from 'react';
 
 const LoadingScreen = ({ error }) => {
@@ -46,7 +47,7 @@ const LoadingScreen = ({ error }) => {
         {[...Array(10)].map((_, i) => (
           <div
             key={i}
-            className="absolute w-1 h-1 bg-[#4B7BF5] rounded-full animate-pulse"
+            className="absolute w-1 h-1 bg-[#4B7BF5] rounded-full"
             style={{
               top: `${Math.random() * 100}%`,
               left: `${Math.random() * 100}%`,
@@ -66,7 +67,9 @@ const LoadingScreen = ({ error }) => {
           style={{
             width: '100vw',
             height: 'auto',
-            maxHeight: '90vh'
+            maxHeight: '90vh',
+            opacity: 1,
+            filter: 'none'
           }}
           draggable="false"
           onError={(e) => {
