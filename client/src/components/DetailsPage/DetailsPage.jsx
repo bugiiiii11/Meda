@@ -1,4 +1,4 @@
-//DetailsPage.jsx
+// DetailsPage.jsx
 import React, { useState } from 'react';
 
 const CopyIcon = () => (
@@ -19,37 +19,26 @@ const CopyIcon = () => (
 );
 
 const AnimatedButton = ({ onClick, children, className }) => {
-  const [isFlashing, setIsFlashing] = React.useState(false);
+  const [isActive, setIsActive] = useState(false);
 
   const handleClick = async () => {
-    if (!isFlashing) {
-      setIsFlashing(true);
+    if (!isActive) {
+      setIsActive(true);
       onClick?.();
-      setTimeout(() => setIsFlashing(false), 300);
+      // Use requestAnimationFrame for smoother animation
+      requestAnimationFrame(() => {
+        setTimeout(() => setIsActive(false), 200);
+      });
     }
   };
 
   return (
     <button
       onClick={handleClick}
-      className={`relative transform transition-all duration-300 hover:scale-105 ${className}`}
+      className={`relative transform transition-transform duration-200 hover:scale-105 
+        ${isActive ? 'scale-95' : ''} ${className}`}
     >
-      {/* Glow effect */}
-      <div className="absolute inset-0 bg-gradient-to-r from-[#4B7BF5]/10 to-[#8A2BE2]/10 rounded-xl blur-lg"></div>
-      
-      {/* Main content */}
       <div className="relative z-10 w-full h-full">{children}</div>
-      
-      {/* Flash effect */}
-      {isFlashing && (
-        <div 
-          className="absolute inset-0 bg-[#FFD700] rounded-xl"
-          style={{
-            opacity: 0.3,
-            animation: 'flashAnimation 0.3s ease-out forwards'
-          }}
-        />
-      )}
     </button>
   );
 };
@@ -89,25 +78,34 @@ const CopyButton = ({ text }) => {
 };
 
 const DetailsPage = ({ isOpen, meme }) => {
+  // Use transform and opacity for smoother transitions
+  const baseStyles = {
+    position: 'fixed',
+    left: 0,
+    right: 0,
+    top: '240px',
+    bottom: '60px',
+    background: '#0A0B0F',
+    borderTop: '1px solid rgba(255, 255, 255, 0.05)',
+    transform: isOpen ? 'translateY(0)' : 'translateY(-100%)',
+    opacity: isOpen ? 1 : 0,
+    transition: 'transform 0.3s ease-out, opacity 0.2s ease-out',
+    visibility: isOpen ? 'visible' : 'hidden', // Prevent interaction when hidden
+    zIndex: 40 // Lower z-index to prevent interference with card animations
+  };
+
   return (
-    <div 
-      className={`fixed left-0 right-0 bg-[#0A0B0F] z-50 transition-transform duration-300 
-        ${isOpen ? 'translate-y-0' : 'translate-y-[-120%]'}`}
-      style={{
-        top: '240px',
-        bottom: '60px',
-        borderTop: '1px solid rgba(255, 255, 255, 0.05)',
-      }}
-    >
+    <div style={baseStyles}>
       <div className="max-w-md mx-auto p-4 h-full overflow-y-auto">
         <div className="space-y-4">
           {/* Contract Section */}
           {meme?.projectDetails?.contract && (
             <div className="relative">
-              <div className="absolute inset-0 bg-gradient-to-r from-[#4B7BF5]/5 to-[#8A2BE2]/5 rounded-xl blur-lg"></div>
               <div className="relative bg-gradient-to-r from-[#2A1B3D] to-[#1A1B2E] rounded-xl p-4 
                 border border-white/5">
-                <div className="font-game-title text-center text-gray-400 mb-3">Contract Address</div>
+                <div className="font-game-title text-center text-gray-400 mb-3">
+                  Contract Address
+                </div>
                 <div className="flex items-center gap-2 bg-[#1A1B2E] rounded-lg px-3 py-2 border border-white/5">
                   <div className="font-game-mono text-gray-200 text-sm truncate flex-1">
                     {meme.projectDetails.contract}
@@ -127,7 +125,8 @@ const DetailsPage = ({ isOpen, meme }) => {
                 className="w-full"
               >
                 <div className="px-4 py-3 bg-gradient-to-r from-[#2A1B3D] to-[#1A1B2E] 
-                  text-gray-200 rounded-xl font-game-title border border-white/5">
+                  text-gray-200 rounded-xl font-game-title border border-white/5 
+                  hover:border-white/10 transition-colors">
                   {button.label}
                 </div>
               </AnimatedButton>
