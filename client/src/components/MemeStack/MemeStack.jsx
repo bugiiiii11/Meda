@@ -43,6 +43,7 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
   const [currentMeme, setCurrentMeme] = React.useState(null);
   const [nextMeme, setNextMeme] = React.useState(null);
   const [lastSwipe, setLastSwipe] = React.useState(null);
+  const [isAnimating, setIsAnimating] = React.useState(false);
   const [isMobile, setIsMobile] = React.useState(false);
   const [isDragging, setIsDragging] = React.useState(false);
 
@@ -243,7 +244,7 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
       userId: userData?.telegramId,
       remainingSuperlikes: superlikeStatus.remainingSuperlikes
     });
-  
+
     console.log('Current meme before swipe:', {
       id: currentMeme.id,
       engagement: currentMeme.engagement
@@ -252,13 +253,8 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
     setIsAnimating(true);
     setLastSwipe(direction);
   
-    // Set animation duration based on swipe type
-    const animationDuration = direction === 'super' ? 1500 : 800;
-  
-    // Transition to next meme with delay
-    setTimeout(() => {
-      transitionToNextMeme();
-    }, animationDuration / 2);  // Transition halfway through the animation
+    // Transition to next meme immediately
+    transitionToNextMeme();
     
     try {
       let response;
@@ -278,10 +274,10 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
             memeId: currentMeme.id
           })
         });
-  
+
         const superlikeData = await response.json();
         console.log('Superlike API response:', superlikeData);
-  
+
         if (superlikeData.success) {
           // Then record the interaction as before
           response = await fetch(ENDPOINTS.interactions.update, {
@@ -298,7 +294,7 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
               username: userData?.username
             })
           });
-  
+
           // Update superlike status after successful use
           await onSuperlikeUse(userData?.telegramId);
         } else {
@@ -329,7 +325,7 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
   
       const data = await response.json();
       console.log('Final API response:', data);
-  
+
       if (!data.success) {
         console.error('API request failed:', data.error);
         throw new Error(data.error || 'Interaction failed');
@@ -341,13 +337,13 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
       setTimeout(() => {
         setLastSwipe(null);
         setIsAnimating(false);
-      }, animationDuration);
+      }, lastSwipe === 'super' ? 1200 : 700); 
     }
   };
 
   return (
     <div className="relative max-w-[calc(100vw-32px)] mx-auto aspect-square bg-[#0A0B0F]">
-      {/* Background Layer (Next Meme) */}
+      {/* Background Layer (Next Meme) - Always below */}
       <div className="absolute inset-0 z-10">
         {nextMeme && (
           <MemeCard
@@ -359,7 +355,7 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
         )}
       </div>
   
-      {/* Top Layer (Current Meme) */}
+      {/* Top Layer (Current Meme) - With animation */}
       <AnimatePresence mode="sync">
         {currentMeme && (
           <motion.div
@@ -367,6 +363,7 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
             className="absolute inset-0 z-20"
             initial={false}
             animate={{ 
+              opacity: isDragging ? 0.5 : 1,
               scale: 1,
               zIndex: 20
             }}
@@ -379,28 +376,26 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
               }
             }}
           >
-          <MemeCard
-            meme={currentMeme}
-            onSwipe={handleSwipe}
-            isTop={true}
-            isMobile={isMobile}
-            userData={userData}
-            isAnimating={isAnimating}  // Add this prop
-            onDragStart={() => setIsDragging(true)}
-            onDragEnd={(e, info) => {
-              setIsDragging(false);
-              if (isAnimating) return;  // Add early return if animating
-              const xVel = info.velocity.x;
-              const yVel = info.velocity.y;
-              const xOffset = info.offset.x;
-              const yOffset = info.offset.y;
-              
-              if (Math.abs(yVel) > Math.abs(xVel) && yOffset < -50) {
-                handleSwipe('super');
-              } else if (xOffset > 50) {
-                handleSwipe('right');
-              } else if (xOffset < -50) {
-                handleSwipe('left');
+            <MemeCard
+              meme={currentMeme}
+              onSwipe={handleSwipe}
+              isTop={true}
+              isMobile={isMobile}
+              userData={userData}
+              onDragStart={() => setIsDragging(true)}
+              onDragEnd={(e, info) => {
+                setIsDragging(false);
+                const xVel = info.velocity.x;
+                const yVel = info.velocity.y;
+                const xOffset = info.offset.x;
+                const yOffset = info.offset.y;
+                
+                if (Math.abs(yVel) > Math.abs(xVel) && yOffset < -50) {
+                  handleSwipe('super');
+                } else if (xOffset > 50) {
+                  handleSwipe('right');
+                } else if (xOffset < -50) {
+                  handleSwipe('left');
                 }
               }}
             />

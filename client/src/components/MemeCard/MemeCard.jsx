@@ -2,7 +2,7 @@
 import React from 'react';
 import { motion, useMotionValue, useTransform } from 'framer-motion';
 
-const MemeCard = ({ meme, onSwipe, isTop, isMobile, onDragStart, onDragEnd, isAnimating }) => {  // Add isAnimating prop
+const MemeCard = ({ meme, onSwipe, isTop, isMobile, onDragStart, onDragEnd }) => {
   const x = useMotionValue(0);
   const y = useMotionValue(0);
   const rotate = useTransform(x, [-100, 0, 100], [-15, 0, 15]);
@@ -39,7 +39,7 @@ const MemeCard = ({ meme, onSwipe, isTop, isMobile, onDragStart, onDragEnd, isAn
   };
 
   React.useEffect(() => {
-    if (!isTop || isAnimating) return;  // Add isAnimating check
+    if (!isTop) return;
     const handleKeyPress = (e) => {
       if (e.key === 'ArrowLeft') onSwipe('left');
       if (e.key === 'ArrowRight') onSwipe('right');
@@ -47,13 +47,13 @@ const MemeCard = ({ meme, onSwipe, isTop, isMobile, onDragStart, onDragEnd, isAn
     };
     window.addEventListener('keydown', handleKeyPress);
     return () => window.removeEventListener('keydown', handleKeyPress);
-  }, [isTop, onSwipe, isAnimating]);  // Add isAnimating to dependencies
+  }, [isTop, onSwipe]);
 
   return (
     <motion.div
       className="absolute w-full"
       style={{ x, y, rotate, opacity }}
-      drag={isTop && !isAnimating}  // Add isAnimating check
+      drag={isTop}
       dragConstraints={{ left: 0, right: 0, top: 0, bottom: 0 }}
       dragElastic={1}
       onDragStart={onDragStart}
