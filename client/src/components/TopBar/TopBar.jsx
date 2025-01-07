@@ -159,7 +159,7 @@ const TopBar = ({ meme, onDetailsClick, isDetailsOpen }) => {
                     {meme?.projectName || ''}
                   </h1>
                   <p className="font-game-mono text-sm text-gray-400">
-                    {meme?.projectDetails?.network || ''}
+                    {meme?.projectDetails?.projectType || ''}
                   </p>
                 </div>
               </div>
