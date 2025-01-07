@@ -3,6 +3,13 @@ import React, { useState, useEffect } from 'react';
 import { ENDPOINTS, getHeaders } from '../config/api';
 
 // Custom Icon Components
+const TelegramIcon = () => (
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M20.665 3.717l-17.73 6.837c-1.21.486-1.203 1.161-.222 1.462l4.552 1.42l10.532-6.645c.498-.303.953-.14.579.192l-8.533 7.701l-.321 4.796c.47 0 .678-.216.94-.47l2.26-2.196l4.696 3.466c.866.477 1.489.232 1.706-.803l3.098-14.59c.317-1.269-.485-1.843-1.557-1.37z" 
+          fill="#2A1B3D"/>
+  </svg>
+);
+
 const TwitterIcon = () => (
   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
     <path d="M23.643 4.937c-.835.37-1.732.62-2.675.733a4.67 4.67 0 0 0 2.048-2.578 9.3 9.3 0 0 1-2.958 1.13 4.66 4.66 0 0 0-7.938 4.25 13.229 13.229 0 0 1-9.602-4.868c-.4.69-.63 1.49-.63 2.342A4.66 4.66 0 0 0 3.96 9.824a4.647 4.647 0 0 1-2.11-.583v.06a4.66 4.66 0 0 0 3.737 4.568 4.692 4.692 0 0 1-2.104.08 4.661 4.661 0 0 0 4.352 3.234 9.348 9.348 0 0 1-5.786 1.995 9.5 9.5 0 0 1-1.112-.065 13.175 13.175 0 0 0 7.14 2.093c8.57 0 13.255-7.098 13.255-13.254 0-.2-.005-.402-.014-.602a9.47 9.47 0 0 0 2.323-2.41z" 
@@ -29,7 +36,7 @@ const CheckIcon = () => (
   </div>
 );
 
-// AnimatedButton component remains unchanged
+// Fixed AnimatedButton component
 const AnimatedButton = ({ onClick, children, className }) => {
   const [isFlashing, setIsFlashing] = React.useState(false);
 
@@ -48,10 +55,12 @@ const AnimatedButton = ({ onClick, children, className }) => {
       onClick={handleClick}
       className={`relative ${className}`}
     >
-      <div className="relative z-10 w-full h-full bg-[#2A1B3D] rounded-xl">
+      {/* Background and content container */}
+      <div className="relative z-10 w-full h-full bg-[#1E1E22] rounded-xl">
         {children}
       </div>
       
+      {/* Flash overlay */}
       {isFlashing && (
         <div 
           className="absolute inset-0 bg-[#FFD700] rounded-xl"
@@ -165,7 +174,7 @@ const TasksPage = ({ userData, onUserDataUpdate }) => {
     >
       <div className="p-4 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="w-6 h-6">{task.icon}</div>
+          <div className="w-6 h-6 flex items-center justify-center">{task.icon}</div>
           <span className="font-game-title text-white">{task.label}</span>
         </div>
         <div className="flex items-center gap-3">
