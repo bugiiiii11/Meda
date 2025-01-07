@@ -113,13 +113,6 @@ const MemeCard = ({ meme, onSwipe, isTop, isMobile, onDragStart, onDragEnd }) =>
                 </div>
               </motion.div>
             </div>
-            
-            {/* Description (if exists) */}
-            {meme.projectDetails?.description && (
-              <div className="mt-2 text-sm text-gray-300 font-game-mono">
-                {meme.projectDetails.description}
-              </div>
-            )}
           </div>
         </div>
       </div>
