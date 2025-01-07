@@ -1,6 +1,20 @@
 import React from 'react';
 import { motion, useMotionValue, useTransform } from 'framer-motion';
 
+// Utility function to handle URLs
+const handleUrlClick = (url) => {
+  if (!url) return;
+  
+  // Check if it's a Telegram URL
+  if (url.toLowerCase().includes('t.me/') || url.toLowerCase().includes('telegram.me/')) {
+    // For Telegram links, we'll use window.location to trigger the telegram app
+    window.location.href = url;
+  } else {
+    // For other URLs, open in new tab/window
+    window.open(url, '_blank', 'noopener,noreferrer');
+  }
+};
+
 const MemeCard = ({ meme, onSwipe, isTop, isMobile, onDragStart, onDragEnd }) => {
   const x = useMotionValue(0);
   const y = useMotionValue(0);
@@ -28,12 +42,13 @@ const MemeCard = ({ meme, onSwipe, isTop, isMobile, onDragStart, onDragEnd }) =>
     return () => window.removeEventListener('keydown', handleKeyPress);
   }, [isTop, onSwipe]);
 
-  // Add handler for sector click
+  // Updated handler for sector click
   const handleSectorClick = (e) => {
-    e.stopPropagation(); // Prevent drag interaction when clicking the sector button
-    // You can add your desired action here, for example:
-    console.log(`Sector ${meme.projectDetails?.sector || 'GameFi'} clicked`);
-    // Add your navigation or action logic here
+    e.stopPropagation(); // Prevent drag interaction
+    const sectorUrl = meme.projectDetails?.sectorUrl;
+    if (sectorUrl) {
+      handleUrlClick(sectorUrl);
+    }
   };
 
   return (
@@ -49,9 +64,7 @@ const MemeCard = ({ meme, onSwipe, isTop, isMobile, onDragStart, onDragEnd }) =>
       initial={false}
     >
       <div className="relative">
-        {/* Glow effect */}
         <div className="absolute inset-0 bg-gradient-to-r from-[#4B7BF5]/10 to-[#8A2BE2]/10 rounded-xl blur-lg"></div>
-        {/* Card content */}
         <div className="relative rounded-xl overflow-hidden shadow-2xl border border-white/5">
           <img
             src={meme.content}
@@ -86,6 +99,7 @@ const MemeCard = ({ meme, onSwipe, isTop, isMobile, onDragStart, onDragEnd }) =>
                   }
                 }}
                 onClick={handleSectorClick}
+                title={meme.projectDetails?.sectorUrl || ''}
               >
                 <div className="px-3 py-1 rounded-lg bg-gradient-to-r from-[#4B7BF5]/20 to-[#8A2BE2]/20 border border-white/5 hover:from-[#4B7BF5]/30 hover:to-[#8A2BE2]/30">
                   <span className="font-game-title text-[#FFD700]">

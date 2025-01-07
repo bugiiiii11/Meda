@@ -11,7 +11,7 @@ const dummyMemes = [
     id: 1,
     projectName: "Pixels",
     content: "/assets/memes/game1.png",
-    weight: 3,
+    weight: 10,
     logo: "/assets/logos/logo_pixels.png",
     projectDetails: {
       network: "Ronin",
@@ -22,7 +22,7 @@ const dummyMemes = [
       buyLink: "https://www.binance.com/en/trade/PIXEL_USDT?ref=37754157",
       description: "Play-to-earn MMO with pixelated graphics and deep economic system",
       sector: "Play", 
-      sectorUrl: "https://play.pixels.xyz/",
+      sectorUrl: "https://t.me/cryptomeda/",
       projectType: "GameFi",
       buttons: [
         {
@@ -492,7 +492,7 @@ const dummyMemes = [
     id: 14,
     projectName: "Pixels",
     content: "/assets/memes/game14.png",
-    weight: 1,
+    weight: 10,
     logo: "/assets/logos/logo_pixels.png",
     projectDetails: {
       network: "Ronin",
@@ -503,7 +503,7 @@ const dummyMemes = [
       buyLink: "https://www.binance.com/en/trade/PIXEL_USDT?ref=37754157",
       description: "Play-to-earn MMO with pixelated graphics and deep economic system",
       sector: "Play", 
-      sectorUrl: "https://play.pixels.xyz/",
+      sectorUrl: "https://t.me/cryptomeda/",
       projectType: "GameFi",
       buttons: [
         {
