@@ -78,7 +78,6 @@ const CopyButton = ({ text }) => {
 };
 
 const DetailsPage = ({ isOpen, meme }) => {
-  // Use transform and opacity for smoother transitions
   const baseStyles = {
     position: 'fixed',
     left: 0,
@@ -90,14 +89,31 @@ const DetailsPage = ({ isOpen, meme }) => {
     transform: isOpen ? 'translateY(0)' : 'translateY(-100%)',
     opacity: isOpen ? 1 : 0,
     transition: 'transform 0.3s ease-out, opacity 0.2s ease-out',
-    visibility: isOpen ? 'visible' : 'hidden', // Prevent interaction when hidden
-    zIndex: 40 // Lower z-index to prevent interference with card animations
+    visibility: isOpen ? 'visible' : 'hidden',
+    zIndex: 40
   };
 
   return (
     <div style={baseStyles}>
       <div className="max-w-md mx-auto p-4 h-full overflow-y-auto">
         <div className="space-y-4">
+          {/* Description Section */}
+          {meme?.projectDetails?.description && (
+            <div className="relative">
+              <div className="relative bg-gradient-to-r from-[#2A1B3D] to-[#1A1B2E] rounded-xl p-4 
+                border border-white/5">
+                <div className="font-game-title text-center text-gray-400 mb-3">
+                  Description
+                </div>
+                <div className="bg-[#1A1B2E] rounded-lg px-3 py-2 border border-white/5">
+                  <div className="font-game-mono text-gray-200 text-sm">
+                    {meme.projectDetails.description}
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* Contract Section */}
           {meme?.projectDetails?.contract && (
             <div className="relative">

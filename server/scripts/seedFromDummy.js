@@ -11,7 +11,7 @@ const dummyMemes = [
     id: 1,
     projectName: "Pixels",
     content: "/assets/memes/game1.png",
-    weight: 10,
+    weight: 1,
     logo: "/assets/logos/logo_pixels.png",
     projectDetails: {
       network: "Ronin",
@@ -492,7 +492,7 @@ const dummyMemes = [
     id: 14,
     projectName: "Pixels",
     content: "/assets/memes/game14.png",
-    weight: 10,
+    weight: 1,
     logo: "/assets/logos/logo_pixels.png",
     projectDetails: {
       network: "Ronin",
