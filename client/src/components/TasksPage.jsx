@@ -17,6 +17,39 @@ const TwitterIcon = () => (
   </svg>
 );
 
+// Achievement Icon Components
+const PowerCollectorIcon = () => (
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M12 3L15.3 6.3C15.7 6.7 16.3 6.9 16.9 6.9H19C20.1 6.9 21 7.8 21 8.9V11C21 11.6 21.2 12.2 21.6 12.6L24 16L21.6 19.4C21.2 19.8 21 20.4 21 21V23.1C21 24.2 20.1 25.1 19 25.1H16.9C16.3 25.1 15.7 25.3 15.3 25.7L12 29L8.7 25.7C8.3 25.3 7.7 25.1 7.1 25.1H5C3.9 25.1 3 24.2 3 23.1V21C3 20.4 2.8 19.8 2.4 19.4L0 16L2.4 12.6C2.8 12.2 3 11.6 3 11V8.9C3 7.8 3.9 6.9 5 6.9H7.1C7.7 6.9 8.3 6.7 8.7 6.3L12 3Z" 
+          fill="#229ED9"/>
+    <path d="M12 8V16M8 12H16" stroke="white" strokeWidth="2" strokeLinecap="round"/>
+  </svg>
+);
+
+const CriticalSlayerIcon = () => (
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M12 2L15.8 8.6L23 9.3L17.5 14.4L19 21.5L12 17.9L5 21.5L6.5 14.4L1 9.3L8.2 8.6L12 2Z" 
+          fill="#1DA1F2"/>
+    <path d="M12 6V14M8 10H16" stroke="white" strokeWidth="2" strokeLinecap="round"/>
+  </svg>
+);
+
+const LegendaryStrikerIcon = () => (
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M13 2L3 14H12L11 22L21 10H12L13 2Z" 
+          fill="#FFD700"/>
+  </svg>
+);
+
+const NetworkNinjaIcon = () => (
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="12" cy="8" r="4" fill="#229ED9"/>
+    <circle cx="6" cy="16" r="3" fill="#229ED9"/>
+    <circle cx="18" cy="16" r="3" fill="#229ED9"/>
+    <path d="M12 12L6 15M12 12L18 15" stroke="#229ED9" strokeWidth="2"/>
+  </svg>
+);
+
 const CheckIcon = () => (
   <div className="bg-[#FFD700] rounded-full p-1.5 flex items-center justify-center">
     <svg
@@ -187,48 +220,68 @@ const TasksPage = ({ userData, onUserDataUpdate }) => {
     </AnimatedButton>
   );
 
-  const AchievementTask = ({ label, current, target, points, completed, icon = '🏆' }) => (
-    <div className="w-full p-4 rounded-xl bg-gradient-to-r from-[#2A1B3D] to-[#1A1B2E] border border-white/5 relative overflow-hidden">
-      {/* Achievement header */}
-      <div className="flex justify-between items-center mb-4">
-        <div className="flex items-center gap-3">
-          <span className="text-2xl">{icon}</span>
-          <div>
-            <span className="font-game-title text-white">{label}</span>
-            {!completed && (
-              <div className="text-sm text-[#FFD700] font-game-mono mt-1">
-                +{points} points
-              </div>
-            )}
+  const AchievementTask = ({ label, current, target, points, completed, achievementType }) => {
+    // Get icon based on achievement type
+    const getIcon = (type) => {
+      switch (type) {
+        case 'power-collector':
+          return <PowerCollectorIcon />;
+        case 'critical-slayer':
+          return <CriticalSlayerIcon />;
+        case 'legendary-striker':
+          return <LegendaryStrikerIcon />;
+        case 'network-ninja':
+          return <NetworkNinjaIcon />;
+        default:
+          return <PowerCollectorIcon />;
+      }
+    };
+
+    return (
+      <div className="w-full p-4 rounded-xl bg-gradient-to-r from-[#2A1B3D] to-[#1A1B2E] border border-white/5 relative overflow-hidden">
+        {/* Achievement header */}
+        <div className="flex justify-between items-center mb-4">
+          <div className="flex items-center gap-3">
+            <div className="w-6 h-6 flex items-center justify-center">
+              {getIcon(achievementType)}
+            </div>
+            <div>
+              <span className="font-game-title text-white">{label}</span>
+              {!completed && (
+                <div className="text-sm text-[#FFD700] font-game-mono mt-1">
+                  +{points} points
+                </div>
+              )}
+            </div>
+          </div>
+          {completed && <CheckIcon />}
+        </div>
+
+        {/* Progress bar */}
+        <div className="w-full h-3 bg-[#1E1E22] rounded-full overflow-hidden relative">
+          <div 
+            className="h-full rounded-full relative overflow-hidden transition-all duration-500 flex items-center"
+            style={{ 
+              width: `${Math.min((current / target) * 100, 100)}%`,
+              background: 'linear-gradient(90deg, #4B7BF5, #8A2BE2)'
+            }}
+          >
+            {/* Shine effect */}
+            <div 
+              className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent"
+              style={{ animation: 'progressShine 2s infinite' }}
+            />
           </div>
         </div>
-        {completed && <CheckIcon />}
-      </div>
 
-      {/* Progress bar */}
-      <div className="w-full h-3 bg-[#1E1E22] rounded-full overflow-hidden relative">
-        <div 
-          className="h-full rounded-full relative overflow-hidden transition-all duration-500 flex items-center"
-          style={{ 
-            width: `${Math.min((current / target) * 100, 100)}%`,
-            background: 'linear-gradient(90deg, #4B7BF5, #8A2BE2)'
-          }}
-        >
-          {/* Shine effect */}
-          <div 
-            className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent"
-            style={{ animation: 'progressShine 2s infinite' }}
-          />
+        {/* Progress numbers */}
+        <div className="flex justify-between mt-2">
+          <span className="font-game-mono text-[#4B7BF5]">{current.toLocaleString()}</span>
+          <span className="font-game-mono text-gray-400">{target.toLocaleString()}</span>
         </div>
       </div>
-
-      {/* Progress numbers */}
-      <div className="flex justify-between mt-2">
-        <span className="font-game-mono text-[#4B7BF5]">{current.toLocaleString()}</span>
-        <span className="font-game-mono text-gray-400">{target.toLocaleString()}</span>
-      </div>
-    </div>
-  );
+    );
+  };
 
   return (
     <div className="flex flex-col h-screen bg-[#0A0B0F]">
@@ -280,7 +333,7 @@ const TasksPage = ({ userData, onUserDataUpdate }) => {
                 target={1000}
                 points={1000}
                 completed={completedTasks.has('achievement-likes')}
-                icon="❤️"
+                achievementType="power-collector"
               />
               <AchievementTask
                 label="Critical Slayer (Tier 1)"
@@ -288,7 +341,7 @@ const TasksPage = ({ userData, onUserDataUpdate }) => {
                 target={1000}
                 points={1000}
                 completed={completedTasks.has('achievement-dislikes')}
-                icon="👊"
+                achievementType="critical-slayer"
               />
               {userData?.pointsBreakdown?.superLikes >= 100 ? (
                 <AchievementTask
@@ -297,7 +350,7 @@ const TasksPage = ({ userData, onUserDataUpdate }) => {
                   target={500}
                   points={5000}
                   completed={completedTasks.has('achievement-superlikes-2')}
-                  icon="⚡"
+                  achievementType="legendary-striker"
                 />
               ) : (
                 <AchievementTask
@@ -306,7 +359,7 @@ const TasksPage = ({ userData, onUserDataUpdate }) => {
                   target={100}
                   points={1000}
                   completed={completedTasks.has('achievement-superlikes')}
-                  icon="⚡"
+                  achievementType="legendary-striker"
                 />
               )}
               <AchievementTask
@@ -315,7 +368,7 @@ const TasksPage = ({ userData, onUserDataUpdate }) => {
                 target={20}
                 points={1000}
                 completed={completedTasks.has('achievement-referrals')}
-                icon="🥷"
+                achievementType="network-ninja"
               />
             </div>
           </div>
