@@ -19,49 +19,49 @@ const TwitterIcon = () => (
 
 // Achievement Icon Components
 const PowerCollectorIcon = () => (
-  <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
     {/* Star burst background */}
-    <path d="M16 2L19.2 9.6L26.1333 5.86667L22.9333 12.8L29.8667 16L22.9333 19.2L26.1333 26.1333L19.2 22.4L16 30L12.8 22.4L5.86667 26.1333L9.06667 19.2L2.13333 16L9.06667 12.8L5.86667 5.86667L12.8 9.6L16 2Z" 
+    <path d="M24 3L28.8 14.4L39.2 8.8L34.4 19.2L44.8 24L34.4 28.8L39.2 39.2L28.8 33.6L24 45L19.2 33.6L8.8 39.2L13.6 28.8L3.2 24L13.6 19.2L8.8 8.8L19.2 14.4L24 3Z" 
           fill="#4CAF50"/>
     {/* Lightning bolt overlay */}
-    <path d="M16 7L11 15H16L13 25L21 15H16L16 7Z" 
+    <path d="M24 10L16 22H24L20 38L32 22H24L24 10Z" 
           fill="white"/>
   </svg>
 );
 
 const CriticalSlayerIcon = () => (
-  <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
     {/* Red circle background */}
-    <circle cx="16" cy="16" r="14" fill="#FF4444"/>
+    <circle cx="24" cy="24" r="20" fill="#FF4444"/>
     {/* White horizontal line */}
-    <rect x="8" y="15" width="16" height="2" fill="white"/>
+    <rect x="12" y="22" width="24" height="4" fill="white"/>
   </svg>
 );
 
 const LegendaryStrikerIcon = () => (
-  <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
     {/* Outer circle */}
-    <circle cx="16" cy="16" r="14" fill="#FFD700"/>
+    <circle cx="24" cy="24" r="20" fill="#FFD700"/>
     {/* Centered star shape */}
-    <path d="M16 7L18.5 14.5H26.5L20 19L22.5 26.5L16 22L9.5 26.5L12 19L5.5 14.5H13.5L16 7Z" 
+    <path d="M24 8L28 19H40L30 26L34 37L24 30L14 37L18 26L8 19H20L24 8Z" 
           fill="white"/>
   </svg>
 );
 
 const NetworkNinjaIcon = () => (
-  <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
     {/* Central node */}
-    <circle cx="16" cy="16" r="5" fill="#1DA1F2"/>
+    <circle cx="24" cy="24" r="8" fill="#1DA1F2"/>
     {/* Outer nodes */}
-    <circle cx="5" cy="16" r="3" fill="#1DA1F2"/>
-    <circle cx="27" cy="16" r="3" fill="#1DA1F2"/>
-    <circle cx="10" cy="8" r="3" fill="#1DA1F2"/>
-    <circle cx="22" cy="8" r="3" fill="#1DA1F2"/>
-    <circle cx="10" cy="24" r="3" fill="#1DA1F2"/>
-    <circle cx="22" cy="24" r="3" fill="#1DA1F2"/>
+    <circle cx="8" cy="24" r="4" fill="#1DA1F2"/>
+    <circle cx="40" cy="24" r="4" fill="#1DA1F2"/>
+    <circle cx="16" cy="12" r="4" fill="#1DA1F2"/>
+    <circle cx="32" cy="12" r="4" fill="#1DA1F2"/>
+    <circle cx="16" cy="36" r="4" fill="#1DA1F2"/>
+    <circle cx="32" cy="36" r="4" fill="#1DA1F2"/>
     {/* Connection lines */}
-    <path d="M8 16L13 16M19 16L24 16M12 9L14 12M20 9L18 12M12 23L14 20M20 23L18 20" 
-          stroke="#1DA1F2" strokeWidth="2"/>
+    <path d="M12 24L20 24M28 24L36 24M18 14L22 20M30 14L26 20M18 34L22 28M30 34L26 28" 
+          stroke="#1DA1F2" strokeWidth="2.5"/>
   </svg>
 );
 
@@ -257,7 +257,7 @@ const TasksPage = ({ userData, onUserDataUpdate }) => {
         {/* Achievement header */}
         <div className="flex justify-between items-center mb-4">
           <div className="flex items-center gap-3">
-            <div className="w-6 h-6 flex items-center justify-center">
+            <div className="w-12 h-12 flex items-center justify-center"> {/* Updated from w-6 h-6 to w-12 h-12 */}
               {getIcon(achievementType)}
             </div>
             <div>
