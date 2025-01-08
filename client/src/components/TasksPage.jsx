@@ -20,33 +20,48 @@ const TwitterIcon = () => (
 // Achievement Icon Components
 const PowerCollectorIcon = () => (
   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M12 3L15.3 6.3C15.7 6.7 16.3 6.9 16.9 6.9H19C20.1 6.9 21 7.8 21 8.9V11C21 11.6 21.2 12.2 21.6 12.6L24 16L21.6 19.4C21.2 19.8 21 20.4 21 21V23.1C21 24.2 20.1 25.1 19 25.1H16.9C16.3 25.1 15.7 25.3 15.3 25.7L12 29L8.7 25.7C8.3 25.3 7.7 25.1 7.1 25.1H5C3.9 25.1 3 24.2 3 23.1V21C3 20.4 2.8 19.8 2.4 19.4L0 16L2.4 12.6C2.8 12.2 3 11.6 3 11V8.9C3 7.8 3.9 6.9 5 6.9H7.1C7.7 6.9 8.3 6.7 8.7 6.3L12 3Z" 
-          fill="#229ED9"/>
-    <path d="M12 8V16M8 12H16" stroke="white" strokeWidth="2" strokeLinecap="round"/>
+    {/* Star burst background */}
+    <path d="M12 2L14.4 7.2L19.6 4.4L17.2 9.6L22.4 12L17.2 14.4L19.6 19.6L14.4 16.8L12 22L9.6 16.8L4.4 19.6L6.8 14.4L1.6 12L6.8 9.6L4.4 4.4L9.6 7.2L12 2Z" 
+          fill="#4CAF50"/>
+    {/* Lightning bolt overlay */}
+    <path d="M12 6L8 12H12L10 18L16 12H12L12 6Z" 
+          fill="white"/>
   </svg>
 );
 
 const CriticalSlayerIcon = () => (
   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M12 2L15.8 8.6L23 9.3L17.5 14.4L19 21.5L12 17.9L5 21.5L6.5 14.4L1 9.3L8.2 8.6L12 2Z" 
-          fill="#1DA1F2"/>
-    <path d="M12 6V14M8 10H16" stroke="white" strokeWidth="2" strokeLinecap="round"/>
+    {/* Red circle background */}
+    <circle cx="12" cy="12" r="10" fill="#FF4444"/>
+    {/* White horizontal line */}
+    <rect x="6" y="11" width="12" height="2" fill="white"/>
   </svg>
 );
 
 const LegendaryStrikerIcon = () => (
   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M13 2L3 14H12L11 22L21 10H12L13 2Z" 
-          fill="#FFD700"/>
+    {/* Outer circle */}
+    <circle cx="12" cy="12" r="10" fill="#FFD700"/>
+    {/* Star shape */}
+    <path d="M12 5L13.7961 8.52786H17.6085L14.4062 10.6443L15.7023 14.1721L12.5 12.0557L9.29772 14.1721L10.5938 10.6443L7.39155 8.52786H11.2039L12 5Z" 
+          fill="white"/>
   </svg>
 );
 
 const NetworkNinjaIcon = () => (
   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <circle cx="12" cy="8" r="4" fill="#229ED9"/>
-    <circle cx="6" cy="16" r="3" fill="#229ED9"/>
-    <circle cx="18" cy="16" r="3" fill="#229ED9"/>
-    <path d="M12 12L6 15M12 12L18 15" stroke="#229ED9" strokeWidth="2"/>
+    {/* Central node */}
+    <circle cx="12" cy="12" r="4" fill="#1DA1F2"/>
+    {/* Outer nodes */}
+    <circle cx="4" cy="12" r="2" fill="#1DA1F2"/>
+    <circle cx="20" cy="12" r="2" fill="#1DA1F2"/>
+    <circle cx="8" cy="6" r="2" fill="#1DA1F2"/>
+    <circle cx="16" cy="6" r="2" fill="#1DA1F2"/>
+    <circle cx="8" cy="18" r="2" fill="#1DA1F2"/>
+    <circle cx="16" cy="18" r="2" fill="#1DA1F2"/>
+    {/* Connection lines */}
+    <path d="M6 12L10 12M14 12L18 12M10 7L12 9M14 7L12 9M10 17L12 15M14 17L12 15" 
+          stroke="#1DA1F2" strokeWidth="1.5"/>
   </svg>
 );
 
