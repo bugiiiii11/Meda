@@ -374,18 +374,17 @@ function App() {
     <div className="fixed inset-0 bg-[#0A0B0F] overflow-hidden">
       {activeTab === 'memes' ? (
         <>
-          {/* Top Bar - No extra wrapper padding */}
           <div className="fixed top-0 left-0 right-0 z-[70]">
-            <TopBar
-              meme={currentMeme}
-              onDetailsClick={() => setIsDetailsOpen(!isDetailsOpen)}
-              isDetailsOpen={isDetailsOpen}
-            />
+            <div className="w-full">
+              <TopBar
+                meme={currentMeme}
+                onDetailsClick={() => setIsDetailsOpen(!isDetailsOpen)}
+                isDetailsOpen={isDetailsOpen}
+              />
+            </div>
           </div>
-
-          {/* Main Content - Reduced top spacing */}
-          <div className="absolute inset-0 pt-[100px] pb-[60px]">
-            <div className="h-full flex items-center justify-center">
+          <div className="absolute inset-0 pt-[130px] pb-[80px]">
+            <div className="h-full flex items-start justify-center">
               <div className="w-full px-4">
                 <MemeStack
                   memes={memes}
@@ -398,11 +397,7 @@ function App() {
               </div>
             </div>
           </div>
-
-          {/* Details Page - Position right below the button */}
-          <div className="fixed top-[100px] left-0 right-0 bottom-[60px] z-[65]">
-            <DetailsPage isOpen={isDetailsOpen} meme={currentMeme} />
-          </div>
+          <DetailsPage isOpen={isDetailsOpen} meme={currentMeme} />
         </>
       ) : activeTab === 'tasks' ? (
         <TasksPage 
@@ -418,8 +413,6 @@ function App() {
           superlikeStatus={superlikeStatus}
         />
       )}
-
-      {/* Bottom Navigation */}
       <div className="fixed bottom-0 left-0 right-0 z-[60]">
         <Navigation activeTab={activeTab} onTabChange={setActiveTab} />
       </div>
