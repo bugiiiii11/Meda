@@ -85,7 +85,7 @@ const TopBar = ({ meme, onDetailsClick, isDetailsOpen }) => {
           onClick={onDetailsClick}
           className={`w-full h-[48px] mt-3 rounded-lg font-game-title transition-all duration-300 
             ${isDetailsOpen 
-              ? 'bg-gradient-to-r from-[#4B7BF5] to-[#8A2BE2] text-black' 
+              ? 'bg-gradient-to-r from-[#4B7BF5] to-[#8A2BE2] text-white' 
               : 'bg-gradient-to-r from-[#2A1B3D] to-[#1A1B2E] text-gray-400 hover:text-white'
             }
             ${!isDetailsOpen ? 'border border-white/5' : ''}`}

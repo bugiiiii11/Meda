@@ -108,7 +108,7 @@ const PriceStats = ({ priceData }) => {
   };
 
   return (
-    <div className="grid grid-cols-3 gap-3 px-4 mb-4">
+    <div className="grid grid-cols-3 gap-3 mb-4">
       {/* Price */}
       <div className="bg-gradient-to-r from-[#2A1B3D] to-[#1A1B2E] rounded-xl p-3 border border-white/5">
         <div className="font-game-title text-gray-400 text-sm mb-1">Price</div>
@@ -190,6 +190,9 @@ const DetailsPage = ({ isOpen, meme }) => {
     <div style={baseStyles}>
       <div className="max-w-md mx-auto p-4 h-full overflow-y-auto">
         <div className="space-y-4">
+          {/* Price Stats Section - Added at the top */}
+          <PriceStats priceData={priceData} />
+
           {/* Description Section */}
           {meme?.projectDetails?.description && (
             <div className="relative">
