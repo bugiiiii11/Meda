@@ -1,11 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { ENDPOINTS, getHeaders } from '../config/api';
 
 const ProfileCard = ({ children, className = '' }) => (
   <div className="relative group">
-    {/* Background glow effect */}
     <div className="absolute inset-0 bg-gradient-to-r from-[#4B7BF5]/5 to-[#8A2BE2]/5 rounded-xl blur-lg group-hover:blur-xl transition-all duration-300"></div>
-    
-    {/* Card content */}
     <div className={`relative bg-gradient-to-r from-[#2A1B3D] to-[#1A1B2E] rounded-xl p-6 border border-white/5 
       transition-all duration-300 hover:border-white/10 ${className}`}>
       {children}
@@ -35,13 +33,49 @@ const StatItem = ({ icon, label, value, subtitle }) => (
   </div>
 );
 
-const ProfilePage = ({ userData, superlikeStatus }) => {
+const ProfilePage = ({ userData: initialUserData, superlikeStatus, onUserDataUpdate }) => {
   const [shareStatus, setShareStatus] = useState('');
+  const [localUserData, setLocalUserData] = useState(initialUserData);
+
+  // Function to fetch latest user data
+  const fetchUserData = async () => {
+    if (!initialUserData?.telegramId) return;
+    
+    try {
+      const response = await fetch(
+        ENDPOINTS.users.get(initialUserData.telegramId),
+        { headers: getHeaders() }
+      );
+      
+      if (!response.ok) throw new Error('Failed to fetch user data');
+      
+      const data = await response.json();
+      if (data.success) {
+        setLocalUserData(data.data);
+        // Notify parent component
+        if (onUserDataUpdate) onUserDataUpdate();
+      }
+    } catch (error) {
+      console.error('Error fetching user data:', error);
+    }
+  };
+
+  // Set up periodic refresh
+  useEffect(() => {
+    fetchUserData(); // Initial fetch
+    const interval = setInterval(fetchUserData, 30000); // Refresh every 30 seconds
+    return () => clearInterval(interval);
+  }, [initialUserData?.telegramId]);
+
+  // Update local data when props change
+  useEffect(() => {
+    setLocalUserData(initialUserData);
+  }, [initialUserData]);
 
   const handleShare = async () => {
-    if (!userData?.telegramId) return;
+    if (!localUserData?.telegramId) return;
 
-    const referralLink = `https://t.me/MedaPortalBot?start=${userData.telegramId}`;
+    const referralLink = `https://t.me/MedaPortalBot?start=${localUserData.telegramId}`;
     const welcomeMessage = `🎮 Join me on Meda Portal and discover exciting blockchain gaming projects! ${referralLink}`;
 
     try {
@@ -65,7 +99,7 @@ const ProfilePage = ({ userData, superlikeStatus }) => {
     }
   };
 
-  if (!userData) {
+  if (!localUserData) {
     return (
       <div className="flex justify-center items-center h-screen bg-[#0A0B0F]">
         <div className="animate-spin rounded-full h-12 w-12 border-4 border-[#4B7BF5] border-t-transparent 
@@ -76,38 +110,32 @@ const ProfilePage = ({ userData, superlikeStatus }) => {
 
   return (
     <div className="flex flex-col h-screen bg-[#0A0B0F]">
-      {/* Fixed Header */}
       <div className="fixed top-0 left-0 right-0 z-50">
-        {/* Enhanced blur overlay */}
         <div className="absolute inset-0 bg-gradient-to-b from-[#0A0B0F] via-[#0A0B0F]/95 to-transparent backdrop-blur-xl"></div>
-        
-        {/* Content */}
         <div className="relative w-full py-6">
           <div className="text-center">
             <h1 className="font-game-title text-3xl bg-gradient-to-r from-[#4B7BF5] to-[#8A2BE2] text-transparent bg-clip-text">
               Battle Profile
             </h1>
-            <p className="font-game-mono text-gray-400 text-sm mt-1">@{userData?.username || 'Anonymous'}</p>
+            <p className="font-game-mono text-gray-400 text-sm mt-1">@{localUserData?.username || 'Anonymous'}</p>
           </div>
         </div>
       </div>
 
-      {/* Content */}
       <div className="flex-1 overflow-auto pt-[100px] pb-20 px-4">
         <div className="max-w-md mx-auto space-y-6">
-          {/* My Stats Section */}
           <ProfileCard>
             <h3 className="font-game-title text-xl text-white mb-4">Combat Stats</h3>
             <div className="space-y-3">
               <StatItem 
                 icon="🏆" 
                 label="Total Power" 
-                value={userData?.totalPoints || 0} 
+                value={localUserData?.totalPoints || 0} 
               />
               <StatItem 
                 icon="👥" 
                 label="Recruited Warriors" 
-                value={userData?.referralStats?.referredUsers?.length || 0} 
+                value={localUserData?.referralStats?.referredUsers?.length || 0} 
               />
               <StatItem 
                 icon="⚡" 
@@ -123,20 +151,18 @@ const ProfilePage = ({ userData, superlikeStatus }) => {
             </div>
           </ProfileCard>
 
-          {/* Points Breakdown */}
           <ProfileCard>
             <h3 className="font-game-title text-xl text-white mb-4">Battle Records</h3>
             <div className="space-y-3">
-              <StatItem icon="👍" label="Power Ups" value={`+${userData?.pointsBreakdown?.likes || 0}`} />
-              <StatItem icon="👎" label="Critical Hits" value={`+${userData?.pointsBreakdown?.dislikes || 0}`} />
-              <StatItem icon="⚡" label="Legendary Strikes" value={`+${(userData?.pointsBreakdown?.superLikes || 0) * 3}`} />
-              <StatItem icon="✅" label="Quests Completed" value={`+${userData?.pointsBreakdown?.tasks || 0}`} />
+              <StatItem icon="👍" label="Power Ups" value={`+${localUserData?.pointsBreakdown?.likes || 0}`} />
+              <StatItem icon="👎" label="Critical Hits" value={`+${localUserData?.pointsBreakdown?.dislikes || 0}`} />
+              <StatItem icon="⚡" label="Legendary Strikes" value={`+${(localUserData?.pointsBreakdown?.superLikes || 0) * 3}`} />
+              <StatItem icon="✅" label="Quests Completed" value={`+${localUserData?.pointsBreakdown?.tasks || 0}`} />
               <StatItem icon="🏅" label="Achievements" value="+0" />
-              <StatItem icon="🎁" label="Alliance Bonus" value={`+${userData?.pointsBreakdown?.referrals || 0}`} />
+              <StatItem icon="🎁" label="Alliance Bonus" value={`+${localUserData?.pointsBreakdown?.referrals || 0}`} />
             </div>
           </ProfileCard>
 
-          {/* Referral Section */}
           <ProfileCard>
             <h3 className="font-game-title text-xl text-white mb-2">Alliance Program</h3>
             <p className="font-game-body text-gray-400 text-sm mb-4">
@@ -146,7 +172,7 @@ const ProfilePage = ({ userData, superlikeStatus }) => {
             <div className="relative overflow-hidden rounded-lg bg-gradient-to-r from-[#1E1E22] to-[#2A2A2E] p-4">
               <button
                 onClick={handleShare}
-                disabled={!userData?.telegramId}
+                disabled={!localUserData?.telegramId}
                 className={`w-full px-4 py-3 rounded-lg font-game-title transition-all duration-300 transform hover:scale-105
                   ${shareStatus 
                     ? 'bg-gradient-to-r from-[#4B7BF5]/20 to-[#8A2BE2]/20 text-[#FFD700]' 
