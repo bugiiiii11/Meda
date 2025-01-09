@@ -1,4 +1,3 @@
-//TopBar.jsx
 import React, { useState } from 'react';
 
 const AnimatedButton = ({ onClick, children, className }) => {
@@ -44,7 +43,7 @@ const TopBar = ({ meme, onDetailsClick, isDetailsOpen }) => {
   };
 
   return (
-    <div className="w-full bg-[#1A1B2E]">
+    <div className="w-full bg-gradient-to-b from-[#2A1B3D] to-[#1A1B2E] rounded-b-xl">
       <div className="max-w-md mx-auto px-4 py-3">
         <div className="flex justify-between items-center">
           {/* Left side - Project Info */}
@@ -61,7 +60,7 @@ const TopBar = ({ meme, onDetailsClick, isDetailsOpen }) => {
                 {meme?.projectName || ''}
               </h1>
               <p className="font-game-mono text-sm text-gray-400">
-                {meme?.projectDetails?.projectType || 'GameFi'}
+                Game Hub
               </p>
             </div>
           </div>
@@ -84,7 +83,7 @@ const TopBar = ({ meme, onDetailsClick, isDetailsOpen }) => {
         {/* Details Button */}
         <button
           onClick={onDetailsClick}
-          className="w-full mt-4 py-3 bg-[#2A2339] rounded-lg text-white text-center"
+          className="w-full mt-3 py-3 bg-[#2A2339] rounded-lg text-white text-center"
         >
           {isDetailsOpen ? 'Close Details' : 'View Details'}
         </button>

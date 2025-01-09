@@ -374,17 +374,18 @@ function App() {
     <div className="fixed inset-0 bg-[#0A0B0F] overflow-hidden">
       {activeTab === 'memes' ? (
         <>
-        <div className="fixed top-0 left-0 right-0 z-[70]">
-          <div className="w-full bg-[#0A0B0F] py-4">
+          {/* Top Bar - Removed extra padding */}
+          <div className="fixed top-0 left-0 right-0 z-[70]">
             <TopBar
               meme={currentMeme}
               onDetailsClick={() => setIsDetailsOpen(!isDetailsOpen)}
               isDetailsOpen={isDetailsOpen}
             />
           </div>
-        </div>
-          <div className="absolute inset-0 pt-[240px] pb-[80px]">
-            <div className="h-full flex items-start justify-center">
+
+          {/* Main Content - Adjusted spacing */}
+          <div className="absolute inset-0 pt-[140px] pb-[60px]">
+            <div className="h-full flex items-center justify-center">
               <div className="w-full px-4">
                 <MemeStack
                   memes={memes}
@@ -397,6 +398,7 @@ function App() {
               </div>
             </div>
           </div>
+
           <DetailsPage isOpen={isDetailsOpen} meme={currentMeme} />
         </>
       ) : activeTab === 'tasks' ? (
@@ -413,6 +415,8 @@ function App() {
           superlikeStatus={superlikeStatus}
         />
       )}
+
+      {/* Bottom Navigation */}
       <div className="fixed bottom-0 left-0 right-0 z-[60]">
         <Navigation activeTab={activeTab} onTabChange={setActiveTab} />
       </div>
