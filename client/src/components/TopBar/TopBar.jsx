@@ -56,7 +56,7 @@ const TopBar = ({ meme, onDetailsClick, isDetailsOpen }) => {
               />
             )}
             <div>
-              <h1 className="font-game-title text-xl text-white">
+              <h1 className="font-game-title text-xl bg-gradient-to-r from-[#4B7BF5] to-[#8A2BE2] text-transparent bg-clip-text">
                 {meme?.projectName || ''}
               </h1>
               <p className="font-game-mono text-sm text-gray-400">
@@ -69,8 +69,8 @@ const TopBar = ({ meme, onDetailsClick, isDetailsOpen }) => {
           <AnimatedButton
             onClick={handleBuyClick}
             disabled={isButtonLoading}
-            className="px-6 py-2 bg-yellow-400 text-black font-semibold rounded-lg
-              disabled:opacity-50 disabled:cursor-not-allowed"
+            className="px-6 py-2 bg-gradient-to-r from-[#FFD700] to-[#FFA500] text-black font-game-title 
+              rounded-lg shadow-lg shadow-[#FFD700]/20 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isButtonLoading ? (
               <div className="h-5 w-5 border-2 border-black border-t-transparent rounded-full animate-spin" />
@@ -83,7 +83,11 @@ const TopBar = ({ meme, onDetailsClick, isDetailsOpen }) => {
         {/* Details Button */}
         <button
           onClick={onDetailsClick}
-          className="w-full mt-3 py-3 bg-[#2A2339] rounded-lg text-white text-center"
+          className={`w-full mt-3 py-3 rounded-lg font-game-title transition-all duration-300 
+            ${isDetailsOpen 
+              ? 'bg-gradient-to-r from-[#FFD700] to-[#FFA500] text-black shadow-lg shadow-[#FFD700]/20' 
+              : 'bg-gradient-to-r from-[#2A1B3D] to-[#1A1B2E] text-gray-400 hover:text-white border border-white/5'
+            }`}
         >
           {isDetailsOpen ? 'Close Details' : 'View Details'}
         </button>
