@@ -383,7 +383,7 @@ function App() {
               />
             </div>
           </div>
-          <div className="absolute inset-0 pt-[100px] pb-[80px]">
+          <div className="absolute inset-0 pt-[110px] pb-[80px]">
             <div className="h-full flex items-start justify-center">
               <div className="w-full px-4">
                 <MemeStack

@@ -82,7 +82,7 @@ const DetailsPage = ({ isOpen, meme }) => {
     position: 'fixed',
     left: 0,
     right: 0,
-    top: '100px', // Adjusted to match MemeStack spacing
+    top: '110px', // Match the MemeStack padding
     bottom: '60px',
     background: '#0A0B0F',
     borderTop: '1px solid rgba(255, 255, 255, 0.05)',
