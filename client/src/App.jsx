@@ -374,7 +374,7 @@ function App() {
     <div className="fixed inset-0 bg-[#0A0B0F] overflow-hidden">
       {activeTab === 'memes' ? (
         <>
-          {/* Top Bar - Removed extra padding */}
+          {/* Top Bar - No extra wrapper padding */}
           <div className="fixed top-0 left-0 right-0 z-[70]">
             <TopBar
               meme={currentMeme}
@@ -383,8 +383,8 @@ function App() {
             />
           </div>
 
-          {/* Main Content - Adjusted spacing */}
-          <div className="absolute inset-0 pt-[140px] pb-[60px]">
+          {/* Main Content - Reduced top spacing */}
+          <div className="absolute inset-0 pt-[100px] pb-[60px]">
             <div className="h-full flex items-center justify-center">
               <div className="w-full px-4">
                 <MemeStack
@@ -399,7 +399,10 @@ function App() {
             </div>
           </div>
 
-          <DetailsPage isOpen={isDetailsOpen} meme={currentMeme} />
+          {/* Details Page - Position right below the button */}
+          <div className="fixed top-[100px] left-0 right-0 bottom-[60px] z-[65]">
+            <DetailsPage isOpen={isDetailsOpen} meme={currentMeme} />
+          </div>
         </>
       ) : activeTab === 'tasks' ? (
         <TasksPage 

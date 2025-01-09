@@ -80,14 +80,16 @@ const TopBar = ({ meme, onDetailsClick, isDetailsOpen }) => {
           </AnimatedButton>
         </div>
 
-        {/* Details Button */}
+        {/* Details Button - Fixed height to prevent size change */}
         <button
           onClick={onDetailsClick}
-          className={`w-full mt-3 py-3 rounded-lg font-game-title transition-all duration-300 
+          className={`w-full h-[48px] mt-3 rounded-lg font-game-title transition-all duration-300 
             ${isDetailsOpen 
-              ? 'bg-gradient-to-r from-[#FFD700] to-[#FFA500] text-black shadow-lg shadow-[#FFD700]/20' 
-              : 'bg-gradient-to-r from-[#2A1B3D] to-[#1A1B2E] text-gray-400 hover:text-white border border-white/5'
-            }`}
+              ? 'bg-gradient-to-r from-[#FFD700] to-[#FFA500] text-black' 
+              : 'bg-gradient-to-r from-[#2A1B3D] to-[#1A1B2E] text-gray-400 hover:text-white'
+            }
+            ${!isDetailsOpen ? 'border border-white/5' : ''}`}
+          style={{ boxSizing: 'border-box' }}
         >
           {isDetailsOpen ? 'Close Details' : 'View Details'}
         </button>
