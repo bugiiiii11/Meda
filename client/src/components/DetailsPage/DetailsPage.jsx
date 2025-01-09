@@ -1,5 +1,6 @@
 // DetailsPage.jsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { priceService } from '../../services/priceService';
 
 const CopyIcon = () => (
   <svg
@@ -77,12 +78,104 @@ const CopyButton = ({ text }) => {
   );
 };
 
+const PriceStats = ({ priceData }) => {
+  const formatPrice = (price) => {
+    if (!price) return '$0.00';
+    const numPrice = Number(price);
+    if (isNaN(numPrice)) return '$0.00';
+    if (numPrice < 0.0001) return `$${numPrice.toFixed(8)}`;
+    if (numPrice < 0.01) return `$${numPrice.toFixed(6)}`;
+    if (numPrice < 1) return `$${numPrice.toFixed(4)}`;
+    return `$${numPrice.toFixed(2)}`;
+  };
+
+  const formatMarketCap = (marketCap) => {
+    if (!marketCap) return '$0.00';
+    if (typeof marketCap === 'string' && (marketCap.includes('B') || marketCap.includes('M'))) {
+      return `$${marketCap}`;
+    }
+    const num = Number(marketCap);
+    if (isNaN(num)) return '$0.00';
+    if (num >= 1e9) return `$${(num / 1e9).toFixed(1)}B`;
+    if (num >= 1e6) return `$${(num / 1e6).toFixed(1)}M`;
+    return `$${num.toLocaleString()}`;
+  };
+
+  const getPriceChangeColor = (change) => {
+    const numChange = Number(change);
+    if (isNaN(numChange)) return 'text-gray-400';
+    return numChange >= 0 ? 'text-[#50FA7B]' : 'text-[#FF5555]';
+  };
+
+  return (
+    <div className="grid grid-cols-3 gap-3 px-4 mb-4">
+      {/* Price */}
+      <div className="bg-gradient-to-r from-[#2A1B3D] to-[#1A1B2E] rounded-xl p-3 border border-white/5">
+        <div className="font-game-title text-gray-400 text-sm mb-1">Price</div>
+        <div className="font-game-mono text-white">
+          {formatPrice(priceData?.price)}
+        </div>
+        <div className={`font-game-mono text-sm ${getPriceChangeColor(priceData?.priceChange24h)}`}>
+          {priceData?.priceChange24h > 0 ? '+' : ''}{priceData?.priceChange24h?.toFixed(2)}%
+        </div>
+      </div>
+
+      {/* Market Cap */}
+      <div className="bg-gradient-to-r from-[#2A1B3D] to-[#1A1B2E] rounded-xl p-3 border border-white/5">
+        <div className="font-game-title text-gray-400 text-sm mb-1">Market Cap</div>
+        <div className="font-game-mono text-white">
+          {formatMarketCap(priceData?.marketCap)}
+        </div>
+      </div>
+
+      {/* 24h Volume */}
+      <div className="bg-gradient-to-r from-[#2A1B3D] to-[#1A1B2E] rounded-xl p-3 border border-white/5">
+        <div className="font-game-title text-gray-400 text-sm mb-1">24h Volume</div>
+        <div className="font-game-mono text-white">N/A</div>
+      </div>
+    </div>
+  );
+};
+
 const DetailsPage = ({ isOpen, meme }) => {
+  const [priceData, setPriceData] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const fetchPriceData = async () => {
+      if (!meme?.id) return;
+
+      try {
+        setLoading(true);
+        const data = await priceService.getTokenDataByMemeId(meme.id);
+        if (isMounted) {
+          setPriceData(data);
+        }
+      } catch (error) {
+        console.error('Error fetching price data:', error);
+      } finally {
+        if (isMounted) {
+          setLoading(false);
+        }
+      }
+    };
+
+    fetchPriceData();
+    const intervalId = setInterval(fetchPriceData, 60000);
+
+    return () => {
+      isMounted = false;
+      clearInterval(intervalId);
+    };
+  }, [meme?.id]);
+
   const baseStyles = {
     position: 'fixed',
     left: 0,
     right: 0,
-    top: '130px', // Match the MemeStack padding
+    top: '130px',
     bottom: '60px',
     background: '#0A0B0F',
     borderTop: '1px solid rgba(255, 255, 255, 0.05)',
