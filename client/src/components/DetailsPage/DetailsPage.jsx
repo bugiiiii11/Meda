@@ -82,7 +82,7 @@ const DetailsPage = ({ isOpen, meme }) => {
     position: 'fixed',
     left: 0,
     right: 0,
-    top: '90px', // Adjusted to start right below the top bar
+    top: '200px',
     bottom: '60px',
     background: '#0A0B0F',
     borderTop: '1px solid rgba(255, 255, 255, 0.05)',
