@@ -111,9 +111,9 @@ const PriceStats = ({ priceData }) => {
     <div className="relative">
       <div className="relative bg-gradient-to-r from-[#2A1B3D] to-[#1A1B2E] rounded-xl p-4 
         border border-white/5">
-        <div className="grid grid-cols-12 gap-3">
-          {/* Price with 24h change - 5 columns */}
-          <div className="col-span-5">
+        <div className="grid grid-cols-2 gap-3">
+          {/* Price with 24h change */}
+          <div>
             <div className="font-game-title text-gray-400 mb-2">Price</div>
             <div className="font-game-mono text-white flex items-baseline gap-2">
               <span>{formatPrice(priceData?.price)}</span>
@@ -126,18 +126,12 @@ const PriceStats = ({ priceData }) => {
             </div>
           </div>
 
-          {/* Market Cap - 4 columns */}
-          <div className="col-span-4 text-right">
+          {/* Market Cap */}
+          <div className="text-right">
             <div className="font-game-title text-gray-400 mb-2">Market Cap</div>
             <div className="font-game-mono text-white">
               {formatMarketCap(priceData?.marketCap)}
             </div>
-          </div>
-
-          {/* 24h Volume - 3 columns */}
-          <div className="col-span-3 text-right">
-            <div className="font-game-title text-gray-400 mb-2">24h Volume</div>
-            <div className="font-game-mono text-white">N/A</div>
           </div>
         </div>
       </div>
