@@ -70,7 +70,7 @@ const RanksPage = () => {
       className={`flex-1 py-3 px-4 rounded-lg font-game-title transition-all duration-300 transform hover:scale-105 
         ${isActive 
           ? 'bg-gradient-to-r from-[#4B7BF5] to-[#8A2BE2] text-white shadow-lg shadow-[#FFD700]/20' 
-          : 'bg-gradient-to-r from-[#2A1B3D] to-[#1A1B2E] text-gray-400 hover:text-white border border-white/5'
+          : 'bg-gradient-to-r from-[#2A1B3D] to-[#1A1B2E] text-white hover:text-white border border-white/5'
         }`}
     >
       {children}
