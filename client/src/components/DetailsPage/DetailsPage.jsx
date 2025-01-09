@@ -91,6 +91,7 @@ const PriceStats = ({ priceData }) => {
 
   const formatMarketCap = (marketCap) => {
     if (!marketCap) return '$0.00';
+    // Handle values already formatted with B/M
     if (typeof marketCap === 'string' && (marketCap.includes('B') || marketCap.includes('M'))) {
       return `$${marketCap}`;
     }
@@ -108,30 +109,38 @@ const PriceStats = ({ priceData }) => {
   };
 
   return (
-    <div className="grid grid-cols-3 gap-3 mb-4">
-      {/* Price */}
-      <div className="bg-gradient-to-r from-[#2A1B3D] to-[#1A1B2E] rounded-xl p-3 border border-white/5">
-        <div className="font-game-title text-gray-400 text-sm mb-1">Price</div>
-        <div className="font-game-mono text-white">
-          {formatPrice(priceData?.price)}
-        </div>
-        <div className={`font-game-mono text-sm ${getPriceChangeColor(priceData?.priceChange24h)}`}>
-          {priceData?.priceChange24h > 0 ? '+' : ''}{priceData?.priceChange24h?.toFixed(2)}%
-        </div>
-      </div>
+    <div className="relative">
+      <div className="relative bg-gradient-to-r from-[#2A1B3D] to-[#1A1B2E] rounded-xl p-4 
+        border border-white/5">
+        <div className="grid grid-cols-3 gap-3">
+          {/* Price */}
+          <div>
+            <div className="font-game-title text-gray-400 text-sm mb-2">Price</div>
+            <div className="font-game-mono text-white">
+              {formatPrice(priceData?.price)}
+            </div>
+            <div className={`font-game-mono text-sm ${
+              priceData?.priceChange24h >= 0 ? 'text-[#50FA7B]' : 'text-[#FF5555]'
+            }`}>
+              {priceData?.priceChange24h > 0 ? '+' : ''}
+              {priceData?.priceChange24h?.toFixed(2)}%
+            </div>
+          </div>
 
-      {/* Market Cap */}
-      <div className="bg-gradient-to-r from-[#2A1B3D] to-[#1A1B2E] rounded-xl p-3 border border-white/5">
-        <div className="font-game-title text-gray-400 text-sm mb-1">Market Cap</div>
-        <div className="font-game-mono text-white">
-          {formatMarketCap(priceData?.marketCap)}
-        </div>
-      </div>
+          {/* Market Cap */}
+          <div>
+            <div className="font-game-title text-gray-400 text-sm mb-2">Market Cap</div>
+            <div className="font-game-mono text-white">
+              {formatMarketCap(priceData?.marketCap)}
+            </div>
+          </div>
 
-      {/* 24h Volume */}
-      <div className="bg-gradient-to-r from-[#2A1B3D] to-[#1A1B2E] rounded-xl p-3 border border-white/5">
-        <div className="font-game-title text-gray-400 text-sm mb-1">24h Volume</div>
-        <div className="font-game-mono text-white">N/A</div>
+          {/* 24h Volume */}
+          <div>
+            <div className="font-game-title text-gray-400 text-sm mb-2">24h Volume</div>
+            <div className="font-game-mono text-white">N/A</div>
+          </div>
+        </div>
       </div>
     </div>
   );
@@ -155,6 +164,14 @@ const DetailsPage = ({ isOpen, meme }) => {
         }
       } catch (error) {
         console.error('Error fetching price data:', error);
+        // Fallback to project details
+        if (isMounted && meme?.projectDetails) {
+          setPriceData({
+            price: meme.projectDetails.price,
+            marketCap: meme.projectDetails.marketCap,
+            priceChange24h: meme.projectDetails.priceChange24h
+          });
+        }
       } finally {
         if (isMounted) {
           setLoading(false);
@@ -190,8 +207,8 @@ const DetailsPage = ({ isOpen, meme }) => {
     <div style={baseStyles}>
       <div className="max-w-md mx-auto p-4 h-full overflow-y-auto">
         <div className="space-y-4">
-          {/* Price Stats Section - Added at the top */}
-          <PriceStats priceData={priceData} />
+          {/* Price Stats Section */}
+          <PriceStats priceData={priceData || meme?.projectDetails} />
 
           {/* Description Section */}
           {meme?.projectDetails?.description && (
