@@ -15,12 +15,9 @@ class PriceService {
     console.log('Price service base URL:', this.baseUrl);
       
     this.uniqueTokens = {
-      'pixels': ['1','14'],
-      'gala': ['2'],
-      'immutable-x': ['3','4','5'],
-      'axie-infinity': ['6','7'],
-      'superfarm': ['8','9','10'],
-      'illuvium': ['11','12','13']
+      'hamster-kombat': ['1','2'],
+      'catizen': ['3','4'],
+      'play-2': ['5','6']
     };
     
     this.cache = new Map();
