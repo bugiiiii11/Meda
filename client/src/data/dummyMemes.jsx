@@ -16,6 +16,7 @@ const dummyMemes = [
     dislikes: 0
   },
   projectDetails: {
+    hasToken: true, // New field to indicate if game has a token
     network: "TON",
     price: "0.003",
     marketCap: "0.24B",
@@ -62,6 +63,7 @@ const dummyMemes = [
     dislikes: 0
   },
   projectDetails: {
+    hasToken: true,
     network: "TON",
     price: "0.003",
     marketCap: "0.24B",
@@ -108,6 +110,7 @@ const dummyMemes = [
     dislikes: 0
   },
   projectDetails: {
+    hasToken: true,
     network: "TON",
     price: "0.29",
     marketCap: "0.06B",
@@ -150,6 +153,7 @@ const dummyMemes = [
     dislikes: 0
   },
   projectDetails: {
+    hasToken: true,
     network: "TON",
     price: "0.29",
     marketCap: "0.06B",
@@ -192,6 +196,7 @@ const dummyMemes = [
     dislikes: 0
   },
   projectDetails: {
+    hasToken: true,
     network: "Base",
     price: "1.38",
     marketCap: "2.3B",
@@ -238,6 +243,7 @@ const dummyMemes = [
     dislikes: 0
   },
   projectDetails: {
+    hasToken: true,
     network: "Base",
     price: "1.38",
     marketCap: "2.3B",
@@ -272,7 +278,6 @@ const dummyMemes = [
     ]
   }
 },
-/*
 {
   id: 7,
   projectName: "TONs of Dungeons",
@@ -285,12 +290,13 @@ const dummyMemes = [
     dislikes: 0
   },
   projectDetails: {
-    network: "N/A",
-    price: "N/A",
-    marketCap: "N/A",
-    priceChange24h: "N/A",
-    contract: "N/A",
-    buyLink: "N/A",
+    hasToken: false, // Indicate this game has no token
+    network: null,
+    price: null,
+    marketCap: null,
+    priceChange24h: null,
+    contract: null,
+    buyLink: null,
     description: "Tap on blocks to discover rewards",
     sector: "Play", 
     sectorUrl: "https://t.me/tonsofdungeons_bot/TOD?startapp=cXd5q9uDl0-wSmOjSC-ipA/",
@@ -327,12 +333,13 @@ const dummyMemes = [
     dislikes: 0
   },
   projectDetails: {
-    network: "N/A",
-    price: "N/A",
-    marketCap: "N/A",
-    priceChange24h: "N/A",
-    contract: "N/A",
-    buyLink: "N/A",
+    hasToken: false, 
+    network: null,
+    price: null,
+    marketCap: null,
+    priceChange24h: null,
+    contract: null,
+    buyLink: null,
     description: "Tap on blocks to discover rewards",
     sector: "Play", 
     sectorUrl: "https://t.me/tonsofdungeons_bot/TOD?startapp=cXd5q9uDl0-wSmOjSC-ipA/",
@@ -357,7 +364,6 @@ const dummyMemes = [
     ]
   }
 },
-*/
 
 ];
 

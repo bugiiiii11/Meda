@@ -26,16 +26,42 @@ const schemas = {
     content: Joi.string().required(),
     weight: Joi.number().default(1),
     projectDetails: Joi.object({
+      hasToken: Joi.boolean().required(),
       type: Joi.string().valid('GameFi', 'Play', 'Gaming Blockchain', 'NFT Game', 'Game Hub', 'Telegram Game Hub', 'Telegram App', 'Telegram Game').default('Telegram Game'),
-      network: Joi.string().required(),
-      price: Joi.string().required(),
-      marketCap: Joi.number(),
-      priceChange24h: Joi.number(),
-      contract: Joi.string(),
-      description: Joi.string().max(500), // Added description validation
-      projectType: Joi.string(), // Added projectType validation
+      network: Joi.when('hasToken', {
+        is: true,
+        then: Joi.string().required(),
+        otherwise: Joi.string().allow(null)
+      }),
+      price: Joi.when('hasToken', {
+        is: true,
+        then: Joi.string().required(),
+        otherwise: Joi.string().allow(null)
+      }),
+      marketCap: Joi.when('hasToken', {
+        is: true,
+        then: Joi.number().required(),
+        otherwise: Joi.number().allow(null)
+      }),
+      priceChange24h: Joi.when('hasToken', {
+        is: true,
+        then: Joi.number().required(),
+        otherwise: Joi.number().allow(null)
+      }),
+      contract: Joi.when('hasToken', {
+        is: true,
+        then: Joi.string().required(),
+        otherwise: Joi.string().allow(null)
+      }),
+      buyLink: Joi.when('hasToken', {
+        is: true,
+        then: Joi.string().required(),
+        otherwise: Joi.string().allow(null)
+      }),
+      description: Joi.string().max(500),
+      projectType: Joi.string(),
       sector: Joi.string(),
-      sectorUrl: Joi.string().uri(), // Added sectorUrl validation
+      sectorUrl: Joi.string().uri(),
       website: Joi.string().uri().optional(),
       twitter: Joi.string().optional(),
       telegram: Joi.string().optional()

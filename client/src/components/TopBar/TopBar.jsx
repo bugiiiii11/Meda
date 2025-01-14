@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 
-const AnimatedButton = ({ onClick, children, className }) => {
+const AnimatedButton = ({ onClick, children, className, disabled }) => {
   const [isFlashing, setIsFlashing] = useState(false);
 
   const handleClick = async () => {
-    if (!isFlashing) {
+    if (!isFlashing && !disabled) {
       setIsFlashing(true);
       onClick?.();
       setTimeout(() => setIsFlashing(false), 300);
@@ -14,11 +14,12 @@ const AnimatedButton = ({ onClick, children, className }) => {
   return (
     <button
       onClick={handleClick}
+      disabled={disabled}
       className={`relative transform transition-all duration-300 hover:scale-105 ${className}`}
     >
       <div className="relative z-10 w-full h-full">{children}</div>
       {isFlashing && (
-        <div 
+        <div
           className="absolute inset-0 bg-[#FFD700] rounded-lg"
           style={{
             opacity: 0.3,
@@ -60,32 +61,34 @@ const TopBar = ({ meme, onDetailsClick, isDetailsOpen }) => {
                 {meme?.projectName || ''}
               </h1>
               <p className="font-game-mono text-sm text-gray-400">
-                Game Hub
+                {meme?.projectDetails?.projectType || 'Telegram App'}
               </p>
             </div>
           </div>
 
-          {/* Right side - Buy Button */}
-          <AnimatedButton
-            onClick={handleBuyClick}
-            disabled={isButtonLoading}
-            className="px-6 py-2 bg-gradient-to-r from-[#FFD700] to-[#FFA500] text-black font-game-title 
-              rounded-lg shadow-lg shadow-[#FFD700]/20 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {isButtonLoading ? (
-              <div className="h-5 w-5 border-2 border-black border-t-transparent rounded-full animate-spin" />
-            ) : (
-              'Buy Now'
-            )}
-          </AnimatedButton>
+          {/* Right side - Buy Button - Only show if project has token */}
+          {meme?.projectDetails?.hasToken && meme?.projectDetails?.buyLink && (
+            <AnimatedButton
+              onClick={handleBuyClick}
+              disabled={isButtonLoading}
+              className="px-6 py-2 bg-gradient-to-r from-[#FFD700] to-[#FFA500] text-black font-game-title
+                rounded-lg shadow-lg shadow-[#FFD700]/20 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {isButtonLoading ? (
+                <div className="h-5 w-5 border-2 border-black border-t-transparent rounded-full animate-spin" />
+              ) : (
+                'Buy Now'
+              )}
+            </AnimatedButton>
+          )}
         </div>
 
         {/* Details Button - Fixed height to prevent size change */}
         <button
           onClick={onDetailsClick}
-          className={`w-full h-[48px] mt-3 rounded-lg font-game-title transition-all duration-300 
-            ${isDetailsOpen 
-              ? 'bg-gradient-to-r from-[#4B7BF5] to-[#8A2BE2] text-white' 
+          className={`w-full h-[48px] mt-3 rounded-lg font-game-title transition-all duration-300
+            ${isDetailsOpen
+              ? 'bg-gradient-to-r from-[#4B7BF5] to-[#8A2BE2] text-white'
               : 'bg-gradient-to-r from-[#2A1B3D] to-[#1A1B2E] text-white hover:text-white'
             }
             ${!isDetailsOpen ? 'border border-white/5' : ''}`}

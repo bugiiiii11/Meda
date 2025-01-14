@@ -79,7 +79,7 @@ const ProfileIcon = ({ className }) => (
 
 const Navigation = ({ activeTab, onTabChange }) => {
   const navItems = [
-    { id: 'memes', icon: SwipeIcon, label: 'Portal' },
+    { id: 'memes', icon: SwipeIcon, label: 'Swipe' },
     { id: 'tasks', icon: TaskIcon, label: 'Quests' },
     { id: 'ranks', icon: RankIcon, label: 'Arena' },
     { id: 'profile', icon: ProfileIcon, label: 'Hero' }

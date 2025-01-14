@@ -31,16 +31,17 @@ const memeSchema = new mongoose.Schema({
     dislikes: { type: Number, default: 0 }
   },
   projectDetails: {
-    network: { type: String, required: true },
-    price: { type: String, required: true },
-    marketCap: { type: String, required: true },
-    priceChange24h: { type: Number, required: true },
-    contract: { type: String, required: true },
-    description: { type: String }, // Added description field
-    projectType: { type: String }, // Added projectType field
+    hasToken: { type: Boolean, default: false }, // New field
+    network: { type: String, required: function() { return this.projectDetails.hasToken; } },
+    price: { type: String, required: function() { return this.projectDetails.hasToken; } },
+    marketCap: { type: String, required: function() { return this.projectDetails.hasToken; } },
+    priceChange24h: { type: Number, required: function() { return this.projectDetails.hasToken; } },
+    contract: { type: String, required: function() { return this.projectDetails.hasToken; } },
+    description: { type: String },
+    projectType: { type: String },
     sector: { type: String },
-    sectorUrl: { type: String }, // Added sectorUrl field
-    buyLink: { type: String, required: true },
+    sectorUrl: { type: String },
+    buyLink: { type: String, required: function() { return this.projectDetails.hasToken; } },
     buttons: [{
       label: { type: String, required: true },
       url: { type: String, required: true }

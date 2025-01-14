@@ -8,11 +8,15 @@ const projectSchema = new mongoose.Schema({
     unique: true,
     index: true
   },
+  hasToken: {
+    type: Boolean,
+    default: false
+  },
   score: {
-    total: { type: Number, default: 0, index: -1 }, // For leaderboard sorting
+    total: { type: Number, default: 0, index: -1 },
     breakdown: {
-      likes: { type: Number, default: 0 },       // +1 per like
-      superLikes: { type: Number, default: 0 }   // +3 per super like
+      likes: { type: Number, default: 0 },
+      superLikes: { type: Number, default: 0 }
     }
   },
   memeStats: [{
@@ -21,9 +25,9 @@ const projectSchema = new mongoose.Schema({
     superLikes: { type: Number, default: 0 },
     views: { type: Number, default: 0 }
   }],
-  description: { 
+  description: {
     type: String,
-    maxLength: 500 // Limiting description length
+    maxLength: 500
   },
   projectType: {
     type: String,
@@ -39,8 +43,8 @@ const projectSchema = new mongoose.Schema({
     enum: ['active', 'inactive'],
     default: 'active'
   },
-  network: String,
-  contractAddress: String,
+  network: { type: String, required: function() { return this.hasToken; } },
+  contractAddress: { type: String, required: function() { return this.hasToken; } },
   social: {
     website: String,
     telegram: String,
