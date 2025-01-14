@@ -38,7 +38,7 @@ const dummyMemes = [
           url: "https://discord.com/invite/pixels"
         },
         {
-          label: "Twitter",
+          label: "Follow X",
           url: "https://x.com/hamster_kombat"
         },
         {
@@ -79,7 +79,7 @@ const dummyMemes = [
           url: "https://discord.com/invite/pixels"
         },
         {
-          label: "Twitter",
+          label: "Follow X",
           url: "https://x.com/hamster_kombat"
         },
         {
@@ -120,11 +120,11 @@ const dummyMemes = [
           url: "https://t.me/CatizenAnn"
         },
         {
-          label: "Follow Twitter",
+          label: "Follow X",
           url: "https://x.com/CatizenAI"
         },
         {
-          label: "Subscribe Medium",
+          label: "Read Medium",
           url: "https://medium.com/catizen"
         }
       ]
@@ -161,11 +161,11 @@ const dummyMemes = [
           url: "https://t.me/CatizenAnn"
         },
         {
-          label: "Follow Twitter",
+          label: "Follow X",
           url: "https://x.com/CatizenAI"
         },
         {
-          label: "Subscribe Medium",
+          label: "Read Medium",
           url: "https://medium.com/catizen"
         }
       ]
@@ -202,7 +202,7 @@ const dummyMemes = [
           url: "https://t.me/PLAY_GameStore_Ann"
         },
         {
-          label: "Follow Twitter",
+          label: "Follow X",
           url: "https://x.com/0xplay_network"
         },
         {
@@ -243,7 +243,7 @@ const dummyMemes = [
           url: "https://t.me/PLAY_GameStore_Ann"
         },
         {
-          label: "Follow Twitter",
+          label: "Follow X",
           url: "https://x.com/0xplay_network"
         },
         {
@@ -285,7 +285,7 @@ const dummyMemes = [
           url: "https://t.me/tonsofdungeons_bot/"
         },
         {
-          label: "Twitter",
+          label: "Follow X",
           url: "https://x.com/tonsofdungeons"
         }
       ]
@@ -322,7 +322,7 @@ const dummyMemes = [
           url: "https://t.me/tonsofdungeons_bot/"
         },
         {
-          label: "Twitter",
+          label: "Follow X",
           url: "https://x.com/tonsofdungeons"
         }
       ]
