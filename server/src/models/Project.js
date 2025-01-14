@@ -27,7 +27,7 @@ const projectSchema = new mongoose.Schema({
   },
   projectType: {
     type: String,
-    default: 'GameFi'
+    default: 'Telegram App'
   },
   type: {
     type: String,

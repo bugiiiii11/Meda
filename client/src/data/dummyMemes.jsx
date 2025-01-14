@@ -24,7 +24,7 @@ const dummyMemes = [
     buyLink: "https://www.binance.com/en/trade/HMSTR_USDT?ref=37754157",
     description: "Unleash your inner CEO!",
     sector: "Play", 
-    sectorUrl: "https://t.me/hamster_koMbat_bot/start?startapp=kentId1812207291/",
+    sectorUrl: "https://t.me/hamster_koMbat_bot/",
     projectType: "Telegram App",
     buttons: [
       {
@@ -70,7 +70,7 @@ const dummyMemes = [
     buyLink: "https://www.binance.com/en/trade/HMSTR_USDT?ref=37754157",
     description: "Unleash your inner CEO!",
     sector: "Play", 
-    sectorUrl: "https://t.me/hamster_koMbat_bot/start?startapp=kentId1812207291/",
+    sectorUrl: "https://t.me/hamster_koMbat_bot/",
     projectType: "Telegram App",
     buttons: [
       {
@@ -134,10 +134,6 @@ const dummyMemes = [
       {
         label: "Follow X",
         url: "https://x.com/CatizenAI"
-      },
-      {
-        label: "Read Medium",
-        url: "https://medium.com/catizen"
       }
     ]
   }
@@ -180,10 +176,6 @@ const dummyMemes = [
       {
         label: "Follow X",
         url: "https://x.com/CatizenAI"
-      },
-      {
-        label: "Read Medium",
-        url: "https://medium.com/catizen"
       }
     ]
   }
