@@ -29,26 +29,22 @@ const MemeCard = ({ meme, onSwipe, isTop, isMobile, onDragStart, onDragEnd, isAn
     const sectorUrl = meme.projectDetails?.sectorUrl;
     
     if (sectorUrl) {
-      // Check if it's a Telegram bot link with deep linking parameters
       const isTelegramBotLink = sectorUrl.startsWith('https://t.me/') || sectorUrl.startsWith('tg://');
       const hasDeepLinkingParams = sectorUrl.includes('?startapp=') || sectorUrl.includes('/TOD?');
   
       if (isTelegramBotLink) {
         if (window.Telegram?.WebApp) {
-          // For deep linking, we need to handle the URL differently
           if (hasDeepLinkingParams) {
-            // Keep the URL as is for deep linking
-            window.Telegram.WebApp.openTelegramLink(sectorUrl);
+            // For deep links, use window.open
+            window.open(sectorUrl, '_blank');
           } else {
-            // For regular bot links without parameters
+            // For regular Telegram links, use WebApp method
             window.Telegram.WebApp.openTelegramLink(sectorUrl);
           }
         } else {
-          // Fallback for when Telegram WebApp is not available
           window.open(sectorUrl, '_blank');
         }
       } else {
-        // Handle regular URLs
         window.open(sectorUrl, '_blank');
       }
     }
@@ -92,13 +88,13 @@ const MemeCard = ({ meme, onSwipe, isTop, isMobile, onDragStart, onDragEnd, isAn
             <div className="flex justify-between items-center">
               <div className="flex items-center gap-4">
                 <div className="flex items-center gap-2">
-                  <span className="text-lg">👍</span>
+                  <span className="text-lg">⚡</span>
                   <span className="font-game-mono text-white">
                     {engagementData.likes.toLocaleString()}
                   </span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="text-lg animate-glow-pulse">⚡</span>
+                  <span className="text-lg animate-glow-pulse">⭐</span>
                   <span className="font-game-mono text-white">
                     {engagementData.superLikes.toLocaleString()}
                   </span>

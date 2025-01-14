@@ -27,7 +27,14 @@ const handleTelegramLink = (url) => {
 
   if (isTelegramBotLink) {
     if (window.Telegram?.WebApp) {
-      window.Telegram.WebApp.openTelegramLink(url);
+      if (hasDeepLinkingParams) {
+        // For deep links, try using regular window.open first
+        // This often works better for deep linking in Telegram
+        window.open(url, '_blank');
+      } else {
+        // For regular Telegram links without parameters, use the WebApp method
+        window.Telegram.WebApp.openTelegramLink(url);
+      }
     } else {
       window.open(url, '_blank');
     }
