@@ -122,11 +122,11 @@ const AnimatedButton = ({ onClick, children, className }) => {
     </button>
   );
 };
-
 const TasksPage = ({ userData, onUserDataUpdate }) => {
   const [completedTasks, setCompletedTasks] = useState(new Set());
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [activeTab, setActiveTab] = useState('quick');
 
   const quickTasks = [
     /*
@@ -212,6 +212,19 @@ const TasksPage = ({ userData, onUserDataUpdate }) => {
     }
   };
 
+  const TabButton = ({ isActive, onClick, children }) => (
+    <button
+      onClick={onClick}
+      className={`flex-1 py-3 px-4 rounded-lg font-game-title transition-all duration-300 transform hover:scale-105 
+        ${isActive 
+          ? 'bg-gradient-to-r from-[#4B7BF5] to-[#8A2BE2] text-white shadow-lg shadow-[#FFD700]/20' 
+          : 'bg-gradient-to-r from-[#2A1B3D] to-[#1A1B2E] text-white hover:text-white border border-white/5'
+        }`}
+    >
+      {children}
+    </button>
+  );
+
   const TaskButton = ({ task, completed }) => (
     <AnimatedButton
       onClick={async () => {
@@ -235,72 +248,9 @@ const TasksPage = ({ userData, onUserDataUpdate }) => {
     </AnimatedButton>
   );
 
-  const AchievementTask = ({ label, current, target, points, completed, achievementType }) => {
-    // Get icon based on achievement type
-    const getIcon = (type) => {
-      switch (type) {
-        case 'power-collector':
-          return <PowerCollectorIcon />;
-        case 'critical-slayer':
-          return <CriticalSlayerIcon />;
-        case 'legendary-striker':
-          return <LegendaryStrikerIcon />;
-        case 'network-ninja':
-          return <NetworkNinjaIcon />;
-        default:
-          return <PowerCollectorIcon />;
-      }
-    };
-
-    return (
-      <div className="w-full p-4 rounded-xl bg-gradient-to-r from-[#2A1B3D] to-[#1A1B2E] border border-white/5 relative overflow-hidden">
-        {/* Achievement header */}
-        <div className="flex justify-between items-center mb-4">
-          <div className="flex items-center gap-3">
-            <div className="w-12 h-12 flex items-center justify-center"> {/* Updated from w-6 h-6 to w-12 h-12 */}
-              {getIcon(achievementType)}
-            </div>
-            <div>
-              <span className="font-game-title text-white">{label}</span>
-              {!completed && (
-                <div className="text-sm text-[#FFD700] font-game-mono mt-1">
-                  +{points} points
-                </div>
-              )}
-            </div>
-          </div>
-          {completed && <CheckIcon />}
-        </div>
-
-        {/* Progress bar */}
-        <div className="w-full h-3 bg-[#1E1E22] rounded-full overflow-hidden relative">
-          <div 
-            className="h-full rounded-full relative overflow-hidden transition-all duration-500 flex items-center"
-            style={{ 
-              width: `${Math.min((current / target) * 100, 100)}%`,
-              background: 'linear-gradient(90deg, #4B7BF5, #8A2BE2)'
-            }}
-          >
-            {/* Shine effect */}
-            <div 
-              className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent"
-              style={{ animation: 'progressShine 2s infinite' }}
-            />
-          </div>
-        </div>
-
-        {/* Progress numbers */}
-        <div className="flex justify-between mt-2">
-          <span className="font-game-mono text-[#4B7BF5]">{current.toLocaleString()}</span>
-          <span className="font-game-mono text-gray-400">{target.toLocaleString()}</span>
-        </div>
-      </div>
-    );
-  };
-
   return (
     <div className="flex flex-col h-screen bg-[#0A0B0F]">
-      {/* Header */}
+      {/* Fixed Header */}
       <div className="fixed top-0 left-0 right-0 z-50">
         {/* Enhanced blur overlay */}
         <div className="absolute inset-0 bg-gradient-to-b from-[#0A0B0F] via-[#0A0B0F]/95 to-transparent backdrop-blur-xl"></div>
@@ -313,20 +263,36 @@ const TasksPage = ({ userData, onUserDataUpdate }) => {
             </h1>
           </div>
         </div>
+
+        {/* Tabs Section */}
+        <div className="px-4 py-4 pb-6">
+          <div className="flex gap-2 max-w-md mx-auto">
+            <TabButton 
+              isActive={activeTab === 'quick'} 
+              onClick={() => setActiveTab('quick')}
+            >
+              Quick Tasks
+            </TabButton>
+            <TabButton 
+              isActive={activeTab === 'achievements'} 
+              onClick={() => setActiveTab('achievements')}
+            >
+              Achievements
+            </TabButton>
+          </div>
+        </div>
       </div>
 
       {/* Main content */}
-      <div className="flex-1 overflow-auto pt-[100px] pb-20 px-4">
-        <div className="max-w-md mx-auto space-y-8">
+      <div className="flex-1 overflow-auto pt-[180px] pb-20 px-4">
+        <div className="max-w-md mx-auto">
           {error && (
             <div className="mb-4 p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 font-game-mono">
               {error}
             </div>
           )}
 
-          {/* Quick Tasks Section */}
-          <div className="space-y-4">
-            <h2 className="font-game-title text-xl text-white px-2">Quick Tasks</h2>
+          {activeTab === 'quick' ? (
             <div className="space-y-2">
               {quickTasks.map((task) => (
                 <TaskButton
@@ -336,11 +302,7 @@ const TasksPage = ({ userData, onUserDataUpdate }) => {
                 />
               ))}
             </div>
-          </div>
-
-          {/* Achievements Section */}
-          <div className="space-y-4">
-            <h2 className="font-game-title text-xl text-white px-2">Achievements</h2>
+          ) : (
             <div className="space-y-3">
               <AchievementTask
                 label="Power-Up Collector (Tier 1)"
@@ -386,7 +348,7 @@ const TasksPage = ({ userData, onUserDataUpdate }) => {
                 achievementType="network-ninja"
               />
             </div>
-          </div>
+          )}
         </div>
       </div>
     </div>
