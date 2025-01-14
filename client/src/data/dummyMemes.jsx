@@ -119,7 +119,7 @@ const dummyMemes = [
     buyLink: "https://www.binance.com/en/trade/CATI_USDT?ref=37754157&type=spot",
     description: "Play for airdrop🪂 Heal the world!",
     sector: "Play", 
-    sectorUrl: "https://t.me/catizenbot/gameapp?startapp=rp_47060003/",
+    sectorUrl: "https://t.me/catizenbot/",
     projectType: "Telegram Game",
     buttons: [
       {
@@ -162,7 +162,7 @@ const dummyMemes = [
     buyLink: "https://www.binance.com/en/trade/CATI_USDT?ref=37754157&type=spot",
     description: "Play for airdrop🪂 Heal the world!",
     sector: "Play", 
-    sectorUrl: "https://t.me/catizenbot/gameapp?startapp=rp_47060003/",
+    sectorUrl: "https://t.me/catizenbot/",
     projectType: "Telegram Game",
     buttons: [
       {
