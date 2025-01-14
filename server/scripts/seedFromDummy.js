@@ -179,7 +179,7 @@ const dummyMemes = [
       description: "Gaming protocol that turbocharges games",
       sector: "Play", 
       sectorUrl: "https://t.me/play_gamestore_bot/",
-      projectType: "Telegram Game Hub",
+      projectType: "Telegram APP",
       buttons: [
         {
           label: "Open Website",
@@ -220,7 +220,7 @@ const dummyMemes = [
       description: "Gaming protocol that turbocharges games",
       sector: "Play", 
       sectorUrl: "https://t.me/play_gamestore_bot/",
-      projectType: "Telegram Game Hub",
+      projectType: "Telegram APP",
       buttons: [
         {
           label: "Open Website",

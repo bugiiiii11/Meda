@@ -202,7 +202,7 @@ const DetailsPage = ({ isOpen, meme }) => {
         <div className="space-y-4">
           {/* Price Stats Section */}
           <PriceStats priceData={priceData || meme?.projectDetails} />
-
+  
           {/* Description Section */}
           {meme?.projectDetails?.description && (
             <div className="relative">
@@ -219,7 +219,7 @@ const DetailsPage = ({ isOpen, meme }) => {
               </div>
             </div>
           )}
-
+  
           {/* Contract Section */}
           {meme?.projectDetails?.contract && meme?.projectDetails?.network && (
             <div className="relative">
@@ -237,70 +237,28 @@ const DetailsPage = ({ isOpen, meme }) => {
               </div>
             </div>
           )}
-
-          {/* Action Buttons - Organized in groups */}
+  
+          {/* Action Buttons */}
           {meme?.projectDetails?.buttons && (
-            <div>
-              {/* Main buttons (Website, Price Chart) */}
-              <div className="grid grid-cols-2 gap-2 mb-2">
-                {meme.projectDetails.buttons
-                  .filter(button => ['Website', 'Price Chart'].includes(button.label))
-                  .map((button, index) => (
-                    <AnimatedButton
-                      key={`main-${index}`}
-                      onClick={() => window.open(button.url, '_blank')}
-                      className="w-full"
-                    >
-                      <div className="px-4 py-3 bg-gradient-to-r from-[#2A1B3D] to-[#1A1B2E] 
-                        text-gray-200 rounded-xl font-game-title border border-white/5 
-                        hover:border-white/10 transition-colors">
-                        {button.label}
-                      </div>
-                    </AnimatedButton>
-                  ))}
-              </div>
-
-              {/* Social media buttons (Telegram, Discord, Twitter) */}
-              <div className="grid grid-cols-2 gap-2">
-                {meme.projectDetails.buttons
-                  .filter(button => button.label.includes('Join') || button.label === 'Twitter' || button.label === 'Discord')
-                  .map((button, index) => (
-                    <AnimatedButton
-                      key={`social-${index}`}
-                      onClick={() => window.open(button.url, '_blank')}
-                      className="w-full"
-                    >
-                      <div className="px-4 py-3 bg-gradient-to-r from-[#2A1B3D] to-[#1A1B2E] 
-                        text-gray-200 rounded-xl font-game-title border border-white/5 
-                        hover:border-white/10 transition-colors">
-                        {button.label}
-                      </div>
-                    </AnimatedButton>
-                  ))}
-              </div>
-
-              {/* Any additional buttons that don't fit the above categories */}
-              <div className="grid grid-cols-2 gap-2 mt-2">
-                {meme.projectDetails.buttons
-                  .filter(button => 
-                    !['Website', 'Price Chart'].includes(button.label) && 
-                    !button.label.includes('Join') && 
-                    !['Twitter', 'Discord'].includes(button.label)
-                  )
-                  .map((button, index) => (
-                    <AnimatedButton
-                      key={`other-${index}`}
-                      onClick={() => window.open(button.url, '_blank')}
-                      className="w-full"
-                    >
-                      <div className="px-4 py-3 bg-gradient-to-r from-[#2A1B3D] to-[#1A1B2E] 
-                        text-gray-200 rounded-xl font-game-title border border-white/5 
-                        hover:border-white/10 transition-colors">
-                        {button.label}
-                      </div>
-                    </AnimatedButton>
-                  ))}
-              </div>
+            <div className="grid grid-cols-2 auto-rows-auto gap-2">
+              {meme.projectDetails.buttons.map((button, index) => (
+                <AnimatedButton
+                  key={`button-${index}`}
+                  onClick={() => window.open(button.url, '_blank')}
+                  className={`w-full ${
+                    index === meme.projectDetails.buttons.length - 1 && 
+                    meme.projectDetails.buttons.length % 2 === 1
+                      ? 'col-span-1'
+                      : ''
+                  }`}
+                >
+                  <div className="px-4 py-3 bg-gradient-to-r from-[#2A1B3D] to-[#1A1B2E] 
+                    text-gray-200 rounded-xl font-game-title border border-white/5 
+                    hover:border-white/10 transition-colors">
+                    {button.label}
+                  </div>
+                </AnimatedButton>
+              ))}
             </div>
           )}
         </div>
