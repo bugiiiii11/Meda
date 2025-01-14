@@ -2,7 +2,7 @@
 import React from 'react';
 import { motion, useMotionValue, useTransform } from 'framer-motion';
 
-const MemeCard = ({ meme, onSwipe, isTop, isMobile, onDragStart, onDragEnd }) => {
+const MemeCard = ({ meme, onSwipe, isTop, isMobile, onDragStart, onDragEnd, isAnimating }) => {
   const x = useMotionValue(0);
   const y = useMotionValue(0);
   const rotate = useTransform(x, [-100, 0, 100], [-15, 0, 15]);
@@ -11,6 +11,11 @@ const MemeCard = ({ meme, onSwipe, isTop, isMobile, onDragStart, onDragEnd }) =>
     [-200, -150, -100, 0, 100, 150, 200],
     [0, 0.5, 0.8, 1, 0.8, 0.5, 0]
   );
+  
+  const bounceBack = () => {
+    x.set(0, { duration: 0.5, type: "spring", stiffness: 300, damping: 20 });
+    y.set(0, { duration: 0.5, type: "spring", stiffness: 300, damping: 20 });
+  };
 
   const engagementData = React.useMemo(() => ({
     likes: parseInt(meme.engagement?.likes || 0),
@@ -22,17 +27,28 @@ const MemeCard = ({ meme, onSwipe, isTop, isMobile, onDragStart, onDragEnd }) =>
   const handleSectorClick = (e) => {
     e.stopPropagation();
     const sectorUrl = meme.projectDetails?.sectorUrl;
+    
     if (sectorUrl) {
-      // Check if it's a Telegram link
-      if (sectorUrl.startsWith('https://t.me/') || sectorUrl.startsWith('tg://')) {
-        // Handle Telegram deep linking
-        if (window.Telegram?.WebApp?.openTelegramLink) {
-          window.Telegram.WebApp.openTelegramLink(sectorUrl);
+      // Check if it's a Telegram bot link with deep linking parameters
+      const isTelegramBotLink = sectorUrl.startsWith('https://t.me/') || sectorUrl.startsWith('tg://');
+      const hasDeepLinkingParams = sectorUrl.includes('?startapp=') || sectorUrl.includes('/TOD?');
+  
+      if (isTelegramBotLink) {
+        if (window.Telegram?.WebApp) {
+          // For deep linking, we need to handle the URL differently
+          if (hasDeepLinkingParams) {
+            // Keep the URL as is for deep linking
+            window.Telegram.WebApp.openTelegramLink(sectorUrl);
+          } else {
+            // For regular bot links without parameters
+            window.Telegram.WebApp.openTelegramLink(sectorUrl);
+          }
         } else {
+          // Fallback for when Telegram WebApp is not available
           window.open(sectorUrl, '_blank');
         }
       } else {
-        // Open regular URLs in new tab
+        // Handle regular URLs
         window.open(sectorUrl, '_blank');
       }
     }

@@ -19,6 +19,23 @@ const CopyIcon = () => (
   </svg>
 );
 
+const handleTelegramLink = (url) => {
+  if (!url) return;
+  
+  const isTelegramBotLink = url.startsWith('https://t.me/') || url.startsWith('tg://');
+  const hasDeepLinkingParams = url.includes('?startapp=') || url.includes('/TOD?');
+
+  if (isTelegramBotLink) {
+    if (window.Telegram?.WebApp) {
+      window.Telegram.WebApp.openTelegramLink(url);
+    } else {
+      window.open(url, '_blank');
+    }
+  } else {
+    window.open(url, '_blank');
+  }
+};
+
 const AnimatedButton = ({ onClick, children, className }) => {
   const [isActive, setIsActive] = useState(false);
 
@@ -250,7 +267,7 @@ const DetailsPage = ({ isOpen, meme }) => {
               {meme.projectDetails.buttons.map((button, index) => (
                 <AnimatedButton
                   key={`button-${index}`}
-                  onClick={() => window.open(button.url, '_blank')}
+                  onClick={() => handleTelegramLink(button.url)}
                   className={`w-full ${
                     index === meme.projectDetails.buttons.length - 1 && 
                     meme.projectDetails.buttons.length % 2 === 1
