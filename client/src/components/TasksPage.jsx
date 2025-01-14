@@ -212,19 +212,6 @@ const TasksPage = ({ userData, onUserDataUpdate }) => {
     }
   };
 
-  const TabButton = ({ isActive, onClick, children }) => (
-    <button
-      onClick={onClick}
-      className={`flex-1 py-3 px-4 rounded-lg font-game-title transition-all duration-300 transform hover:scale-105 
-        ${isActive 
-          ? 'bg-gradient-to-r from-[#4B7BF5] to-[#8A2BE2] text-white shadow-lg shadow-[#FFD700]/20' 
-          : 'bg-gradient-to-r from-[#2A1B3D] to-[#1A1B2E] text-white hover:text-white border border-white/5'
-        }`}
-    >
-      {children}
-    </button>
-  );
-
   const TaskButton = ({ task, completed }) => (
     <AnimatedButton
       onClick={async () => {
@@ -246,6 +233,82 @@ const TasksPage = ({ userData, onUserDataUpdate }) => {
         </div>
       </div>
     </AnimatedButton>
+  );
+
+  const AchievementTask = ({ label, current, target, points, completed, achievementType }) => {
+    // Get icon based on achievement type
+    const getIcon = (type) => {
+      switch (type) {
+        case 'power-collector':
+          return <PowerCollectorIcon />;
+        case 'critical-slayer':
+          return <CriticalSlayerIcon />;
+        case 'legendary-striker':
+          return <LegendaryStrikerIcon />;
+        case 'network-ninja':
+          return <NetworkNinjaIcon />;
+        default:
+          return <PowerCollectorIcon />;
+      }
+    };
+
+    return (
+      <div className="w-full p-4 rounded-xl bg-gradient-to-r from-[#2A1B3D] to-[#1A1B2E] border border-white/5 relative overflow-hidden">
+        {/* Achievement header */}
+        <div className="flex justify-between items-center mb-4">
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-12 flex items-center justify-center"> {/* Updated from w-6 h-6 to w-12 h-12 */}
+              {getIcon(achievementType)}
+            </div>
+            <div>
+              <span className="font-game-title text-white">{label}</span>
+              {!completed && (
+                <div className="text-sm text-[#FFD700] font-game-mono mt-1">
+                  +{points} points
+                </div>
+              )}
+            </div>
+          </div>
+          {completed && <CheckIcon />}
+        </div>
+
+        {/* Progress bar */}
+        <div className="w-full h-3 bg-[#1E1E22] rounded-full overflow-hidden relative">
+          <div 
+            className="h-full rounded-full relative overflow-hidden transition-all duration-500 flex items-center"
+            style={{ 
+              width: `${Math.min((current / target) * 100, 100)}%`,
+              background: 'linear-gradient(90deg, #4B7BF5, #8A2BE2)'
+            }}
+          >
+            {/* Shine effect */}
+            <div 
+              className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent"
+              style={{ animation: 'progressShine 2s infinite' }}
+            />
+          </div>
+        </div>
+
+        {/* Progress numbers */}
+        <div className="flex justify-between mt-2">
+          <span className="font-game-mono text-[#4B7BF5]">{current.toLocaleString()}</span>
+          <span className="font-game-mono text-gray-400">{target.toLocaleString()}</span>
+        </div>
+      </div>
+    );
+  };
+
+  const TabButton = ({ isActive, onClick, children }) => (
+    <button
+      onClick={onClick}
+      className={`flex-1 py-3 px-4 rounded-lg font-game-title transition-all duration-300 transform hover:scale-105 
+        ${isActive 
+          ? 'bg-gradient-to-r from-[#4B7BF5] to-[#8A2BE2] text-white shadow-lg shadow-[#FFD700]/20' 
+          : 'bg-gradient-to-r from-[#2A1B3D] to-[#1A1B2E] text-white hover:text-white border border-white/5'
+        }`}
+    >
+      {children}
+    </button>
   );
 
   return (
@@ -292,6 +355,7 @@ const TasksPage = ({ userData, onUserDataUpdate }) => {
             </div>
           )}
 
+          {/* Conditional rendering based on active tab */}
           {activeTab === 'quick' ? (
             <div className="space-y-2">
               {quickTasks.map((task) => (
