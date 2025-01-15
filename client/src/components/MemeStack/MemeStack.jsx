@@ -509,6 +509,7 @@ console.log('===== DEBUG: MemeStack Props =====');
             {lastSwipe === 'super' && (
               <>
               {/* Matrix Rain */}
+              {/*
               <motion.div className="absolute inset-0 overflow-hidden">
                 {[...Array(30)].map((_, i) => ( // Reduced number of matrix elements
                   <motion.div
@@ -533,9 +534,10 @@ console.log('===== DEBUG: MemeStack Props =====');
                   </motion.div>
                 ))}
               </motion.div>
+              */}
 
               {/* Light Effects */}
-              <motion.div
+              {/* <motion.div
                 className="absolute inset-0"
                 initial={{ opacity: 0 }}
                 animate={{
@@ -548,8 +550,9 @@ console.log('===== DEBUG: MemeStack Props =====');
                 }}
                 transition={{ duration: 0.7, times: [0, 0.3, 0.6, 0.8, 1] }} // Reduced from 1.2
                 />
-
+              */}
                 {/* Floating Particles */}
+                {/*
                 <motion.div className="absolute inset-0">
                   {[...Array(12)].map((_, i) => ( // Reduced number of particles
                     <motion.div
@@ -575,6 +578,7 @@ console.log('===== DEBUG: MemeStack Props =====');
                     />
                   ))}
                 </motion.div>
+                */}
 
                 {/* Main Legendary Indicator */}
                 <motion.div 
