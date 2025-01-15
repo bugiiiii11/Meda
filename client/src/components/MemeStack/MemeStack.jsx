@@ -438,7 +438,7 @@ console.log('===== DEBUG: MemeStack Props =====');
                 >
                   <GlitchText>
                     <div className="font-game-title text-4xl text-white">
-                    ⚡POWER UP⚡
+                      ⚡POWER UP⚡
                     </div>
                   </GlitchText>
                 </motion.div>
@@ -498,7 +498,7 @@ console.log('===== DEBUG: MemeStack Props =====');
                         repeatType: "reverse"
                       }}
                     >
-                      CRITICAL⛔
+                      ⛔CRITICAL⛔
                     </motion.div>
                   </div>
                 </motion.div>
@@ -591,23 +591,19 @@ console.log('===== DEBUG: MemeStack Props =====');
                   transition={{ duration: 1.2 }}
                   exit={{ scale: 0, transition: { duration: 0.3 } }}
                 >
-                  <div className="font-game-title text-5xl text-white">
+                  <div className="font-game-title text-4xl text-white">
                     <motion.div
                       animate={{
-                        scale: [1, 1.1, 1],
-                        textShadow: [
-                          '0 0 10px rgba(255, 255, 255, 0.5)',
-                          '0 0 20px rgba(255, 255, 255, 0.7)',
-                          '0 0 10px rgba(255, 255, 255, 0.5)'
-                        ]
+                        x: [-2, 2, -2, 1, -1, 0],
+                        scale: [1, 1.05, 1, 1.02, 1]
                       }}
                       transition={{
-                        duration: 1,
-                        repeat: Infinity,
+                        duration: 0.3,
+                        repeat: 2,
                         repeatType: "reverse"
                       }}
                     >
-                      STRIKE⭐
+                      ⭐STRIKE⭐
                     </motion.div>
                   </div>
                 </motion.div>
