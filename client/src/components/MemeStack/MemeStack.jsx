@@ -276,7 +276,7 @@ console.log('===== DEBUG: MemeStack Props =====');
         }
 
         // Animation timing based on swipe type
-        const animationDuration = direction === 'super' ? 1200 : 700;
+        const animationDuration = 700; // Same duration for all swipe types
         
         // After the indicator animation completes, transition to next meme
         setTimeout(() => {
@@ -508,50 +508,50 @@ console.log('===== DEBUG: MemeStack Props =====');
             {/* Legendary - Enhanced Matrix Rain and Light Effects */}
             {lastSwipe === 'super' && (
               <>
-                {/* Enhanced Matrix Rain */}
-                <motion.div className="absolute inset-0 overflow-hidden">
-                  {[...Array(50)].map((_, i) => (
-                    <motion.div
-                      key={`matrix-${i}`}
-                      className="absolute text-sm font-mono text-[#4B7BF5]"
-                      initial={{
-                        x: `${Math.random() * 100}%`,
-                        y: -20,
-                        opacity: 0,
-                      }}
-                      animate={{
-                        y: ['0%', '120%'],
-                        opacity: [0, 0.8, 0],
-                      }}
-                      transition={{
-                        duration: 1.5,
-                        delay: i * 0.02,
-                        ease: 'linear',
-                      }}
-                    >
-                      {String.fromCharCode(0x30A0 + Math.random() * 96)}
-                    </motion.div>
-                  ))}
-                </motion.div>
+              {/* Matrix Rain */}
+              <motion.div className="absolute inset-0 overflow-hidden">
+                {[...Array(30)].map((_, i) => ( // Reduced number of matrix elements
+                  <motion.div
+                    key={`matrix-${i}`}
+                    className="absolute text-sm font-mono text-[#4B7BF5]"
+                    initial={{
+                      x: `${Math.random() * 100}%`,
+                      y: -20,
+                      opacity: 0,
+                    }}
+                    animate={{
+                      y: ['0%', '120%'],
+                      opacity: [0, 0.8, 0],
+                    }}
+                    transition={{
+                      duration: 0.7, // Reduced from 1.5
+                      delay: i * 0.01, // Reduced delay
+                      ease: 'linear',
+                    }}
+                  >
+                    {String.fromCharCode(0x30A0 + Math.random() * 96)}
+                  </motion.div>
+                ))}
+              </motion.div>
 
-                {/* Enhanced Light Effects */}
-                <motion.div
-                  className="absolute inset-0"
-                  initial={{ opacity: 0 }}
-                  animate={{
-                    opacity: [0, 0.8, 0.4, 0.6, 0],
-                    background: [
-                      'radial-gradient(circle at center, rgba(75, 123, 245, 0.4) 0%, rgba(138, 43, 226, 0.2) 30%, transparent 70%)',
-                      'radial-gradient(circle at center, rgba(75, 123, 245, 0.6) 0%, rgba(138, 43, 226, 0.4) 40%, transparent 80%)',
-                      'radial-gradient(circle at center, rgba(75, 123, 245, 0.3) 0%, rgba(138, 43, 226, 0.2) 30%, transparent 70%)',
-                    ]
-                  }}
-                  transition={{ duration: 1.2, times: [0, 0.3, 0.6, 0.8, 1] }}
+              {/* Light Effects */}
+              <motion.div
+                className="absolute inset-0"
+                initial={{ opacity: 0 }}
+                animate={{
+                  opacity: [0, 0.8, 0.4, 0.6, 0],
+                  background: [
+                    'radial-gradient(circle at center, rgba(75, 123, 245, 0.4) 0%, rgba(138, 43, 226, 0.2) 30%, transparent 70%)',
+                    'radial-gradient(circle at center, rgba(75, 123, 245, 0.6) 0%, rgba(138, 43, 226, 0.4) 40%, transparent 80%)',
+                    'radial-gradient(circle at center, rgba(75, 123, 245, 0.3) 0%, rgba(138, 43, 226, 0.2) 30%, transparent 70%)',
+                  ]
+                }}
+                transition={{ duration: 0.7, times: [0, 0.3, 0.6, 0.8, 1] }} // Reduced from 1.2
                 />
 
                 {/* Floating Particles */}
                 <motion.div className="absolute inset-0">
-                  {[...Array(20)].map((_, i) => (
+                  {[...Array(12)].map((_, i) => ( // Reduced number of particles
                     <motion.div
                       key={`particle-${i}`}
                       className="absolute w-2 h-2 rounded-full bg-[#4B7BF5]"
@@ -568,8 +568,8 @@ console.log('===== DEBUG: MemeStack Props =====');
                         opacity: [0, 0.8, 0],
                       }}
                       transition={{
-                        duration: 1,
-                        delay: i * 0.05,
+                        duration: 0.7, // Reduced from 1.0
+                        delay: i * 0.02, // Reduced delay
                         ease: "easeOut"
                       }}
                     />
@@ -588,8 +588,8 @@ console.log('===== DEBUG: MemeStack Props =====');
                       '0 0 90px rgba(75, 123, 245, 0.5)'
                     ]
                   }}
-                  transition={{ duration: 1.2 }}
-                  exit={{ scale: 0, transition: { duration: 0.3 } }}
+                  transition={{ duration: 0.7 }} // Reduced from 1.2
+                  exit={{ scale: 0, transition: { duration: 0.2 } }}
                 >
                   <div className="font-game-title text-4xl text-white">
                     <motion.div
@@ -599,7 +599,7 @@ console.log('===== DEBUG: MemeStack Props =====');
                       }}
                       transition={{
                         duration: 0.3,
-                        repeat: 2,
+                        repeat: 1, // Reduced repeats
                         repeatType: "reverse"
                       }}
                     >
