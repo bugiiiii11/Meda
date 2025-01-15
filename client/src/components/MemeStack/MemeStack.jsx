@@ -438,7 +438,7 @@ console.log('===== DEBUG: MemeStack Props =====');
                 >
                   <GlitchText>
                     <div className="font-game-title text-4xl text-white">
-                    POWER UP ⚡
+                    ⚡POWER UP⚡
                     </div>
                   </GlitchText>
                 </motion.div>
@@ -498,7 +498,7 @@ console.log('===== DEBUG: MemeStack Props =====');
                         repeatType: "reverse"
                       }}
                     >
-                      CRITICAL HIT ⛔
+                      CRITICAL⛔
                     </motion.div>
                   </div>
                 </motion.div>
@@ -607,7 +607,7 @@ console.log('===== DEBUG: MemeStack Props =====');
                         repeatType: "reverse"
                       }}
                     >
-                      ⭐STRIKE⭐
+                      STRIKE⭐
                     </motion.div>
                   </div>
                 </motion.div>

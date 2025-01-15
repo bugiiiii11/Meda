@@ -128,7 +128,7 @@ const ProfilePage = ({ userData: initialUserData, superlikeStatus, onUserDataUpd
             <h3 className="font-game-title text-xl text-white mb-4">Combat Stats</h3>
             <div className="space-y-3">
               <StatItem 
-                icon="🏆" 
+                icon="⚡" 
                 label="Total Power" 
                 value={localUserData?.totalPoints || 0} 
               />
@@ -138,7 +138,7 @@ const ProfilePage = ({ userData: initialUserData, superlikeStatus, onUserDataUpd
                 value={localUserData?.referralStats?.referredUsers?.length || 0} 
               />
               <StatItem 
-                icon="⚡" 
+                icon="⭐" 
                 label="Strikes Available" 
                 value={superlikeStatus?.remainingSuperlikes || 0}
                 subtitle={superlikeStatus?.nextResetIn ? ` Recharge in ${superlikeStatus.nextResetIn}h` : undefined}
