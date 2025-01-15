@@ -267,7 +267,7 @@ const dummyMemes = [
       buyLink: null,
       description: "Tap on blocks to discover rewards",
       sector: "Play", 
-      sectorUrl: "https://t.me/tonsofdungeons_bot/TOD?startapp=cXd5q9uDl0-wSmOjSC-ipA/",
+      sectorUrl: "https://t.me/tonsofdungeons_bot/TOD?startapp=cXd5q9uDl0-wSmOjSC-ipA",
       projectType: "Telegram Game",
       buttons: [
         {
@@ -305,7 +305,7 @@ const dummyMemes = [
       buyLink: null,
       description: "Tap on blocks to discover rewards",
       sector: "Play", 
-      sectorUrl: "https://t.me/tonsofdungeons_bot/TOD?startapp=cXd5q9uDl0-wSmOjSC-ipA/",
+      sectorUrl: "https://t.me/tonsofdungeons_bot/TOD?startapp=cXd5q9uDl0-wSmOjSC-ipA",
       projectType: "Telegram Game",
       buttons: [
         {
