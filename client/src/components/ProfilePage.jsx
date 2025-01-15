@@ -139,9 +139,9 @@ const ProfilePage = ({ userData: initialUserData, superlikeStatus, onUserDataUpd
               />
               <StatItem 
                 icon="⚡" 
-                label="Legendary Strikes Available" 
+                label="Strikes Available" 
                 value={superlikeStatus?.remainingSuperlikes || 0}
-                subtitle={superlikeStatus?.nextResetIn ? ` Recharges in ${superlikeStatus.nextResetIn}h` : undefined}
+                subtitle={superlikeStatus?.nextResetIn ? ` Recharge in ${superlikeStatus.nextResetIn}h` : undefined}
               />
               <StatItem 
                 icon="👑" 
@@ -154,12 +154,12 @@ const ProfilePage = ({ userData: initialUserData, superlikeStatus, onUserDataUpd
           <ProfileCard>
             <h3 className="font-game-title text-xl text-white mb-4">Battle Records</h3>
             <div className="space-y-3">
-              <StatItem icon="👍" label="Power Ups" value={`+${localUserData?.pointsBreakdown?.likes || 0}`} />
-              <StatItem icon="👎" label="Critical Hits" value={`+${localUserData?.pointsBreakdown?.dislikes || 0}`} />
-              <StatItem icon="⚡" label="Legendary Strikes" value={`+${(localUserData?.pointsBreakdown?.superLikes || 0) * 3}`} />
+              <StatItem icon="⚡" label="Power Ups" value={`+${localUserData?.pointsBreakdown?.likes || 0}`} />
+              <StatItem icon="⛔" label="Criticals" value={`+${localUserData?.pointsBreakdown?.dislikes || 0}`} />
+              <StatItem icon="⭐" label="Strikes" value={`+${(localUserData?.pointsBreakdown?.superLikes || 0) * 3}`} />
               <StatItem icon="✅" label="Quests Completed" value={`+${localUserData?.pointsBreakdown?.tasks || 0}`} />
-              <StatItem icon="🏅" label="Achievements" value="+0" />
-              <StatItem icon="🎁" label="Alliance Bonus" value={`+${localUserData?.pointsBreakdown?.referrals || 0}`} />
+              <StatItem icon="🎖️" label="Achievements" value="+0" />
+              <StatItem icon="🏰" label="Alliance Bonus" value={`+${localUserData?.pointsBreakdown?.referrals || 0}`} />
             </div>
           </ProfileCard>
 
