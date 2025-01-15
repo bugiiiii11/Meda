@@ -47,8 +47,9 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
   const [isMobile, setIsMobile] = React.useState(false);
   const [isDragging, setIsDragging] = React.useState(false);
   const currentCardRef = React.useRef(null);
+  const usedMemeIds = React.useRef(new Set()); // Track used meme IDs
 
-  console.log('===== DEBUG: MemeStack Props =====');
+console.log('===== DEBUG: MemeStack Props =====');
   console.log('Received memes:', memes.map(m => ({
     id: m.id,
     projectName: m.projectName,
@@ -60,82 +61,20 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
     console.log('===== Getting Random Meme =====');
     console.log('Total memes available:', memes.length);
     
-    // If this is the first selection (no current or next meme), use all memes
-    if (!currentMeme && !nextMeme) {
-      console.log('Initial meme selection - using all memes');
-      const totalWeight = memes.reduce((sum, meme) => sum + (meme.weight || 1), 0);
-      let random = Math.random() * totalWeight;
-      
-      for (const meme of memes) {
-        random -= (meme.weight || 1);
-        if (random <= 0) {
-          const selectedMeme = {
-            ...meme,
-            engagement: {
-              likes: parseInt(meme.engagement?.likes || 0),
-              superLikes: parseInt(meme.engagement?.superLikes || 0),
-              dislikes: parseInt(meme.engagement?.dislikes || 0)
-            }
-          };
-          
-          console.log('Selected initial meme:', {
-            id: selectedMeme.id,
-            projectName: selectedMeme.projectName,
-            engagement: selectedMeme.engagement
-          });
-          
-          return selectedMeme;
-        }
-      }
-      
-      // Fallback to first meme if loop completes without selection
-      const fallbackMeme = {
-        ...memes[0],
-        engagement: {
-          likes: parseInt(memes[0].engagement?.likes || 0),
-          superLikes: parseInt(memes[0].engagement?.superLikes || 0),
-          dislikes: parseInt(memes[0].engagement?.dislikes || 0)
-        }
-      };
-      
-      console.log('Using fallback meme for initial selection:', {
-        id: fallbackMeme.id,
-        projectName: fallbackMeme.projectName,
-        engagement: fallbackMeme.engagement
-      });
-      
-      return fallbackMeme;
-    }
+    // Filter out memes that have been used recently
+    const availableMemes = memes.filter(meme => !usedMemeIds.current.has(meme.id));
     
-    // Filter out both current and next meme IDs
-    const currentMemeId = currentMeme?.id;
-    const nextMemeId = nextMeme?.id;
-    console.log('Filtering out memes:', { currentMemeId, nextMemeId });
-    
-    const availableMemes = memes.filter(meme => 
-      meme.id !== currentMemeId && meme.id !== nextMemeId
-    );
-    
-    console.log('Filtered available memes:', availableMemes.length);
-  
+    // If we've used all memes, reset the tracking
     if (availableMemes.length === 0) {
-      console.log('No available unique memes, using all memes except current');
-      // If no other memes available, at least avoid the current meme
-      const fallbackMemes = memes.filter(meme => meme.id !== currentMemeId);
-      if (fallbackMemes.length === 0) {
-        console.log('Using first meme as last resort');
-        return {
-          ...memes[0],
-          engagement: {
-            likes: parseInt(memes[0].engagement?.likes || 0),
-            superLikes: parseInt(memes[0].engagement?.superLikes || 0),
-            dislikes: parseInt(memes[0].engagement?.dislikes || 0)
-          }
-        };
+      console.log('Resetting used meme tracking');
+      usedMemeIds.current.clear();
+      // Keep only the current meme in the used set to prevent immediate reuse
+      if (currentMeme) {
+        usedMemeIds.current.add(currentMeme.id);
       }
-      availableMemes.push(...fallbackMemes);
+      return getWeightedRandomMeme(); // Retry with cleared history
     }
-  
+
     // Calculate total weight for available memes
     const totalWeight = availableMemes.reduce((sum, meme) => sum + (meme.weight || 1), 0);
     let random = Math.random() * totalWeight;
@@ -152,7 +91,10 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
           }
         };
         
-        console.log('Selected meme with engagement:', {
+        // Add the selected meme ID to the used set
+        usedMemeIds.current.add(selectedMeme.id);
+        
+        console.log('Selected meme:', {
           id: selectedMeme.id,
           projectName: selectedMeme.projectName,
           engagement: selectedMeme.engagement
@@ -172,6 +114,8 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
       }
     };
     
+    usedMemeIds.current.add(fallbackMeme.id);
+    
     console.log('Fallback meme selected:', {
       id: fallbackMeme.id,
       projectName: fallbackMeme.projectName,
@@ -179,24 +123,27 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
     });
     
     return fallbackMeme;
-  }, [memes, currentMeme, nextMeme]);
+  }, [memes, currentMeme]);
 
   // Initialize memes
   React.useEffect(() => {
-    if (memes.length > 0 && !currentMeme) {
-      console.log('Initializing first meme with engagement data');
-      // Remove propCurrentMeme preference to ensure random first meme
+    if (memes.length > 0 && !currentMeme && !nextMeme) {
+      console.log('Initializing first and second memes');
+      
+      // Get first meme
       const firstMeme = getWeightedRandomMeme();
       console.log('First meme:', {
         id: firstMeme.id,
         engagement: firstMeme.engagement
       });
       
+      // Set current meme and notify
       setCurrentMeme(firstMeme);
       onMemeChange(firstMeme);
       
+      // Get second meme (getWeightedRandomMeme will automatically avoid the first meme)
       const secondMeme = getWeightedRandomMeme();
-      console.log('Next meme:', {
+      console.log('Second meme:', {
         id: secondMeme.id,
         engagement: secondMeme.engagement
       });
@@ -213,12 +160,12 @@ const MemeStack = ({ memes, onMemeChange, currentMeme: propCurrentMeme, userData
     setCurrentMeme(nextMeme);
     onMemeChange(nextMeme);
     
-    // Slight delay before setting next meme to prevent blinking
+    // Get new next meme with slight delay
     setTimeout(() => {
       const newNextMeme = getWeightedRandomMeme();
       console.log('New next meme with engagement:', newNextMeme);
       setNextMeme(newNextMeme);
-    }, 200); // Delay matches the exit animation duration
+    }, 200);
     
   }, [nextMeme, getWeightedRandomMeme, onMemeChange]);
 
