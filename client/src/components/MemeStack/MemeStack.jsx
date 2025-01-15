@@ -201,96 +201,82 @@ console.log('===== DEBUG: MemeStack Props =====');
     setLastSwipe(direction);
 
     try {
-        let response;
-        
-        if (direction === 'super') {
-            console.log('Making superlike API request for meme:', currentMeme.id);
-            // First use superlike endpoint to handle limits
-            response = await fetch(ENDPOINTS.superlikes.use, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Origin': window.location.origin,
-                    'X-Telegram-Init-Data': window.Telegram?.WebApp?.initData || ''
-                },
-                body: JSON.stringify({
-                    telegramId: userData?.telegramId,
-                    memeId: currentMeme.id
-                })
-            });
+      let response;
+      
+      if (direction === 'super') {
+          response = await fetch(ENDPOINTS.superlikes.use, {
+              method: 'POST',
+              headers: {
+                  'Content-Type': 'application/json',
+                  'Origin': window.location.origin,
+                  'X-Telegram-Init-Data': window.Telegram?.WebApp?.initData || ''
+              },
+              body: JSON.stringify({
+                  telegramId: userData?.telegramId,
+                  memeId: currentMeme.id
+              })
+          });
 
-            const superlikeData = await response.json();
-            console.log('Superlike API response:', superlikeData);
+          const superlikeData = await response.json();
+          
+          if (superlikeData.success) {
+              response = await fetch(ENDPOINTS.interactions.update, {
+                  method: 'POST',
+                  headers: {
+                      'Content-Type': 'application/json',
+                      'Origin': window.location.origin,
+                      'X-Telegram-Init-Data': window.Telegram?.WebApp?.initData || ''
+                  },
+                  body: JSON.stringify({
+                      action: 'superlike',
+                      memeId: currentMeme.id,
+                      telegramId: userData?.telegramId,
+                      username: userData?.username
+                  })
+              });
 
-            if (superlikeData.success) {
-                // Then record the interaction as before
-                response = await fetch(ENDPOINTS.interactions.update, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Origin': window.location.origin,
-                        'X-Telegram-Init-Data': window.Telegram?.WebApp?.initData || ''
-                    },
-                    body: JSON.stringify({
-                        action: 'superlike',
-                        memeId: currentMeme.id,
-                        telegramId: userData?.telegramId,
-                        username: userData?.username
-                    })
-                });
+              await onSuperlikeUse(userData?.telegramId);
+          } else {
+              throw new Error(superlikeData.error || 'Superlike failed');
+          }
+      } else {
+          const action = direction === 'right' ? 'like' : 'dislike';
+          response = await fetch(ENDPOINTS.interactions.update, {
+              method: 'POST',
+              headers: {
+                  'Content-Type': 'application/json',
+                  'Origin': window.location.origin,
+                  'X-Telegram-Init-Data': window.Telegram?.WebApp?.initData || ''
+              },
+              body: JSON.stringify({
+                  action,
+                  memeId: currentMeme.id,
+                  telegramId: userData?.telegramId,
+                  username: userData?.username
+              })
+          });
+      }
 
-                // Update superlike status after successful use
-                await onSuperlikeUse(userData?.telegramId);
-            } else {
-                throw new Error(superlikeData.error || 'Superlike failed');
-            }
-        } else {
-            console.log('Making regular interaction API request:', {
-                action: direction === 'right' ? 'like' : 'dislike',
-                memeId: currentMeme.id
-            });
-            // Regular like/dislike
-            const action = direction === 'right' ? 'like' : 'dislike';
-            response = await fetch(ENDPOINTS.interactions.update, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Origin': window.location.origin,
-                    'X-Telegram-Init-Data': window.Telegram?.WebApp?.initData || ''
-                },
-                body: JSON.stringify({
-                    action,
-                    memeId: currentMeme.id,
-                    telegramId: userData?.telegramId,
-                    username: userData?.username
-                })
-            });
-        }
+      const data = await response.json();
+      
+      if (!data.success) {
+          throw new Error(data.error || 'Interaction failed');
+      }
 
-        const data = await response.json();
-        console.log('Final API response:', data);
+      // Use consistent animation duration for all swipe types
+      const animationDuration = 700;
+      
+      setTimeout(() => {
+          setLastSwipe(null);
+          transitionToNextMeme();
+          setIsAnimating(false);
+      }, animationDuration);
 
-        if (!data.success) {
-            console.error('API request failed:', data.error);
-            throw new Error(data.error || 'Interaction failed');
-        }
-
-        // Animation timing based on swipe type
-        const animationDuration = 700; // Same duration for all swipe types
-        
-        // After the indicator animation completes, transition to next meme
-        setTimeout(() => {
-            setLastSwipe(null);
-            transitionToNextMeme();
-            setIsAnimating(false);
-        }, animationDuration);
-
-    } catch (error) {
-        console.error('Interaction error:', error);
-        // Reset animation state in case of error
-        setIsAnimating(false);
-        setLastSwipe(null);
-    }
+  } catch (error) {
+      console.error('Interaction error:', error);
+      setIsAnimating(false);
+      setLastSwipe(null);
+  }
 };
 
   return (
@@ -508,6 +494,19 @@ console.log('===== DEBUG: MemeStack Props =====');
             {/* Legendary - Enhanced Matrix Rain and Light Effects */}
             {lastSwipe === 'super' && (
               <>
+              {/* Single Background Glow Effect */}
+              <motion.div
+                className="absolute inset-0"
+                initial={{ opacity: 0 }}
+                animate={{
+                  opacity: [0, 0.3, 0],
+                }}
+                transition={{ duration: 0.7 }}
+                style={{
+                  background: 'radial-gradient(circle at center, rgba(75, 123, 245, 0.4) 0%, rgba(138, 43, 226, 0.2) 50%, transparent 70%)',
+                }}
+              />
+
               {/* Matrix Rain */}
               {/*
               <motion.div className="absolute inset-0 overflow-hidden">
@@ -580,30 +579,32 @@ console.log('===== DEBUG: MemeStack Props =====');
                 </motion.div>
                 */}
 
-                {/* Main Legendary Indicator */}
+                 {/* Main Strike Indicator */}
                 <motion.div 
                   className="px-8 py-4 rounded-2xl border-4 border-[#4B7BF5] bg-black/80 backdrop-blur-sm"
                   initial={{ scale: 0 }}
                   animate={{ 
                     scale: [0.9, 1.1, 1],
-                    boxShadow: [
-                      '0 0 30px rgba(75, 123, 245, 0.5)',
-                      '0 0 60px rgba(138, 43, 226, 0.7)',
-                      '0 0 90px rgba(75, 123, 245, 0.5)'
-                    ]
+                    boxShadow: '0 0 30px rgba(75, 123, 245, 0.5)',
                   }}
-                  transition={{ duration: 0.7 }} // Reduced from 1.2
-                  exit={{ scale: 0, transition: { duration: 0.2 } }}
+                  transition={{ 
+                    duration: 0.7,
+                    ease: "easeOut"
+                  }}
+                  exit={{ 
+                    scale: 0, 
+                    transition: { duration: 0.2 } 
+                  }}
                 >
                   <div className="font-game-title text-4xl text-white">
                     <motion.div
                       animate={{
                         x: [-2, 2, -2, 1, -1, 0],
-                        scale: [1, 1.05, 1, 1.02, 1]
+                        scale: [1, 1.05, 1]
                       }}
                       transition={{
                         duration: 0.3,
-                        repeat: 1, // Reduced repeats
+                        repeat: 1,
                         repeatType: "reverse"
                       }}
                     >
