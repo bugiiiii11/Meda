@@ -122,11 +122,45 @@ const AnimatedButton = ({ onClick, children, className }) => {
     </button>
   );
 };
-const TasksPage = ({ userData, onUserDataUpdate }) => {
+const TasksPage = ({ userData: initialUserData, onUserDataUpdate }) => {
   const [completedTasks, setCompletedTasks] = useState(new Set());
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState('quick');
+  const [localUserData, setLocalUserData] = useState(initialUserData);
+
+  // Function to fetch latest user data
+  const fetchUserData = async () => {
+    if (!initialUserData?.telegramId) return;
+    
+    try {
+      const response = await fetch(
+        `${ENDPOINTS.users.get(initialUserData.telegramId)}`,
+        { headers: getHeaders() }
+      );
+      
+      if (!response.ok) throw new Error('Failed to fetch user data');
+      
+      const data = await response.json();
+      if (data.success) {
+        setLocalUserData(data.data);
+        // Notify parent component
+        if (onUserDataUpdate) onUserDataUpdate();
+      }
+    } catch (error) {
+      console.error('Error fetching user data:', error);
+    }
+  };
+
+  // Set up data fetch when component mounts
+  useEffect(() => {
+    fetchUserData(); // Initial fetch
+  }, [initialUserData?.telegramId]);
+
+  // Update local data when props change
+  useEffect(() => {
+    setLocalUserData(initialUserData);
+  }, [initialUserData]);
 
   const quickTasks = [
     /*
@@ -171,10 +205,10 @@ const TasksPage = ({ userData, onUserDataUpdate }) => {
   ];
 
   useEffect(() => {
-    if (userData?.completedTasks) {
-      setCompletedTasks(new Set(userData.completedTasks.map(task => task.taskId)));
+    if (localUserData?.completedTasks) {
+      setCompletedTasks(new Set(localUserData.completedTasks.map(task => task.taskId)));
     }
-  }, [userData]);
+  }, [localUserData]);
 
   const handleTaskCompletion = async (taskId) => {
     if (completedTasks.has(taskId) || isLoading) return;
@@ -188,7 +222,7 @@ const TasksPage = ({ userData, onUserDataUpdate }) => {
         headers: getHeaders(),
         body: JSON.stringify({
           taskId,
-          telegramId: userData?.telegramId
+          telegramId: localUserData?.telegramId
         })
       });
 
@@ -370,7 +404,7 @@ const TasksPage = ({ userData, onUserDataUpdate }) => {
             <div className="space-y-3">
               <AchievementTask
                 label="Power-Up Collector (Tier 1)"
-                current={userData?.pointsBreakdown?.likes || 0}
+                current={localUserData?.pointsBreakdown?.likes || 0}
                 target={1000}
                 points={1000}
                 completed={completedTasks.has('achievement-likes')}
@@ -378,16 +412,16 @@ const TasksPage = ({ userData, onUserDataUpdate }) => {
               />
               <AchievementTask
                 label="Critical Slayer (Tier 1)"
-                current={userData?.pointsBreakdown?.dislikes || 0}
+                current={localUserData?.pointsBreakdown?.dislikes || 0}
                 target={1000}
                 points={1000}
                 completed={completedTasks.has('achievement-dislikes')}
                 achievementType="critical-slayer"
               />
-              {userData?.pointsBreakdown?.superLikes >= 100 ? (
+              {localUserData?.pointsBreakdown?.superLikes >= 100 ? (
                 <AchievementTask
                   label="Ultra Striker (Tier 2)"
-                  current={userData?.pointsBreakdown?.superLikes || 0}
+                  current={localUserData?.pointsBreakdown?.superLikes || 0}
                   target={500}
                   points={5000}
                   completed={completedTasks.has('achievement-superlikes-2')}
@@ -396,7 +430,7 @@ const TasksPage = ({ userData, onUserDataUpdate }) => {
               ) : (
                 <AchievementTask
                   label="Legendary Striker (Tier 1)"
-                  current={userData?.pointsBreakdown?.superLikes || 0}
+                  current={localUserData?.pointsBreakdown?.superLikes || 0}
                   target={100}
                   points={1000}
                   completed={completedTasks.has('achievement-superlikes')}
@@ -405,7 +439,7 @@ const TasksPage = ({ userData, onUserDataUpdate }) => {
               )}
               <AchievementTask
                 label="Network Ninja (Tier 1)"
-                current={userData?.referralStats?.referredUsers?.length || 0}
+                current={localUserData?.referralStats?.referredUsers?.length || 0}
                 target={20}
                 points={1000}
                 completed={completedTasks.has('achievement-referrals')}
