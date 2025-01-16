@@ -102,11 +102,12 @@ const CopyButton = ({ text }) => {
   );
 };
 
-const PriceStats = ({ priceData }) => {
-    // Only render price stats if the project has a token
-    if (!priceData?.hasToken) {
-      return null;
-    }
+const PriceStats = ({ priceData, hasToken }) => {
+  // Only render price stats if the project has a token
+  if (!hasToken) {
+    return null;
+  }
+
   const formatPrice = (price) => {
     if (!price) return '$0.00';
     const numPrice = Number(price);
@@ -228,12 +229,13 @@ const DetailsPage = ({ isOpen, meme }) => {
     <div style={baseStyles}>
       <div className="max-w-md mx-auto p-4 h-full overflow-y-auto">
         <div className="space-y-4">
-          {/* Only show PriceStats if project has a token */}
-          {meme?.projectDetails?.hasToken && (
-            <PriceStats priceData={priceData || meme?.projectDetails} />
-          )}
-
-          {/* Description Section - always show */}
+          {/* Price Stats Section */}
+          <PriceStats 
+            priceData={priceData || meme?.projectDetails} 
+            hasToken={meme?.projectDetails?.hasToken}
+          />
+  
+          {/* Description Section */}
           {meme?.projectDetails?.description && (
             <div className="relative">
               <div className="relative bg-gradient-to-r from-[#2A1B3D] to-[#1A1B2E] rounded-xl p-4 
@@ -249,7 +251,7 @@ const DetailsPage = ({ isOpen, meme }) => {
               </div>
             </div>
           )}
-
+  
           {/* Contract Section - only show if project has a token */}
           {meme?.projectDetails?.hasToken && meme?.projectDetails?.contract && meme?.projectDetails?.network && (
             <div className="relative">
@@ -267,7 +269,7 @@ const DetailsPage = ({ isOpen, meme }) => {
               </div>
             </div>
           )}
-
+  
           {/* Action Buttons */}
           {meme?.projectDetails?.buttons && (
             <div className="grid grid-cols-2 auto-rows-auto gap-2">
