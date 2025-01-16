@@ -25,7 +25,7 @@ const dummyMemes = [
     buyLink: "https://www.binance.com/en/trade/HMSTR_USDT?ref=37754157",
     description: "Unleash your inner CEO!",
     sector: "Play", 
-    sectorUrl: "https://t.me/hamster_koMbat_bot/",
+    sectorUrl: "https://t.me/hamster_koMbat_bot/start?startapp=kentId1812207291",
     projectType: "Telegram App",
     buttons: [
       {
@@ -72,7 +72,7 @@ const dummyMemes = [
     buyLink: "https://www.binance.com/en/trade/HMSTR_USDT?ref=37754157",
     description: "Unleash your inner CEO!",
     sector: "Play", 
-    sectorUrl: "https://t.me/hamster_koMbat_bot/",
+    sectorUrl: "https://t.me/hamster_koMbat_bot/start?startapp=kentId1812207291",
     projectType: "Telegram App",
     buttons: [
       {
@@ -119,7 +119,7 @@ const dummyMemes = [
     buyLink: "https://www.binance.com/en/trade/CATI_USDT?ref=37754157&type=spot",
     description: "Play for airdrop🪂 Heal the world!",
     sector: "Play", 
-    sectorUrl: "https://t.me/catizenbot/",
+    sectorUrl: "https://t.me/catizenbot/gameapp?startapp=rp_47060003",
     projectType: "Telegram Game",
     buttons: [
       {
@@ -162,7 +162,7 @@ const dummyMemes = [
     buyLink: "https://www.binance.com/en/trade/CATI_USDT?ref=37754157&type=spot",
     description: "Play for airdrop🪂 Heal the world!",
     sector: "Play", 
-    sectorUrl: "https://t.me/catizenbot/",
+    sectorUrl: "https://t.me/catizenbot/gameapp?startapp=rp_47060003",
     projectType: "Telegram Game",
     buttons: [
       {
@@ -360,6 +360,232 @@ const dummyMemes = [
       {
         label: "Follow X",
         url: "https://x.com/tonsofdungeons"
+      }
+    ]
+  }
+},
+{
+  id: 9,
+  projectName: "Dogiators",
+  content: "/assets/memes/game9.png",
+  weight: 1,
+  logo: "/assets/logos/logo_dogiators.png",
+  engagement: {
+    likes: 0,
+    superLikes: 0,
+    dislikes: 0
+  },
+  projectDetails: {
+    hasToken: false, 
+    network: null,
+    price: null,
+    marketCap: null,
+    priceChange24h: null,
+    contract: null,
+    buyLink: null,
+    description: "Grow your dog and fight with other players!",
+    sector: "Play", 
+    sectorUrl: "https://t.me/Dogiators_bot/game?startapp=htiHhZ7ACF2YDNaw",
+    projectType: "Telegram Game",
+    buttons: [
+      {
+        label: "Join Telegram",
+        url: "https://t.me/dogiators"
+      }
+    ]
+  }
+},
+{
+  id: 10,
+  projectName: "Dogiators",
+  content: "/assets/memes/game10.png",
+  weight: 1,
+  logo: "/assets/logos/logo_dogiators.png",
+  engagement: {
+    likes: 0,
+    superLikes: 0,
+    dislikes: 0
+  },
+  projectDetails: {
+    hasToken: false, 
+    network: null,
+    price: null,
+    marketCap: null,
+    priceChange24h: null,
+    contract: null,
+    buyLink: null,
+    description: "Grow your dog and fight with other players!",
+    sector: "Play", 
+    sectorUrl: "https://t.me/Dogiators_bot/game?startapp=htiHhZ7ACF2YDNaw",
+    projectType: "Telegram Game",
+    buttons: [
+      {
+        label: "Join Telegram",
+        url: "https://t.me/dogiators"
+      }
+    ]
+  }
+},
+{
+  id: 11,
+  projectName: "Dragon Slighter",
+  content: "/assets/memes/game11.png",
+  weight: 1,
+  logo: "/assets/logos/logo_dragon.png",
+  engagement: {
+    likes: 0,
+    superLikes: 0,
+    dislikes: 0
+  },
+  projectDetails: {
+    hasToken: false, 
+    network: null,
+    price: null,
+    marketCap: null,
+    priceChange24h: null,
+    contract: null,
+    buyLink: null,
+    description: "Web3 snake game!",
+    sector: "Play", 
+    sectorUrl: "https://t.me/DragonSlither_bot/Dragon?startapp=460453938",
+    projectType: "Telegram Game",
+    buttons: [
+      {
+        label: "Website",
+        url: "https://dragonslither.com/"
+      },
+      {
+        label: "Join Telegram",
+        url: "https://t.me/DragonSlither"
+      },
+      {
+        label: "Follow X",
+        url: "https://x.com/Dragon_Slither"
+      }
+    ]
+  }
+},
+{
+  id: 12,
+  projectName: "Dragon Slighter",
+  content: "/assets/memes/game12.png",
+  weight: 1,
+  logo: "/assets/logos/logo_dragon.png",
+  engagement: {
+    likes: 0,
+    superLikes: 0,
+    dislikes: 0
+  },
+  projectDetails: {
+    hasToken: false, 
+    network: null,
+    price: null,
+    marketCap: null,
+    priceChange24h: null,
+    contract: null,
+    buyLink: null,
+    description: "Web3 snake game!",
+    sector: "Play", 
+    sectorUrl: "https://t.me/DragonSlither_bot/Dragon?startapp=460453938",
+    projectType: "Telegram Game",
+    buttons: [
+      {
+        label: "Website",
+        url: "https://dragonslither.com/"
+      },
+      {
+        label: "Join Telegram",
+        url: "https://t.me/DragonSlither"
+      },
+      {
+        label: "Follow X",
+        url: "https://x.com/Dragon_Slither"
+      }
+    ]
+  }
+},
+{
+  id: 13,
+  projectName: "Rocky Rabit",
+  content: "/assets/memes/game13.png",
+  weight: 1,
+  logo: "/assets/logos/logo_rocky.png",
+  engagement: {
+    likes: 0,
+    superLikes: 0,
+    dislikes: 0
+  },
+  projectDetails: {
+    hasToken: false, 
+    network: null,
+    price: null,
+    marketCap: null,
+    priceChange24h: null,
+    contract: null,
+    buyLink: null,
+    description: "Telegram tapping game!",
+    sector: "Play", 
+    sectorUrl: "https://t.me/rocky_rabbit_bot/play?startapp=frId460453938",
+    projectType: "Telegram Game",
+    buttons: [
+      {
+        label: "Website",
+        url: "https://rockyrabbit.io/"
+      },
+      {
+        label: "Join Telegram",
+        url: "https://t.me/rockyrabbitio"
+      },
+      {
+        label: "Follow X",
+        url: "https://x.com/rockyrabbitio"
+      },
+      {
+        label: "Youtube",
+        url: "https://www.youtube.com/@rockyrabbitio"
+      }
+    ]
+  }
+},
+{
+  id: 14,
+  projectName: "Rocky Rabit",
+  content: "/assets/memes/game14.png",
+  weight: 1,
+  logo: "/assets/logos/logo_rocky.png",
+  engagement: {
+    likes: 0,
+    superLikes: 0,
+    dislikes: 0
+  },
+  projectDetails: {
+    hasToken: false, 
+    network: null,
+    price: null,
+    marketCap: null,
+    priceChange24h: null,
+    contract: null,
+    buyLink: null,
+    description: "Telegram tapping game!",
+    sector: "Play", 
+    sectorUrl: "https://t.me/rocky_rabbit_bot/play?startapp=frId460453938",
+    projectType: "Telegram Game",
+    buttons: [
+      {
+        label: "Website",
+        url: "https://rockyrabbit.io/"
+      },
+      {
+        label: "Join Telegram",
+        url: "https://t.me/rockyrabbitio"
+      },
+      {
+        label: "Follow X",
+        url: "https://x.com/rockyrabbitio"
+      },
+      {
+        label: "Youtube",
+        url: "https://www.youtube.com/@rockyrabbitio"
       }
     ]
   }
