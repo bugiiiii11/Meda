@@ -19,33 +19,21 @@ const TwitterIcon = () => (
 
 // Achievement Icon Components
 const PowerCollectorIcon = () => (
-  <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-    {/* Star burst background */}
-    <path d="M24 3L28.8 14.4L39.2 8.8L34.4 19.2L44.8 24L34.4 28.8L39.2 39.2L28.8 33.6L24 45L19.2 33.6L8.8 39.2L13.6 28.8L3.2 24L13.6 19.2L8.8 8.8L19.2 14.4L24 3Z" 
-          fill="#4CAF50"/>
-    {/* Lightning bolt overlay */}
-    <path d="M24 10L16 22H24L20 38L32 22H24L24 10Z" 
-          fill="white"/>
-  </svg>
+  <div className="w-12 h-12 flex items-center justify-center text-4xl">
+    ⚡
+  </div>
 );
 
 const CriticalSlayerIcon = () => (
-  <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-    {/* Red circle background */}
-    <circle cx="24" cy="24" r="20" fill="#FF4444"/>
-    {/* White horizontal line */}
-    <rect x="12" y="22" width="24" height="4" fill="white"/>
-  </svg>
+  <div className="w-12 h-12 flex items-center justify-center text-4xl">
+    ⛔
+  </div>
 );
 
 const LegendaryStrikerIcon = () => (
-  <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-    {/* Outer circle */}
-    <circle cx="24" cy="24" r="20" fill="#FFD700"/>
-    {/* Centered star shape */}
-    <path d="M24 8L28 19H40L30 26L34 37L24 30L14 37L18 26L8 19H20L24 8Z" 
-          fill="white"/>
-  </svg>
+  <div className="w-12 h-12 flex items-center justify-center text-4xl">
+    ⭐
+  </div>
 );
 
 const NetworkNinjaIcon = () => (
