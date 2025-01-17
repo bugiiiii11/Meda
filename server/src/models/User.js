@@ -27,6 +27,7 @@ const completedTaskSchema = new mongoose.Schema({
   }
 });
 
+
 const userSchema = new mongoose.Schema({
   telegramId: {
     type: String,
@@ -53,13 +54,26 @@ const userSchema = new mongoose.Schema({
     dislikes: { type: Number, default: 0 },
     superLikes: { type: Number, default: 0 },
     tasks: { type: Number, default: 0 },
-    referrals: { type: Number, default: 0 }
+    referrals: { type: Number, default: 0 },
+    achievements: { type: Number, default: 0 } 
   },
   achievements: {
-    likes: { type: Number, default: 0 },
-    dislikes: { type: Number, default: 0 },
-    superLikes: { type: Number, default: 0 },
-    referrals: { type: Number, default: 0 }
+    likes: { 
+      points: { type: Number, default: 0 },
+      currentTier: { type: Number, default: 0 }
+    },
+    dislikes: { 
+      points: { type: Number, default: 0 },
+      currentTier: { type: Number, default: 0 }
+    },
+    superLikes: { 
+      points: { type: Number, default: 0 },
+      currentTier: { type: Number, default: 0 }
+    },
+    referrals: { 
+      points: { type: Number, default: 0 },
+      currentTier: { type: Number, default: 0 }
+    }
   },
   // Add referredBy field to track who referred this user
   referredBy: {
@@ -133,9 +147,43 @@ userSchema.methods.calculateTotalPoints = function() {
     this.pointsBreakdown.dislikes +
     (this.pointsBreakdown.superLikes * 3) +
     this.pointsBreakdown.tasks +
-    this.pointsBreakdown.referrals
+    this.pointsBreakdown.referrals +
+    this.pointsBreakdown.achievements 
   );
   return this.totalPoints;
+};
+
+// Add new method to handle achievement completion
+userSchema.methods.completeAchievement = async function(category, tier, points) {
+  // Update achievements tracking
+  if (!this.achievements[category]) {
+    this.achievements[category] = {
+      points: 0,
+      currentTier: 0
+    };
+  }
+
+  // Only update if this is a new tier
+  if (tier > this.achievements[category].currentTier) {
+    this.achievements[category].currentTier = tier;
+    this.achievements[category].points += points;
+    this.pointsBreakdown.achievements += points;
+    
+    // Add to completed tasks
+    this.completedTasks.push({
+      taskId: `achievement-${category}-${tier}`,
+      type: 'achievement',
+      completedAt: new Date(),
+      pointsAwarded: points,
+      achievementTier: tier
+    });
+
+    // Recalculate total points
+    this.calculateTotalPoints();
+    await this.save();
+    return true;
+  }
+  return false;
 };
 
 // Method to update points from an interaction
@@ -147,7 +195,7 @@ userSchema.methods.addPoints = async function(type, amount) {
   }
 };
 
-// Method to complete a task
+// Update completeTask method to handle achievements
 userSchema.methods.completeTask = async function(taskId, type, points, achievementTier = null) {
   const taskData = {
     taskId,
@@ -155,11 +203,17 @@ userSchema.methods.completeTask = async function(taskId, type, points, achieveme
     completedAt: new Date(),
     pointsAwarded: points
   };
+
   if (type === 'achievement' && achievementTier) {
     taskData.achievementTier = achievementTier;
+    // For achievement tasks, add points to achievements breakdown
+    this.pointsBreakdown.achievements += points;
+  } else {
+    // For regular tasks
+    this.pointsBreakdown.tasks += points;
   }
+
   this.completedTasks.push(taskData);
-  this.pointsBreakdown.tasks += points;
   this.calculateTotalPoints();
 };
 

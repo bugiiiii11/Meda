@@ -1,10 +1,8 @@
 // server/src/scripts/migrateAchievements.js
 const mongoose = require('mongoose');
-const path = require('path');
-require('dotenv').config({ path: path.join(__dirname, '../../.env') });
 
-// Get MongoDB URI from environment variables
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/meda';
+// Define MongoDB URI - Update this with your actual MongoDB URI
+const MONGODB_URI = 'mongodb://127.0.0.1:27017/meda';
 
 // Achievement tiers configuration
 const ACHIEVEMENT_TIERS = {
@@ -39,22 +37,6 @@ async function migrateDatabase() {
     console.log('Starting migration...');
     console.log('Using MongoDB URI:', MONGODB_URI);
 
-    // Update achievement tasks with new tier structure
-    console.log('Updating achievement tasks...');
-    await mongoose.connection.collection('tasks').updateMany(
-      { type: 'achievement' },
-      {
-        $set: {
-          'tiers': {
-            'likes': ACHIEVEMENT_TIERS.powerUps,
-            'dislikes': ACHIEVEMENT_TIERS.criticals,
-            'superLikes': ACHIEVEMENT_TIERS.strikes,
-            'referrals': ACHIEVEMENT_TIERS.referrals
-          }
-        }
-      }
-    );
-
     // Get all users with their referral data
     console.log('Preserving referral data...');
     const users = await mongoose.connection.collection('users').find({}).toArray();
@@ -65,8 +47,8 @@ async function migrateDatabase() {
       referredBy: user.referredBy
     }));
 
-    // Clean user data while preserving referrals
-    console.log('Cleaning user data...');
+    // Update users collection with new schema
+    console.log('Updating user schema...');
     await mongoose.connection.collection('users').updateMany(
       {},
       {
@@ -80,12 +62,61 @@ async function migrateDatabase() {
             referrals: 0,
             achievements: 0
           },
+          achievements: {
+            likes: { points: 0, currentTier: 0 },
+            dislikes: { points: 0, currentTier: 0 },
+            superLikes: { points: 0, currentTier: 0 },
+            referrals: { points: 0, currentTier: 0 }
+          },
           completedTasks: []
         }
       }
     );
 
-    // Restore referral data for each user
+    // Update achievement tasks
+    console.log('Updating achievement tasks...');
+    const achievementTasks = [
+      {
+        taskId: 'achievement-likes',
+        type: 'achievement',
+        category: 'likes',
+        label: 'Power-Up Collector',
+        status: 'active',
+        tiers: ACHIEVEMENT_TIERS.powerUps
+      },
+      {
+        taskId: 'achievement-dislikes',
+        type: 'achievement',
+        category: 'dislikes',
+        label: 'Critical Slayer',
+        status: 'active',
+        tiers: ACHIEVEMENT_TIERS.criticals
+      },
+      {
+        taskId: 'achievement-superLikes',
+        type: 'achievement',
+        category: 'superLikes',
+        label: 'Super Striker',
+        status: 'active',
+        tiers: ACHIEVEMENT_TIERS.strikes
+      },
+      {
+        taskId: 'achievement-referrals',
+        type: 'achievement',
+        category: 'referrals',
+        label: 'Network Ninja',
+        status: 'active',
+        tiers: ACHIEVEMENT_TIERS.referrals
+      }
+    ];
+
+    // Remove existing achievement tasks
+    await mongoose.connection.collection('tasks').deleteMany({ type: 'achievement' });
+
+    // Insert new achievement tasks
+    await mongoose.connection.collection('tasks').insertMany(achievementTasks);
+
+    // Restore referral data
     console.log('Restoring referral data...');
     for (const userData of referralData) {
       if (userData.telegramId) {
@@ -108,6 +139,8 @@ async function migrateDatabase() {
   } catch (error) {
     console.error('Migration failed:', error);
     throw error;
+  } finally {
+    await mongoose.disconnect();
   }
 }
 
@@ -117,7 +150,7 @@ mongoose.connect(MONGODB_URI)
   .then(() => migrateDatabase())
   .then(() => {
     console.log('Migration completed, disconnecting...');
-    return mongoose.disconnect();
+    process.exit(0);
   })
   .catch(error => {
     console.error('Migration script failed:', error);
