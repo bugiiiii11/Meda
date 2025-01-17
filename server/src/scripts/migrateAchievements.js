@@ -1,8 +1,10 @@
 // server/src/scripts/migrateAchievements.js
 const mongoose = require('mongoose');
+const path = require('path');
+require('dotenv').config({ path: path.join(__dirname, '../../.env') });
 
-// Define MongoDB URI - Update this with your actual MongoDB URI
-const MONGODB_URI = 'mongodb://127.0.0.1:27017/meda';
+// Get MongoDB URI from environment variables
+const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/meda';
 
 // Achievement tiers configuration
 const ACHIEVEMENT_TIERS = {
@@ -47,7 +49,19 @@ async function migrateDatabase() {
       referredBy: user.referredBy
     }));
 
-    // Update users collection with new schema
+    // First, unset the old achievements field
+    console.log('Removing old achievement structure...');
+    await mongoose.connection.collection('users').updateMany(
+      {},
+      {
+        $unset: { 
+          achievements: "",
+          "pointsBreakdown.achievements": ""
+        }
+      }
+    );
+
+    // Then set the new structure
     console.log('Updating user schema...');
     await mongoose.connection.collection('users').updateMany(
       {},
@@ -63,10 +77,22 @@ async function migrateDatabase() {
             achievements: 0
           },
           achievements: {
-            likes: { points: 0, currentTier: 0 },
-            dislikes: { points: 0, currentTier: 0 },
-            superLikes: { points: 0, currentTier: 0 },
-            referrals: { points: 0, currentTier: 0 }
+            likes: { 
+              points: 0, 
+              currentTier: 0 
+            },
+            dislikes: { 
+              points: 0, 
+              currentTier: 0 
+            },
+            superLikes: { 
+              points: 0, 
+              currentTier: 0 
+            },
+            referrals: { 
+              points: 0, 
+              currentTier: 0 
+            }
           },
           completedTasks: []
         }
@@ -75,6 +101,10 @@ async function migrateDatabase() {
 
     // Update achievement tasks
     console.log('Updating achievement tasks...');
+    // First remove existing achievement tasks
+    await mongoose.connection.collection('tasks').deleteMany({ type: 'achievement' });
+
+    // Create new achievement tasks
     const achievementTasks = [
       {
         taskId: 'achievement-likes',
@@ -110,10 +140,6 @@ async function migrateDatabase() {
       }
     ];
 
-    // Remove existing achievement tasks
-    await mongoose.connection.collection('tasks').deleteMany({ type: 'achievement' });
-
-    // Insert new achievement tasks
     await mongoose.connection.collection('tasks').insertMany(achievementTasks);
 
     // Restore referral data
