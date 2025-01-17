@@ -491,126 +491,80 @@ console.log('===== DEBUG: MemeStack Props =====');
               </>
             )}
 
-            {/* Legendary - Enhanced Matrix Rain and Light Effects */}
+            {/* Strike Indicator - Power Up Style */}
             {lastSwipe === 'super' && (
               <>
-              {/* Single Background Glow Effect */}
-              <motion.div
-                className="absolute inset-0"
-                initial={{ opacity: 0 }}
-                animate={{
-                  opacity: [0, 0.3, 0],
-                }}
-                transition={{ duration: 0.7 }}
-                style={{
-                  background: 'radial-gradient(circle at center, rgba(75, 123, 245, 0.4) 0%, rgba(138, 43, 226, 0.2) 50%, transparent 70%)',
-                }}
-              />
-
-              {/* Matrix Rain */}
-              {/*
-              <motion.div className="absolute inset-0 overflow-hidden">
-                {[...Array(30)].map((_, i) => ( // Reduced number of matrix elements
-                  <motion.div
-                    key={`matrix-${i}`}
-                    className="absolute text-sm font-mono text-[#4B7BF5]"
-                    initial={{
-                      x: `${Math.random() * 100}%`,
-                      y: -20,
-                      opacity: 0,
-                    }}
-                    animate={{
-                      y: ['0%', '120%'],
-                      opacity: [0, 0.8, 0],
-                    }}
-                    transition={{
-                      duration: 0.7, // Reduced from 1.5
-                      delay: i * 0.01, // Reduced delay
-                      ease: 'linear',
-                    }}
-                  >
-                    {String.fromCharCode(0x30A0 + Math.random() * 96)}
-                  </motion.div>
-                ))}
-              </motion.div>
-              */}
-
-              {/* Light Effects */}
-              {/* <motion.div
-                className="absolute inset-0"
-                initial={{ opacity: 0 }}
-                animate={{
-                  opacity: [0, 0.8, 0.4, 0.6, 0],
-                  background: [
-                    'radial-gradient(circle at center, rgba(75, 123, 245, 0.4) 0%, rgba(138, 43, 226, 0.2) 30%, transparent 70%)',
-                    'radial-gradient(circle at center, rgba(75, 123, 245, 0.6) 0%, rgba(138, 43, 226, 0.4) 40%, transparent 80%)',
-                    'radial-gradient(circle at center, rgba(75, 123, 245, 0.3) 0%, rgba(138, 43, 226, 0.2) 30%, transparent 70%)',
-                  ]
-                }}
-                transition={{ duration: 0.7, times: [0, 0.3, 0.6, 0.8, 1] }} // Reduced from 1.2
-                />
-              */}
-                {/* Floating Particles */}
-                {/*
-                <motion.div className="absolute inset-0">
-                  {[...Array(12)].map((_, i) => ( // Reduced number of particles
+                {/* Enhanced Corner Effects - Using purple instead of green */}
+                <motion.div className="absolute top-4 left-4">
+                  {[...Array(6)].map((_, i) => (
                     <motion.div
-                      key={`particle-${i}`}
-                      className="absolute w-2 h-2 rounded-full bg-[#4B7BF5]"
-                      initial={{
-                        x: "50%",
-                        y: "50%",
-                        scale: 0,
-                        opacity: 0
-                      }}
+                      key={`corner-effect-${i}`}
+                      className="absolute w-16 h-16"
+                      initial={{ opacity: 0, scale: 0 }}
                       animate={{
-                        x: `${50 + (Math.random() * 100 - 50)}%`,
-                        y: `${50 + (Math.random() * 100 - 50)}%`,
-                        scale: [0, 1.5, 0],
-                        opacity: [0, 0.8, 0],
+                        opacity: [0, 1, 0],
+                        scale: [0.5, 1.5, 2],
+                        rotate: [0, 90, 180]
                       }}
                       transition={{
-                        duration: 0.7, // Reduced from 1.0
-                        delay: i * 0.02, // Reduced delay
+                        duration: 0.7,
+                        delay: i * 0.1,
                         ease: "easeOut"
+                      }}
+                    >
+                      <div className="w-full h-full border-t-4 border-l-4 border-[#8A2BE2] rounded-tl-lg" />
+                    </motion.div>
+                  ))}
+                </motion.div>
+
+                {/* Vertical Energy Lines - Modified from horizontal */}
+                <motion.div className="absolute inset-0">
+                  {[...Array(12)].map((_, i) => (
+                    <motion.div
+                      key={`energy-line-${i}`}
+                      className="absolute w-2 bg-gradient-to-b from-[#8A2BE2] to-transparent"
+                      style={{
+                        top: 0,
+                        left: `${(i / 12) * 100}%`,
+                        height: '100%',
+                        transform: `rotate(0deg)`, // Keep vertical
+                        transformOrigin: 'center'
+                      }}
+                      initial={{ opacity: 0, scale: 0, x: -50 }}
+                      animate={{
+                        opacity: [0, 0.7, 0],
+                        scale: [0, 1, 1],
+                        x: ['-50%', '100%'], // Move from left to right
+                      }}
+                      transition={{
+                        duration: 0.6,
+                        delay: i * 0.04,
                       }}
                     />
                   ))}
                 </motion.div>
-                */}
 
-                 {/* Main Strike Indicator */}
+                {/* Main Strike Indicator - Using Power Up style with purple theme */}
                 <motion.div 
-                  className="px-8 py-4 rounded-2xl border-4 border-[#4B7BF5] bg-black/80 backdrop-blur-sm"
-                  initial={{ scale: 0 }}
+                  className="px-8 py-4 rounded-2xl border-4 border-[#8A2BE2] bg-black/80 backdrop-blur-sm"
+                  initial={{ scale: 0, y: 50 }}
                   animate={{ 
-                    scale: [0.9, 1.1, 1],
-                    boxShadow: '0 0 30px rgba(75, 123, 245, 0.5)',
+                    scale: 1,
+                    y: 0,
+                    boxShadow: [
+                      '0 0 20px rgba(138, 43, 226, 0.4)',
+                      '0 0 40px rgba(138, 43, 226, 0.6)',
+                      '0 0 60px rgba(138, 43, 226, 0.4)'
+                    ]
                   }}
-                  transition={{ 
-                    duration: 0.7,
-                    ease: "easeOut"
-                  }}
-                  exit={{ 
-                    scale: 0, 
-                    transition: { duration: 0.2 } 
-                  }}
+                  transition={{ duration: 0.7 }}
+                  exit={{ scale: 0, y: -50, transition: { duration: 0.2 } }}
                 >
-                  <div className="font-game-title text-4xl text-white">
-                    <motion.div
-                      animate={{
-                        x: [-2, 2, -2, 1, -1, 0],
-                        scale: [1, 1.05, 1]
-                      }}
-                      transition={{
-                        duration: 0.3,
-                        repeat: 1,
-                        repeatType: "reverse"
-                      }}
-                    >
+                  <GlitchText>
+                    <div className="font-game-title text-4xl text-white">
                       STRIKE⭐
-                    </motion.div>
-                  </div>
+                    </div>
+                  </GlitchText>
                 </motion.div>
               </>
             )}
