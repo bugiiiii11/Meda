@@ -2,39 +2,47 @@
 import React, { useState, useEffect } from 'react';
 import { ENDPOINTS, getHeaders } from '../config/api';
 
-const ProfileCard = ({ children, className = '' }) => (
-  <div className="relative group">
-    <div className="absolute inset-0 bg-gradient-to-r from-[#4B7BF5]/5 to-[#8A2BE2]/5 rounded-xl blur-lg group-hover:blur-xl transition-all duration-300"></div>
-    <div className={`relative bg-gradient-to-r from-[#2A1B3D] to-[#1A1B2E] rounded-xl p-6 border border-white/5 
-      transition-all duration-300 hover:border-white/10 ${className}`}>
-      {children}
-    </div>
-  </div>
+const TabButton = ({ isActive, onClick, children }) => (
+  <button
+    onClick={onClick}
+    className={`flex-1 py-3 px-4 rounded-lg font-game-title transition-all duration-300 transform hover:scale-105 
+      ${isActive 
+        ? 'bg-gradient-to-r from-[#4B7BF5] to-[#8A2BE2] text-white shadow-lg shadow-[#FFD700]/20' 
+        : 'bg-gradient-to-r from-[#2A1B3D] to-[#1A1B2E] text-white hover:text-white border border-white/5'
+      }`}
+  >
+    {children}
+  </button>
 );
 
-const StatItem = ({ icon, label, value, subtitle }) => (
-  <div className="relative overflow-hidden group">
-    <div className="absolute inset-0 bg-gradient-to-r from-[#4B7BF5]/5 to-[#8A2BE2]/5 rounded-lg opacity-0 
-      group-hover:opacity-100 transition-opacity duration-300"></div>
-    <div className="p-3 rounded-lg bg-gradient-to-r from-[#1E1E22] to-[#2A2A2E] border border-white/5 
-      relative transition-all duration-300 group-hover:border-white/10">
-      <div className="flex items-center justify-between">
-        <div className="flex flex-col">
-          <span className="text-gray-300 flex items-center gap-2">
-            <span className="text-xl">{icon}</span>
-            <span className="font-game-body">{label}</span>
-          </span>
+const StatCard = ({ icon, label, value, subtitle }) => (
+  <div className="group relative">
+    <div className="absolute inset-0 bg-gradient-to-r from-[#4B7BF5]/5 to-[#8A2BE2]/5 rounded-xl blur-lg group-hover:blur-xl transition-all duration-300"></div>
+    <div className="relative bg-gradient-to-r from-[#2A1B3D] to-[#1A1B2E] rounded-xl p-4 border border-white/5 
+      transform transition-all duration-300 hover:scale-[1.02] hover:border-white/10">
+      <div className="flex items-center gap-4">
+        <div className="w-12 flex items-center justify-center">
+          <span className="text-2xl">{icon}</span>
+        </div>
+        <div className="flex-1">
+          <h3 className="font-game-title text-white">{label}</h3>
           {subtitle && (
-            <span className="text-sm text-gray-500 ml-7 font-game-mono">{subtitle}</span>
+            <p className="font-game-mono text-gray-400 text-sm">{subtitle}</p>
           )}
         </div>
-        <span className="font-game-mono text-[#FFD700] animate-glow-pulse">{value}</span>
+        <div className="flex items-center gap-2">
+          <span className="font-game-mono text-[#FFD700] text-lg animate-glow-pulse">
+            {value}
+          </span>
+          <span className="font-game-mono text-gray-400 text-sm">pts</span>
+        </div>
       </div>
     </div>
   </div>
 );
 
 const ProfilePage = ({ userData: initialUserData, superlikeStatus, onUserDataUpdate }) => {
+  const [activeTab, setActiveTab] = useState('combat');
   const [shareStatus, setShareStatus] = useState('');
   const [localUserData, setLocalUserData] = useState(initialUserData);
 
@@ -53,7 +61,6 @@ const ProfilePage = ({ userData: initialUserData, superlikeStatus, onUserDataUpd
       const data = await response.json();
       if (data.success) {
         setLocalUserData(data.data);
-        // Notify parent component
         if (onUserDataUpdate) onUserDataUpdate();
       }
     } catch (error) {
@@ -61,28 +68,25 @@ const ProfilePage = ({ userData: initialUserData, superlikeStatus, onUserDataUpd
     }
   };
 
-  // Set up periodic refresh
   useEffect(() => {
-    fetchUserData(); // Initial fetch
-    const interval = setInterval(fetchUserData, 30000); // Refresh every 30 seconds
+    fetchUserData();
+    const interval = setInterval(fetchUserData, 30000);
     return () => clearInterval(interval);
   }, [initialUserData?.telegramId]);
 
-  // Update local data when props change
   useEffect(() => {
     setLocalUserData(initialUserData);
   }, [initialUserData]);
 
   const handleShare = async () => {
     if (!localUserData?.telegramId) return;
-
     const referralLink = `https://t.me/MedaPortalBot?start=${localUserData.telegramId}`;
     const welcomeMessage = `🎮 Join me on Meda Portal and discover exciting blockchain gaming projects! ${referralLink}`;
-
+    
     try {
       await navigator.clipboard.writeText(welcomeMessage);
       setShareStatus('✨ Copied!');
-
+      
       if (window.Telegram?.WebApp) {
         try {
           window.Telegram.WebApp.switchInlineQuery(welcomeMessage);
@@ -91,7 +95,7 @@ const ProfilePage = ({ userData: initialUserData, superlikeStatus, onUserDataUpd
           window.location.href = 'tg://msg';
         }
       }
-
+      
       setTimeout(() => setShareStatus(''), 2000);
     } catch (error) {
       console.error('Share error:', error);
@@ -99,6 +103,66 @@ const ProfilePage = ({ userData: initialUserData, superlikeStatus, onUserDataUpd
       setTimeout(() => setShareStatus(''), 2000);
     }
   };
+
+  const renderCombatStats = () => (
+    <div className="space-y-3">
+      <StatCard 
+        icon="⚡" 
+        label="Total Power" 
+        value={localUserData?.totalPoints || 0}
+      />
+      <StatCard 
+        icon="👥" 
+        label="Recruited Warriors" 
+        value={localUserData?.referralStats?.referredUsers?.length || 0}
+      />
+      <StatCard 
+        icon="⭐" 
+        label="Strikes Available" 
+        value={superlikeStatus?.remainingSuperlikes || 0}
+        subtitle={superlikeStatus?.nextResetIn ? `Recharge in ${superlikeStatus.nextResetIn}h` : undefined}
+      />
+      <StatCard 
+        icon="👑" 
+        label="Membership" 
+        value="Free Tier"
+      />
+    </div>
+  );
+
+  const renderBattleRecords = () => (
+    <div className="space-y-3">
+      <StatCard icon="⚡" label="Power Ups" value={localUserData?.pointsBreakdown?.likes || 0} />
+      <StatCard icon="⛔" label="Criticals" value={localUserData?.pointsBreakdown?.dislikes || 0} />
+      <StatCard icon="⭐" label="Strikes" value={(localUserData?.pointsBreakdown?.superLikes || 0) * 3} />
+      <StatCard icon="✅" label="Quests Completed" value={localUserData?.pointsBreakdown?.tasks || 0} />
+      <StatCard icon="🎖️" label="Achievements" value="0" />
+      <StatCard icon="🏰" label="Alliance Bonus" value={localUserData?.pointsBreakdown?.referrals || 0} />
+    </div>
+  );
+
+  const renderAllianceProgram = () => (
+    <div className="space-y-6">
+      <div className="text-center">
+        <p className="font-game-body text-gray-400 text-lg mb-6">
+          Invite friends into the Meda Portal and earn 20 power points for recruited Meda Warriors!
+        </p>
+      </div>
+      <div className="relative overflow-hidden rounded-lg bg-gradient-to-r from-[#1E1E22] to-[#2A2A2E] p-4">
+        <button
+          onClick={handleShare}
+          disabled={!localUserData?.telegramId}
+          className={`w-full px-4 py-3 rounded-lg font-game-title transition-all duration-300 transform hover:scale-105
+            ${shareStatus 
+              ? 'bg-gradient-to-r from-[#4B7BF5]/20 to-[#8A2BE2]/20 text-[#FFD700]' 
+              : 'bg-gradient-to-r from-[#FFD700] to-[#FFA500] text-black shadow-lg shadow-[#FFD700]/20'
+            } disabled:opacity-50 disabled:cursor-not-allowed`}
+        >
+          {shareStatus || 'Recruit Warriors'}
+        </button>
+      </div>
+    </div>
+  );
 
   if (!localUserData) {
     return (
@@ -121,69 +185,36 @@ const ProfilePage = ({ userData: initialUserData, superlikeStatus, onUserDataUpd
             <p className="font-game-mono text-gray-400 text-sm mt-1">@{localUserData?.username || 'Anonymous'}</p>
           </div>
         </div>
+
+        <div className="px-4 py-4 pb-6">
+          <div className="flex gap-2 max-w-md mx-auto">
+            <TabButton 
+              isActive={activeTab === 'combat'} 
+              onClick={() => setActiveTab('combat')}
+            >
+              Combat Stats
+            </TabButton>
+            <TabButton 
+              isActive={activeTab === 'battle'} 
+              onClick={() => setActiveTab('battle')}
+            >
+              Battle Records
+            </TabButton>
+            <TabButton 
+              isActive={activeTab === 'alliance'} 
+              onClick={() => setActiveTab('alliance')}
+            >
+              Alliance
+            </TabButton>
+          </div>
+        </div>
       </div>
 
-      <div className="flex-1 overflow-auto pt-[100px] pb-20 px-4">
-        <div className="max-w-md mx-auto space-y-6">
-          <ProfileCard>
-            <h3 className="font-game-title text-xl text-white mb-4">Combat Stats</h3>
-            <div className="space-y-3">
-              <StatItem 
-                icon="⚡" 
-                label="Total Power" 
-                value={localUserData?.totalPoints || 0} 
-              />
-              <StatItem 
-                icon="👥" 
-                label="Recruited Warriors" 
-                value={localUserData?.referralStats?.referredUsers?.length || 0} 
-              />
-              <StatItem 
-                icon="⭐" 
-                label="Strikes Available" 
-                value={superlikeStatus?.remainingSuperlikes || 0}
-                subtitle={superlikeStatus?.nextResetIn ? ` Recharge in ${superlikeStatus.nextResetIn}h` : undefined}
-              />
-              <StatItem 
-                icon="👑" 
-                label="Membership" 
-                value="Free Tier" 
-              />
-            </div>
-          </ProfileCard>
-
-          <ProfileCard>
-            <h3 className="font-game-title text-xl text-white mb-4">Battle Records</h3>
-            <div className="space-y-3">
-              <StatItem icon="⚡" label="Power Ups" value={`+${localUserData?.pointsBreakdown?.likes || 0}`} />
-              <StatItem icon="⛔" label="Criticals" value={`+${localUserData?.pointsBreakdown?.dislikes || 0}`} />
-              <StatItem icon="⭐" label="Strikes" value={`+${(localUserData?.pointsBreakdown?.superLikes || 0) * 3}`} />
-              <StatItem icon="✅" label="Quests Completed" value={`+${localUserData?.pointsBreakdown?.tasks || 0}`} />
-              <StatItem icon="🎖️" label="Achievements" value="+0" />
-              <StatItem icon="🏰" label="Alliance Bonus" value={`+${localUserData?.pointsBreakdown?.referrals || 0}`} />
-            </div>
-          </ProfileCard>
-
-          <ProfileCard>
-            <h3 className="font-game-title text-xl text-white mb-2">Alliance Program</h3>
-            <p className="font-game-body text-gray-400 text-sm mb-4">
-              Invite friends into the Meda Portal and earn 20 power points for recruited Meda Warriors!
-            </p>
-
-            <div className="relative overflow-hidden rounded-lg bg-gradient-to-r from-[#1E1E22] to-[#2A2A2E] p-4">
-              <button
-                onClick={handleShare}
-                disabled={!localUserData?.telegramId}
-                className={`w-full px-4 py-3 rounded-lg font-game-title transition-all duration-300 transform hover:scale-105
-                  ${shareStatus 
-                    ? 'bg-gradient-to-r from-[#4B7BF5]/20 to-[#8A2BE2]/20 text-[#FFD700]' 
-                    : 'bg-gradient-to-r from-[#FFD700] to-[#FFA500] text-black shadow-lg shadow-[#FFD700]/20'
-                  } disabled:opacity-50 disabled:cursor-not-allowed`}
-              >
-                {shareStatus || 'Recruit Warriors'}
-              </button>
-            </div>
-          </ProfileCard>
+      <div className="flex-1 overflow-auto pt-[180px] pb-20 px-4">
+        <div className="max-w-md mx-auto">
+          {activeTab === 'combat' && renderCombatStats()}
+          {activeTab === 'battle' && renderBattleRecords()}
+          {activeTab === 'alliance' && renderAllianceProgram()}
         </div>
       </div>
     </div>
