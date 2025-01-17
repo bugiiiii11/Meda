@@ -91,28 +91,30 @@ class TaskController {
             .map(t => t.achievementTier);
 
           const nextTier = task.tiers.find(tier => 
-            !completedTiers.includes(tier.level) && currentValue >= tier.target
+            !completedTiers.includes(tier.level) && 
+            currentValue >= tier.min && 
+            currentValue <= tier.max
           );
 
           if (!nextTier) {
             throw new Error('No achievement tier reached');
           }
 
-          // Award points
-          user.totalPoints += nextTier.points;
-          user.pointsBreakdown.tasks += nextTier.points;
-          user.completedTasks.push({
-            taskId,
-            type: 'achievement',
-            completedAt: new Date(),
-            pointsAwarded: nextTier.points,
-            achievementTier: nextTier.level
-          });
+          // Award points using the achievement method
+          const result = await user.completeAchievement(
+            task.category,
+            nextTier.level,
+            nextTier.reward
+          );
+
+          if (!result.success) {
+            throw new Error('Failed to complete achievement');
+          }
 
           // Create points transaction
           await new PointsTransaction({
             user: telegramId,
-            amount: nextTier.points,
+            amount: nextTier.reward,
             type: 'earn',
             source: 'achievement',
             relatedEntity: {

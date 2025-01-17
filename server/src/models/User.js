@@ -142,14 +142,21 @@ userSchema.methods.getDisplayName = function() {
 
 // Method to calculate total points
 userSchema.methods.calculateTotalPoints = function() {
+  const achievementsTotal = Object.values(this.achievements)
+    .reduce((sum, achievement) => sum + (achievement.points || 0), 0);
+
   this.totalPoints = (
     this.pointsBreakdown.likes +
     this.pointsBreakdown.dislikes +
     (this.pointsBreakdown.superLikes * 3) +
     this.pointsBreakdown.tasks +
     this.pointsBreakdown.referrals +
-    this.pointsBreakdown.achievements 
+    achievementsTotal  // Use the calculated achievements total
   );
+  
+  // Make sure pointsBreakdown.achievements matches the actual total
+  this.pointsBreakdown.achievements = achievementsTotal;
+  
   return this.totalPoints;
 };
 
@@ -165,9 +172,13 @@ userSchema.methods.completeAchievement = async function(category, tier, points) 
 
   // Only update if this is a new tier
   if (tier > this.achievements[category].currentTier) {
+    // Update achievement-specific tracking
     this.achievements[category].currentTier = tier;
     this.achievements[category].points += points;
+    
+    // Add points to both achievements total and overall total
     this.pointsBreakdown.achievements += points;
+    this.totalPoints += points;
     
     // Add to completed tasks
     this.completedTasks.push({
@@ -178,12 +189,17 @@ userSchema.methods.completeAchievement = async function(category, tier, points) 
       achievementTier: tier
     });
 
-    // Recalculate total points
-    this.calculateTotalPoints();
     await this.save();
-    return true;
+    return {
+      success: true,
+      points: points,
+      newTotalPoints: this.totalPoints
+    };
   }
-  return false;
+  return {
+    success: false,
+    reason: 'Tier already completed'
+  };
 };
 
 // Method to update points from an interaction
