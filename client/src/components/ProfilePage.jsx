@@ -1,4 +1,3 @@
-//ProfilePage.jsx
 import React, { useState, useEffect } from 'react';
 import { ENDPOINTS, getHeaders } from '../config/api';
 
@@ -178,27 +177,30 @@ const ProfilePage = ({ userData: initialUserData, superlikeStatus, onUserDataUpd
       <div className="fixed top-0 left-0 right-0 z-50">
         <div className="absolute inset-0 bg-gradient-to-b from-[#0A0B0F] via-[#0A0B0F]/95 to-transparent backdrop-blur-xl"></div>
         <div className="relative w-full py-6">
-          <div className="text-center">
+          <div className="text-center mb-8">
             <h1 className="font-game-title text-3xl bg-gradient-to-r from-[#4B7BF5] to-[#8A2BE2] text-transparent bg-clip-text">
               Battle Profile
             </h1>
-            <p className="font-game-mono text-gray-400 text-sm mt-1">@{localUserData?.username || 'Anonymous'}</p>
+          </div>
+          
+          <div className="text-center mb-6">
+            <p className="font-game-mono text-gray-400">@{localUserData?.username || 'Anonymous'}</p>
           </div>
         </div>
 
-        <div className="px-4 py-4 pb-6">
+        <div className="px-4 pb-6">
           <div className="flex gap-2 max-w-md mx-auto">
             <TabButton 
               isActive={activeTab === 'combat'} 
               onClick={() => setActiveTab('combat')}
             >
-              Combat Stats
+              Stats
             </TabButton>
             <TabButton 
               isActive={activeTab === 'battle'} 
               onClick={() => setActiveTab('battle')}
             >
-              Battle Records
+              Records
             </TabButton>
             <TabButton 
               isActive={activeTab === 'alliance'} 
