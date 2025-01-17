@@ -1,3 +1,4 @@
+//ProfilePage.jsx
 import React, { useState, useEffect } from 'react';
 import { ENDPOINTS, getHeaders } from '../config/api';
 

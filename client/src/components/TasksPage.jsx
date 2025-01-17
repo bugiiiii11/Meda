@@ -1,6 +1,8 @@
 //TasksPage.jsx
 import React, { useState, useEffect } from 'react';
 import { ENDPOINTS, getHeaders } from '../config/api';
+import { ACHIEVEMENT_TIERS } from '../config/achievementTiers';
+import CongratulationsModal from './modals/CongratulationsModal';
 
 // Custom Icon Components
 const TelegramIcon = () => (
@@ -257,66 +259,74 @@ const TasksPage = ({ userData: initialUserData, onUserDataUpdate }) => {
     </AnimatedButton>
   );
 
-  const AchievementTask = ({ label, current, target, points, completed, achievementType }) => {
-    // Get icon based on achievement type
-    const getIcon = (type) => {
-      switch (type) {
-        case 'power-collector':
-          return <PowerCollectorIcon />;
-        case 'critical-slayer':
-          return <CriticalSlayerIcon />;
-        case 'legendary-striker':
-          return <LegendaryStrikerIcon />;
-        case 'network-ninja':
-          return <NetworkNinjaIcon />;
-        default:
-          return <PowerCollectorIcon />;
-      }
+  const AchievementTask = ({ 
+    type,
+    current,
+    icon,
+    completed,
+    achievementType
+  }) => {
+    const [showCongrats, setShowCongrats] = useState(false);
+    
+    const getTierInfo = (value, type) => {
+      const tiers = ACHIEVEMENT_TIERS[type];
+      return tiers.find(tier => value >= tier.min && value <= tier.max) || tiers[tiers.length - 1];
     };
-
+  
+    const currentTier = getTierInfo(current, type);
+    const progress = Math.min((current - currentTier.min) / (currentTier.max - currentTier.min) * 100, 100);
+  
     return (
-      <div className="w-full p-4 rounded-xl bg-gradient-to-r from-[#2A1B3D] to-[#1A1B2E] border border-white/5 relative overflow-hidden">
-        {/* Achievement header */}
-        <div className="flex justify-between items-center mb-4">
-          <div className="flex items-center gap-3">
-            <div className="w-12 h-12 flex items-center justify-center"> {/* Updated from w-6 h-6 to w-12 h-12 */}
-              {getIcon(achievementType)}
+      <>
+        <div className="w-full p-4 rounded-xl bg-gradient-to-r from-[#2A1B3D] to-[#1A1B2E] border border-white/5 relative overflow-hidden">
+          {/* Achievement header */}
+          <div className="flex justify-between items-center mb-4">
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 flex items-center justify-center text-4xl">
+                {icon}
+              </div>
+              <div>
+                <span className="font-game-title text-white">
+                  {currentTier.name}
+                </span>
+                {!completed && (
+                  <div className="text-sm text-[#FFD700] font-game-mono mt-1">
+                    +{currentTier.reward} points
+                  </div>
+                )}
+              </div>
             </div>
-            <div>
-              <span className="font-game-title text-white">{label}</span>
-              {!completed && (
-                <div className="text-sm text-[#FFD700] font-game-mono mt-1">
-                  +{points} points
-                </div>
-              )}
-            </div>
+            {completed && <CheckIcon />}
           </div>
-          {completed && <CheckIcon />}
-        </div>
-
-        {/* Progress bar */}
-        <div className="w-full h-3 bg-[#1E1E22] rounded-full overflow-hidden relative">
-          <div 
-            className="h-full rounded-full relative overflow-hidden transition-all duration-500 flex items-center"
-            style={{ 
-              width: `${Math.min((current / target) * 100, 100)}%`,
-              background: 'linear-gradient(90deg, #4B7BF5, #8A2BE2)'
-            }}
-          >
-            {/* Shine effect */}
+  
+          {/* Progress bar */}
+          <div className="w-full h-3 bg-[#1E1E22] rounded-full overflow-hidden relative">
             <div 
-              className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent"
-              style={{ animation: 'progressShine 2s infinite' }}
-            />
+              className="h-full rounded-full relative overflow-hidden transition-all duration-500 flex items-center"
+              style={{ 
+                width: `${progress}%`,
+                background: 'linear-gradient(90deg, #4B7BF5, #8A2BE2)'
+              }}
+            >
+              <div 
+                className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent"
+                style={{ animation: 'progressShine 2s infinite' }}
+              />
+            </div>
+          </div>
+  
+          {/* Progress numbers */}
+          <div className="flex justify-between mt-2">
+            <span className="font-game-mono text-[#4B7BF5]">{current.toLocaleString()}</span>
+            <span className="font-game-mono text-gray-400">{currentTier.max.toLocaleString()}</span>
           </div>
         </div>
-
-        {/* Progress numbers */}
-        <div className="flex justify-between mt-2">
-          <span className="font-game-mono text-[#4B7BF5]">{current.toLocaleString()}</span>
-          <span className="font-game-mono text-gray-400">{target.toLocaleString()}</span>
-        </div>
-      </div>
+  
+        <CongratulationsModal 
+          isOpen={showCongrats}
+          onClose={() => setShowCongrats(false)}
+        />
+      </>
     );
   };
 
@@ -390,50 +400,35 @@ const TasksPage = ({ userData: initialUserData, onUserDataUpdate }) => {
             </div>
           ) : (
             <div className="space-y-3">
-              <AchievementTask
-                label="Power-Up Collector (Tier 1)"
-                current={localUserData?.pointsBreakdown?.likes || 0}
-                target={1000}
-                points={1000}
-                completed={completedTasks.has('achievement-likes')}
-                achievementType="power-collector"
-              />
-              <AchievementTask
-                label="Critical Slayer (Tier 1)"
-                current={localUserData?.pointsBreakdown?.dislikes || 0}
-                target={1000}
-                points={1000}
-                completed={completedTasks.has('achievement-dislikes')}
-                achievementType="critical-slayer"
-              />
-              {localUserData?.pointsBreakdown?.superLikes >= 100 ? (
-                <AchievementTask
-                  label="Ultra Striker (Tier 2)"
-                  current={localUserData?.pointsBreakdown?.superLikes || 0}
-                  target={500}
-                  points={5000}
-                  completed={completedTasks.has('achievement-superlikes-2')}
-                  achievementType="legendary-striker"
-                />
-              ) : (
-                <AchievementTask
-                  label="Legendary Striker (Tier 1)"
-                  current={localUserData?.pointsBreakdown?.superLikes || 0}
-                  target={100}
-                  points={1000}
-                  completed={completedTasks.has('achievement-superlikes')}
-                  achievementType="legendary-striker"
-                />
-              )}
-              <AchievementTask
-                label="Network Ninja (Tier 1)"
-                current={localUserData?.referralStats?.referredUsers?.length || 0}
-                target={20}
-                points={1000}
-                completed={completedTasks.has('achievement-referrals')}
-                achievementType="network-ninja"
-              />
-            </div>
+            <AchievementTask
+              type="powerUps"
+              current={localUserData?.pointsBreakdown?.likes || 0}
+              icon="⚡"
+              completed={completedTasks.has('achievement-likes')}
+              achievementType="power-collector"
+            />
+            <AchievementTask
+              type="criticals"
+              current={localUserData?.pointsBreakdown?.dislikes || 0}
+              icon="⛔"
+              completed={completedTasks.has('achievement-dislikes')}
+              achievementType="critical-slayer"
+            />
+            <AchievementTask
+              type="strikes"
+              current={localUserData?.pointsBreakdown?.superLikes || 0}
+              icon="⭐"
+              completed={completedTasks.has('achievement-superlikes')}
+              achievementType="legendary-striker"
+            />
+            <AchievementTask
+              type="referrals"
+              current={localUserData?.referralStats?.referredUsers?.length || 0}
+              icon={<NetworkNinjaIcon />}
+              completed={completedTasks.has('achievement-referrals')}
+              achievementType="network-ninja"
+            />
+          </div>
           )}
         </div>
       </div>

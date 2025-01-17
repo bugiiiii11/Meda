@@ -6,12 +6,20 @@ const taskTierSchema = new mongoose.Schema({
     type: Number,
     required: true
   },
-  target: {
+  min: {
     type: Number,
     required: true
   },
-  points: {
+  max: {
     type: Number,
+    required: true
+  },
+  reward: {
+    type: Number,
+    required: true
+  },
+  name: {
+    type: String,
     required: true
   }
 });
