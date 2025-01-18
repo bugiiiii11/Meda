@@ -18,4 +18,10 @@ router.get('/:telegramId/achievements',
   TaskController.checkAchievements
 );
 
+// Get achievement tiers endpoint
+router.get('/achievement-tiers',
+  bypassAuthInDevelopment,
+  TaskController.getAchievementTiers
+);
+
 module.exports = router;

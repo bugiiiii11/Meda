@@ -204,6 +204,27 @@ class TaskController {
       });
     }
   }
+
+  static async getAchievementTiers(req, res) {
+    try {
+      const achievementTasks = await Task.find({ 
+        type: 'achievement',
+        status: 'active'
+      }).select('taskId type category label tiers');
+      
+      res.json({
+        success: true,
+        data: achievementTasks
+      });
+    } catch (error) {
+      console.error('Get achievement tiers error:', error);
+      res.status(500).json({
+        success: false,
+        error: error.message
+      });
+    }
+  }
+
 }
 
 module.exports = TaskController;

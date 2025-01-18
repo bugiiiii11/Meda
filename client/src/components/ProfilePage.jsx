@@ -135,7 +135,7 @@ const ProfilePage = ({ userData: initialUserData, superlikeStatus, onUserDataUpd
       <StatCard icon="⛔" label="Criticals" value={localUserData?.pointsBreakdown?.dislikes || 0} />
       <StatCard icon="⭐" label="Strikes" value={(localUserData?.pointsBreakdown?.superLikes || 0) * 3} />
       <StatCard icon="✅" label="Quests Completed" value={localUserData?.pointsBreakdown?.tasks || 0} />
-      <StatCard icon="🎖️" label="Achievements" value="0" />
+      <StatCard icon="🎖️" label="Achievements" value={localUserData?.pointsBreakdown?.achievements || 0} />
       <StatCard icon="🏰" label="Alliance Bonus" value={localUserData?.pointsBreakdown?.referrals || 0} />
     </div>
   );

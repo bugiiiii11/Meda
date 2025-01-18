@@ -1,7 +1,6 @@
 //TasksPage.jsx
 import React, { useState, useEffect } from 'react';
 import { ENDPOINTS, getHeaders } from '../config/api';
-import { ACHIEVEMENT_TIERS } from '../config/achievementTiers';
 import CongratulationsModal from './modals/CongratulationsModal';
 
 // Custom Icon Components
@@ -118,6 +117,7 @@ const TasksPage = ({ userData: initialUserData, onUserDataUpdate }) => {
   const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState('quick');
   const [localUserData, setLocalUserData] = useState(initialUserData);
+  const [achievementTiers, setAchievementTiers] = useState(null);
 
   // Function to fetch latest user data
   const fetchUserData = async () => {
@@ -142,9 +142,37 @@ const TasksPage = ({ userData: initialUserData, onUserDataUpdate }) => {
     }
   };
 
+  const fetchAchievementTiers = async () => {
+    try {
+      const response = await fetch(`${ENDPOINTS.base}/api/tasks/achievement-tiers`, {
+        headers: getHeaders()
+      });
+      
+      if (!response.ok) throw new Error('Failed to fetch achievement tiers');
+      
+      const data = await response.json();
+      if (data.success) {
+        // Transform the data into the format the component expects
+        const tiers = data.data.reduce((acc, task) => {
+          if (task.type === 'achievement') {
+            const category = task.category === 'likes' ? 'powerUps' :
+                           task.category === 'dislikes' ? 'criticals' :
+                           task.category === 'superLikes' ? 'strikes' : 'referrals';
+            acc[category] = task.tiers;
+          }
+          return acc;
+        }, {});
+        setAchievementTiers(tiers);
+      }
+    } catch (error) {
+      console.error('Error fetching achievement tiers:', error);
+    }
+  };
+
   // Set up data fetch when component mounts
   useEffect(() => {
     fetchUserData(); // Initial fetch
+    fetchAchievementTiers();
   }, [initialUserData?.telegramId]);
 
   // Update local data when props change
@@ -267,12 +295,14 @@ const TasksPage = ({ userData: initialUserData, onUserDataUpdate }) => {
     achievementType
   }) => {
     const [showCongrats, setShowCongrats] = useState(false);
-    
+
     const getTierInfo = (value, type) => {
-      const tiers = ACHIEVEMENT_TIERS[type];
-      return tiers.find(tier => value >= tier.min && value <= tier.max) || tiers[tiers.length - 1];
+      if (!achievementTiers?.[type]) return null;
+      return achievementTiers[type]?.find(tier => 
+        value >= tier.min && value <= tier.max
+      ) || achievementTiers[type]?.[achievementTiers[type].length - 1];
     };
-  
+
     const currentTier = getTierInfo(current, type);
     const progress = Math.min((current - currentTier.min) / (currentTier.max - currentTier.min) * 100, 100);
   
@@ -397,6 +427,10 @@ const TasksPage = ({ userData: initialUserData, onUserDataUpdate }) => {
                   completed={completedTasks.has(task.id)}
                 />
               ))}
+            </div>
+          ) : activeTab === 'achievements' && !achievementTiers ? (
+            <div className="flex justify-center items-center p-8">
+              <div className="animate-spin rounded-full h-8 w-8 border-4 border-[#4B7BF5] border-t-transparent"></div>
             </div>
           ) : (
             <div className="space-y-3">
