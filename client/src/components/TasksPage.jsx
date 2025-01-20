@@ -327,16 +327,43 @@ const TasksPage = ({ userData: initialUserData, onUserDataUpdate }) => {
     achievementType
   }) => {
     const [showCongrats, setShowCongrats] = useState(false);
-
+  
     const getTierInfo = (value, type) => {
       if (!achievementTiers?.[type]) return null;
       return achievementTiers[type]?.find(tier => 
         value >= tier.min && value <= tier.max
       ) || achievementTiers[type]?.[achievementTiers[type].length - 1];
     };
-
+  
+    const getTierNumber = (value, type) => {
+      if (!achievementTiers?.[type]) return 1;
+      const tiers = achievementTiers[type];
+      for (let i = 0; i < tiers.length; i++) {
+        if (value >= tiers[i].min && value <= tiers[i].max) {
+          return i + 1;
+        }
+      }
+      return tiers.length;
+    };
+  
     const currentTier = getTierInfo(current, type);
+    const tierNumber = getTierNumber(current, type);
     const progress = Math.min((current - currentTier.min) / (currentTier.max - currentTier.min) * 100, 100);
+  
+    const getAchievementTitle = () => {
+      switch(type) {
+        case 'powerUps':
+          return `Power Collector (Tier ${tierNumber})`;
+        case 'criticals':
+          return `Critical Slayer (Tier ${tierNumber})`;
+        case 'strikes':
+          return `Legendary Striker (Tier ${tierNumber})`;
+        case 'referrals':
+          return `Network Ninja (Tier ${tierNumber})`;
+        default:
+          return currentTier.name;
+      }
+    };
   
     return (
       <>
@@ -349,7 +376,7 @@ const TasksPage = ({ userData: initialUserData, onUserDataUpdate }) => {
               </div>
               <div>
                 <span className="font-game-title text-white">
-                  {currentTier.name}
+                  {getAchievementTitle()}
                 </span>
                 <div className="text-sm text-[#FFD700] font-game-mono mt-1">
                   +{currentTier.reward} points
