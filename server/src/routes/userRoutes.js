@@ -21,4 +21,6 @@ router.get('/:telegramId/stats',
   UserController.getUserStats
 );
 
+router.get('/whitelist/:telegramId', UserController.checkWhitelist);
+
 module.exports = router;

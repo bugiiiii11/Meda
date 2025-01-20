@@ -17,6 +17,7 @@ export const ENDPOINTS = {
     interact: `${BASE_URL}/api/memes/interact`
   },
   users: {
+    whitelist: `${BASE_URL}/api/users/whitelist`,
     create: `${BASE_URL}/api/users/create`,
     get: (telegramId) => `${BASE_URL}/api/users/${telegramId}`,
     points: `${BASE_URL}/api/users/points`

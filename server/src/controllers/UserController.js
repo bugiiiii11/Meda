@@ -2,6 +2,7 @@
 const mongoose = require('mongoose');
 const User = require('../models/User');
 const ReferralController = require('../controllers/ReferralController');
+const WhitelistedUser = require('../models/WhitelistedUser');
 
 class UserController {
   static async createUser(req, res) {
@@ -191,6 +192,35 @@ class UserController {
       });
     }
   }
+
+  static async checkWhitelist(req, res) {
+    try {
+      const { telegramId } = req.params;
+      
+      if (!telegramId) {
+        return res.status(400).json({
+          success: false,
+          error: 'telegramId is required'
+        });
+      }
+  
+      const isWhitelisted = await WhitelistedUser.findOne({ telegramId });
+      
+      res.json({
+        success: true,
+        data: {
+          isWhitelisted: !!isWhitelisted
+        }
+      });
+    } catch (error) {
+      console.error('Whitelist check error:', error);
+      res.status(500).json({
+        success: false,
+        error: error.message
+      });
+    }
+  }
+
 }
 
 module.exports = UserController;
