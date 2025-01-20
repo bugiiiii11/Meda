@@ -40,7 +40,6 @@ const StatCard = ({ icon, label, value, subtitle }) => (
 );
 
 const ProfilePage = ({ userData: initialUserData, superlikeStatus, onUserDataUpdate }) => {
-  const [activeTab, setActiveTab] = useState('combat');
   const [activeTab, setActiveTab] = useState('stats');
   const [shareStatus, setShareStatus] = useState('');
   const [localUserData, setLocalUserData] = useState(initialUserData);
@@ -135,6 +134,34 @@ const ProfilePage = ({ userData: initialUserData, superlikeStatus, onUserDataUpd
         label="Achievements" 
         value="0" 
       />
+    </div>
+  );
+
+  const renderAllianceProgram = () => (
+    <div className="space-y-3">
+      <div className="relative bg-gradient-to-r from-[#2A1B3D] to-[#1A1B2E] rounded-xl p-4 border border-white/5">
+        <p className="font-game-body text-white">
+          Invite friends into the Meda Portal and earn 20 power points for recruited Meda Warriors
+        </p>
+      </div>
+      
+      <button
+        onClick={handleShare}
+        disabled={!localUserData?.telegramId}
+        className={`w-full px-4 py-3 rounded-lg font-game-title transition-all duration-300 transform hover:scale-105
+          ${shareStatus 
+            ? 'bg-gradient-to-r from-[#4B7BF5]/20 to-[#8A2BE2]/20 text-[#FFD700]' 
+            : 'bg-gradient-to-r from-[#FFD700] to-[#FFA500] text-black'
+          } disabled:opacity-50 disabled:cursor-not-allowed`}
+      >
+        {shareStatus || 'Recruit Warriors'}
+      </button>
+
+      <StatCard 
+        icon="👥" 
+        label="Recruited Warriors" 
+        value={localUserData?.referralStats?.referredUsers?.length || 0}
+      />
       <StatCard 
         icon="🏰" 
         label="Alliance Bonus" 
@@ -150,38 +177,6 @@ const ProfilePage = ({ userData: initialUserData, superlikeStatus, onUserDataUpd
         label="Strikes Available" 
         value={superlikeStatus?.remainingSuperlikes || 0}
         subtitle={superlikeStatus?.nextResetIn ? `Recharge in ${superlikeStatus.nextResetIn}h` : undefined}
-      />
-    </div>
-  );
-
-  const renderAllianceProgram = () => (
-    <div className="space-y-6">
-      <div className="relative bg-gradient-to-r from-[#2A1B3D] to-[#1A1B2E] rounded-xl p-4 border border-white/5">
-        <p className="font-game-title text-white">
-          Invite friends into the Meda Portal and earn 20 power points for recruited Meda Warriors
-        </p>
-      </div>
-      
-      <div className="py-4">
-        <div className="max-w-[280px] mx-auto">
-          <button
-            onClick={handleShare}
-            disabled={!localUserData?.telegramId}
-            className={`w-full px-4 py-3 rounded-lg transition-all duration-300 transform hover:scale-105
-              ${shareStatus 
-                ? 'bg-gradient-to-r from-[#4B7BF5]/20 to-[#8A2BE2]/20 text-[#FFD700] font-game-title' 
-                : 'bg-gradient-to-r from-[#FFD700] to-[#FFA500] text-black font-game-title shadow-lg shadow-[#FFD700]/20'
-              } disabled:opacity-50 disabled:cursor-not-allowed`}
-          >
-            {shareStatus || 'Recruit Warriors'}
-          </button>
-        </div>
-      </div>
-
-      <StatCard 
-        icon="👥" 
-        label="Recruited Warriors" 
-        value={localUserData?.referralStats?.referredUsers?.length || 0}
       />
     </div>
   );
