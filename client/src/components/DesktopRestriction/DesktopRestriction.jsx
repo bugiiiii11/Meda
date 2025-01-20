@@ -20,7 +20,7 @@ const DesktopRestriction = () => {
           
           {/* Title */}
           <h2 className="font-game-title text-2xl text-white mb-4">
-            Continue on Mobile
+            Mobile App Only!
           </h2>
           
           {/* Description */}
