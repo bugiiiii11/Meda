@@ -265,26 +265,58 @@ const TasksPage = ({ userData: initialUserData, onUserDataUpdate }) => {
   };
 
   const TaskButton = ({ task, completed }) => (
-    <AnimatedButton
-      onClick={async () => {
-        if (task.link) window.open(task.link, '_blank');
-        if (!completed) await handleTaskCompletion(task.id);
-      }}
-      className="w-full"
-    >
-      <div className="p-4 flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <span className="text-2xl">{task.icon}</span>
-          <span className="font-game-title text-white">{task.label}</span>
+    <div className="group relative">
+      {/* Background blur effect */}
+      <div className="absolute inset-0 bg-gradient-to-r from-[#4B7BF5]/5 to-[#8A2BE2]/5 rounded-xl blur-lg group-hover:blur-xl transition-all duration-300"></div>
+      
+      {/* Main button */}
+      <button
+        onClick={async () => {
+          if (task.link) window.open(task.link, '_blank');
+          if (!completed) await handleTaskCompletion(task.id);
+        }}
+        className="relative w-full bg-gradient-to-r from-[#2A1B3D] to-[#1A1B2E] rounded-xl p-4 border border-white/5 
+          transform transition-all duration-300 hover:scale-[1.02] hover:border-white/10"
+      >
+        <div className="flex items-center gap-4">
+          {/* Icon container */}
+          <div className="w-12 flex items-center justify-center">
+            <span className="text-2xl">{task.icon}</span>
+          </div>
+          
+          {/* Label container */}
+          <div className="flex-1">
+            <h3 className="font-game-title text-white">{task.label}</h3>
+          </div>
+          
+          {/* Points/Check container */}
+          <div className="flex items-center">
+            {!completed ? (
+              <span className="font-game-mono text-[#FFD700] text-lg animate-glow-pulse">
+                +{task.points}
+              </span>
+            ) : (
+              <div className="bg-[#FFD700] rounded-full p-1.5 flex items-center justify-center">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="black"
+                  strokeWidth="4"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="text-black"
+                >
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+              </div>
+            )}
+          </div>
         </div>
-        <div className="flex items-center gap-3">
-          {!completed && (
-            <span className="font-game-mono text-[#FFD700] text-lg">+{task.points}</span>
-          )}
-          {completed && <CheckIcon />}
-        </div>
-      </div>
-    </AnimatedButton>
+      </button>
+    </div>
   );
 
   const AchievementTask = ({ 

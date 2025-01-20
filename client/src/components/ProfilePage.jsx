@@ -106,7 +106,7 @@ const ProfilePage = ({ userData: initialUserData, superlikeStatus, onUserDataUpd
     <div className="space-y-3">
       <StatCard 
         icon="⚡" 
-        label="Total Power" 
+        label="Meda Energy" 
         value={localUserData?.totalPoints || 0}
       />
       <StatCard 
@@ -152,7 +152,7 @@ const ProfilePage = ({ userData: initialUserData, superlikeStatus, onUserDataUpd
     <div className="space-y-3">
       <div className="relative bg-gradient-to-r from-[#2A1B3D] to-[#1A1B2E] rounded-xl p-4 border border-white/5">
         <p className="font-game-body text-white">
-          Invite friends into the Meda Portal and earn 20 power points for recruited Meda Warriors
+          Invite friends into the Meda Portal and earn 20 Meda Energy for recruited Warriors!
         </p>
       </div>
       
