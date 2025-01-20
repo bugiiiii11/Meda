@@ -284,13 +284,13 @@ const TasksPage = ({ userData: initialUserData, onUserDataUpdate }) => {
             <span className="text-2xl">{task.icon}</span>
           </div>
           
-          {/* Label container */}
-          <div className="flex-1">
+          {/* Label container - removed justify-between */}
+          <div className="flex-1 text-left">
             <h3 className="font-game-title text-white">{task.label}</h3>
           </div>
           
           {/* Points/Check container */}
-          <div className="flex items-center">
+          <div className="flex items-center ml-4">
             {!completed ? (
               <span className="font-game-mono text-[#FFD700] text-lg animate-glow-pulse">
                 +{task.points}
@@ -484,6 +484,8 @@ const TasksPage = ({ userData: initialUserData, onUserDataUpdate }) => {
               completed={completedTasks.has('achievement-superlikes')}
               achievementType="legendary-striker"
             />
+          
+          {/*
             <AchievementTask
               type="referrals"
               current={localUserData?.referralStats?.referredUsers?.length || 0}
@@ -491,6 +493,8 @@ const TasksPage = ({ userData: initialUserData, onUserDataUpdate }) => {
               completed={completedTasks.has('achievement-referrals')}
               achievementType="network-ninja"
             />
+
+            */}
           </div>
           )}
         </div>
