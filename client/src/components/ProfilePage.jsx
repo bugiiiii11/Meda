@@ -83,7 +83,7 @@ const ProfilePage = ({ userData: initialUserData, superlikeStatus, onUserDataUpd
     
     try {
       await navigator.clipboard.writeText(welcomeMessage);
-      setShareStatus('✨ Copied!');
+      setShareStatus('✨ Link Copied!');
       
       if (window.Telegram?.WebApp) {
         try {
@@ -168,8 +168,10 @@ const ProfilePage = ({ userData: initialUserData, superlikeStatus, onUserDataUpd
         {shareStatus || 'Recruit Warriors'}
       </button>
 
-erlikes || 0}
-        subtitle={superlikeStatus?.nextResetIn ? `Recharge in ${superlikeStatus.nextResetIn}h` : undefined}
+      <StatCard 
+        icon="👥" 
+        label="Recruited Warriors" 
+        value={localUserData?.referralStats?.referredUsers?.length || 0}
       />
     </div>
   );
