@@ -440,7 +440,7 @@ const TasksPage = ({ userData: initialUserData, onUserDataUpdate }) => {
         <div className="relative w-full py-6">
           <div className="text-center">
             <h1 className="font-game-title text-3xl bg-gradient-to-r from-[#4B7BF5] to-[#8A2BE2] text-transparent bg-clip-text">
-              Challenges
+              My Challenges
             </h1>
           </div>
         </div>
