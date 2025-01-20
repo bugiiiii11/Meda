@@ -117,7 +117,7 @@ const MemeCard = ({ meme, onSwipe, isTop, isMobile, onDragStart, onDragEnd, isAn
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
               >
-                <div className="px-3 py-1 rounded-lg bg-gradient-to-r from-[#FFD700]/20 to-[#FFA500]/20 
+                <div className="px-3 py-1 rounded-lg bg-gradient-to-r from-[#FFD700] to-[#FFA500] 
                   border border-white/5 hover:border-white/20 transition-all duration-300">
                   <span className="font-game-title text-black">
                     {meme.projectDetails?.sector || 'GameFi'}

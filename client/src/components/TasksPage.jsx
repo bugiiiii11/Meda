@@ -385,26 +385,33 @@ const TasksPage = ({ userData: initialUserData, onUserDataUpdate }) => {
             </div>
           </div>
   
-          {/* Progress bar */}
-          <div className="w-full h-3 bg-[#1E1E22] rounded-full overflow-hidden relative">
-            <div 
-              className="h-full rounded-full relative overflow-hidden transition-all duration-500 flex items-center"
-              style={{ 
-                width: `${progress}%`,
-                background: 'linear-gradient(90deg, #4B7BF5, #8A2BE2)'
-              }}
-            >
-              <div 
-                className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent"
-                style={{ animation: 'progressShine 2s infinite' }}
-              />
+          {/* Progress tracking section - Updated layout */}
+          <div className="flex items-center gap-3">
+            {/* Current value */}
+            <div className="font-game-mono text-[#4B7BF5] min-w-[50px]">
+              {current.toLocaleString()}
             </div>
-          </div>
+            
+            {/* Progress bar */}
+            <div className="flex-1 h-3 bg-[#1E1E22] rounded-full overflow-hidden relative">
+              <div 
+                className="h-full rounded-full relative overflow-hidden transition-all duration-500 flex items-center"
+                style={{ 
+                  width: `${progress}%`,
+                  background: 'linear-gradient(90deg, #4B7BF5, #8A2BE2)'
+                }}
+              >
+                <div 
+                  className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent"
+                  style={{ animation: 'progressShine 2s infinite' }}
+                />
+              </div>
+            </div>
   
-          {/* Progress numbers */}
-          <div className="flex justify-between mt-2">
-            <span className="font-game-mono text-[#4B7BF5]">{current.toLocaleString()}</span>
-            <span className="font-game-mono text-gray-400">{currentTier.max.toLocaleString()}</span>
+            {/* Max value */}
+            <div className="font-game-mono text-gray-400 min-w-[50px] text-right">
+              {currentTier.max.toLocaleString()}
+            </div>
           </div>
         </div>
   
