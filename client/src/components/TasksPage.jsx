@@ -319,14 +319,11 @@ const TasksPage = ({ userData: initialUserData, onUserDataUpdate }) => {
                 <span className="font-game-title text-white">
                   {currentTier.name}
                 </span>
-                {!completed && (
-                  <div className="text-sm text-[#FFD700] font-game-mono mt-1">
-                    +{currentTier.reward} points
-                  </div>
-                )}
+                <div className="text-sm text-[#FFD700] font-game-mono mt-1">
+                  +{currentTier.reward} points
+                </div>
               </div>
             </div>
-            {completed && <CheckIcon />}
           </div>
   
           {/* Progress bar */}
