@@ -47,7 +47,7 @@ const userSchema = new mongoose.Schema({
       count: { type: Number, default: 0 },
       lastReset: { type: Date, default: Date.now }
     },
-    limit: { type: Number, default: 3 }
+    limit: { type: Number, default: 6 }
   },
   pointsBreakdown: {
     likes: { type: Number, default: 0 },

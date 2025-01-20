@@ -77,7 +77,7 @@ function App() {
   const [userData, setUserData] = useState(null);
   const [superlikeStatus, setSuperlikeStatus] = useState({
     canSuperlike: true,
-    remainingSuperlikes: 3,
+    remainingSuperlikes: 6,
     nextResetIn: 24
   });
   const [isDesktop, setIsDesktop] = useState(false);
