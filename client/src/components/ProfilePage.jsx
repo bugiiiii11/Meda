@@ -134,6 +134,17 @@ const ProfilePage = ({ userData: initialUserData, superlikeStatus, onUserDataUpd
         label="Achievements" 
         value="0" 
       />
+      <StatCard 
+        icon="🏰" 
+        label="Alliance Bonus" 
+        value={localUserData?.pointsBreakdown?.referrals || 0} 
+      />
+      <StatCard 
+        icon="⭐" 
+        label="Strikes Available" 
+        value={superlikeStatus?.remainingSuperlikes || 0}
+        subtitle={superlikeStatus?.nextResetIn ? `Recharge in ${superlikeStatus.nextResetIn}h` : undefined}
+      />
     </div>
   );
 
@@ -157,25 +168,7 @@ const ProfilePage = ({ userData: initialUserData, superlikeStatus, onUserDataUpd
         {shareStatus || 'Recruit Warriors'}
       </button>
 
-      <StatCard 
-        icon="👥" 
-        label="Recruited Warriors" 
-        value={localUserData?.referralStats?.referredUsers?.length || 0}
-      />
-      <StatCard 
-        icon="🏰" 
-        label="Alliance Bonus" 
-        value={localUserData?.pointsBreakdown?.referrals || 0} 
-      />
-      <StatCard 
-        icon="👑" 
-        label="Membership" 
-        value="Free Tier"
-      />
-      <StatCard 
-        icon="⭐" 
-        label="Strikes Available" 
-        value={superlikeStatus?.remainingSuperlikes || 0}
+erlikes || 0}
         subtitle={superlikeStatus?.nextResetIn ? `Recharge in ${superlikeStatus.nextResetIn}h` : undefined}
       />
     </div>
