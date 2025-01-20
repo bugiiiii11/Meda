@@ -1,5 +1,4 @@
-import React, { useEffect } from 'react';
-import { QrCode } from 'lucide-react';
+import React from 'react';
 
 const DesktopRestriction = () => {
   return (
@@ -12,9 +11,13 @@ const DesktopRestriction = () => {
         <div className="relative bg-gradient-to-r from-[#2A1B3D] to-[#1A1B2E] border border-[#4B7BF5]/20 
           rounded-xl p-6 text-center">
           
-          {/* Icon */}
+          {/* Mobile Phone Icon */}
           <div className="flex justify-center mb-6">
-            <QrCode size={64} className="text-[#4B7BF5]" />
+            <div className="w-16 h-16 relative">
+              <div className="absolute inset-0 border-4 border-[#4B7BF5] rounded-xl"></div>
+              <div className="absolute top-1 left-1/2 -translate-x-1/2 w-4 h-1 bg-[#4B7BF5] rounded-full"></div>
+              <div className="absolute bottom-1 left-1/2 -translate-x-1/2 w-3 h-3 border-2 border-[#4B7BF5] rounded-full"></div>
+            </div>
           </div>
           
           {/* Title */}
@@ -24,7 +27,7 @@ const DesktopRestriction = () => {
           
           {/* Description */}
           <p className="font-game-mono text-gray-400 mb-6">
-            This app is designed for mobile devices only. Please scan the QR code in Telegram or open this link on your mobile device.
+            This app is designed for mobile devices only. Please open this link on your mobile device.
           </p>
           
           {/* Additional info */}
