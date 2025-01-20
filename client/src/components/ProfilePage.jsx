@@ -6,8 +6,8 @@ const TabButton = ({ isActive, onClick, children }) => (
     onClick={onClick}
     className={`flex-1 py-3 px-4 rounded-lg font-game-title transition-all duration-300 transform hover:scale-105 
       ${isActive 
-        ? 'bg-gradient-to-r from-[#4B7BF5] to-[#8A2BE2] text-white shadow-lg shadow-[#FFD700]/20' 
-        : 'bg-gradient-to-r from-[#2A1B3D] to-[#1A1B2E] text-white hover:text-white border border-white/5'
+        ? 'bg-gradient-to-r from-[#4B7BF5] to-[#8A2BE2] text-white' 
+        : 'bg-[#1E1E2E] text-white hover:text-white'
       }`}
   >
     {children}
@@ -29,11 +29,10 @@ const StatCard = ({ icon, label, value, subtitle }) => (
             <p className="font-game-mono text-gray-400 text-sm">{subtitle}</p>
           )}
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center">
           <span className="font-game-mono text-[#FFD700] text-lg animate-glow-pulse">
             {value}
           </span>
-          <span className="font-game-mono text-gray-400 text-sm">pts</span>
         </div>
       </div>
     </div>
@@ -42,6 +41,7 @@ const StatCard = ({ icon, label, value, subtitle }) => (
 
 const ProfilePage = ({ userData: initialUserData, superlikeStatus, onUserDataUpdate }) => {
   const [activeTab, setActiveTab] = useState('combat');
+  const [activeTab, setActiveTab] = useState('stats');
   const [shareStatus, setShareStatus] = useState('');
   const [localUserData, setLocalUserData] = useState(initialUserData);
 
@@ -103,7 +103,7 @@ const ProfilePage = ({ userData: initialUserData, superlikeStatus, onUserDataUpd
     }
   };
 
-  const renderCombatStats = () => (
+  const renderMyStats = () => (
     <div className="space-y-3">
       <StatCard 
         icon="⚡" 
@@ -111,9 +111,39 @@ const ProfilePage = ({ userData: initialUserData, superlikeStatus, onUserDataUpd
         value={localUserData?.totalPoints || 0}
       />
       <StatCard 
-        icon="👥" 
-        label="Recruited Warriors" 
-        value={localUserData?.referralStats?.referredUsers?.length || 0}
+        icon="⚡" 
+        label="Power Ups" 
+        value={localUserData?.pointsBreakdown?.likes || 0} 
+      />
+      <StatCard 
+        icon="⛔" 
+        label="Criticals" 
+        value={localUserData?.pointsBreakdown?.dislikes || 0} 
+      />
+      <StatCard 
+        icon="⭐" 
+        label="Strikes" 
+        value={(localUserData?.pointsBreakdown?.superLikes || 0) * 3} 
+      />
+      <StatCard 
+        icon="✅" 
+        label="Quests Completed" 
+        value={localUserData?.pointsBreakdown?.tasks || 0} 
+      />
+      <StatCard 
+        icon="🎖️" 
+        label="Achievements" 
+        value="0" 
+      />
+      <StatCard 
+        icon="🏰" 
+        label="Alliance Bonus" 
+        value={localUserData?.pointsBreakdown?.referrals || 0} 
+      />
+      <StatCard 
+        icon="👑" 
+        label="Membership" 
+        value="Free Tier"
       />
       <StatCard 
         icon="⭐" 
@@ -121,45 +151,38 @@ const ProfilePage = ({ userData: initialUserData, superlikeStatus, onUserDataUpd
         value={superlikeStatus?.remainingSuperlikes || 0}
         subtitle={superlikeStatus?.nextResetIn ? `Recharge in ${superlikeStatus.nextResetIn}h` : undefined}
       />
-      <StatCard 
-        icon="👑" 
-        label="Membership" 
-        value="Free Tier"
-      />
-    </div>
-  );
-
-  const renderBattleRecords = () => (
-    <div className="space-y-3">
-      <StatCard icon="⚡" label="Power Ups" value={localUserData?.pointsBreakdown?.likes || 0} />
-      <StatCard icon="⛔" label="Criticals" value={localUserData?.pointsBreakdown?.dislikes || 0} />
-      <StatCard icon="⭐" label="Strikes" value={(localUserData?.pointsBreakdown?.superLikes || 0) * 3} />
-      <StatCard icon="✅" label="Quests Completed" value={localUserData?.pointsBreakdown?.tasks || 0} />
-      <StatCard icon="🎖️" label="Achievements" value={localUserData?.pointsBreakdown?.achievements || 0} />
-      <StatCard icon="🏰" label="Alliance Bonus" value={localUserData?.pointsBreakdown?.referrals || 0} />
     </div>
   );
 
   const renderAllianceProgram = () => (
     <div className="space-y-6">
-      <div className="text-center">
-        <p className="font-game-body text-gray-400 text-lg mb-6">
-          Invite friends into the Meda Portal and earn 20 power points for recruited Meda Warriors!
+      <div className="relative bg-gradient-to-r from-[#2A1B3D] to-[#1A1B2E] rounded-xl p-4 border border-white/5">
+        <p className="font-game-title text-white">
+          Invite friends into the Meda Portal and earn 20 power points for recruited Meda Warriors
         </p>
       </div>
-      <div className="relative overflow-hidden rounded-lg bg-gradient-to-r from-[#1E1E22] to-[#2A2A2E] p-4">
-        <button
-          onClick={handleShare}
-          disabled={!localUserData?.telegramId}
-          className={`w-full px-4 py-3 rounded-lg font-game-title transition-all duration-300 transform hover:scale-105
-            ${shareStatus 
-              ? 'bg-gradient-to-r from-[#4B7BF5]/20 to-[#8A2BE2]/20 text-[#FFD700]' 
-              : 'bg-gradient-to-r from-[#FFD700] to-[#FFA500] text-black shadow-lg shadow-[#FFD700]/20'
-            } disabled:opacity-50 disabled:cursor-not-allowed`}
-        >
-          {shareStatus || 'Recruit Warriors'}
-        </button>
+      
+      <div className="py-4">
+        <div className="max-w-[280px] mx-auto">
+          <button
+            onClick={handleShare}
+            disabled={!localUserData?.telegramId}
+            className={`w-full px-4 py-3 rounded-lg transition-all duration-300 transform hover:scale-105
+              ${shareStatus 
+                ? 'bg-gradient-to-r from-[#4B7BF5]/20 to-[#8A2BE2]/20 text-[#FFD700] font-game-title' 
+                : 'bg-gradient-to-r from-[#FFD700] to-[#FFA500] text-black font-game-title shadow-lg shadow-[#FFD700]/20'
+              } disabled:opacity-50 disabled:cursor-not-allowed`}
+          >
+            {shareStatus || 'Recruit Warriors'}
+          </button>
+        </div>
       </div>
+
+      <StatCard 
+        icon="👥" 
+        label="Recruited Warriors" 
+        value={localUserData?.referralStats?.referredUsers?.length || 0}
+      />
     </div>
   );
 
@@ -177,30 +200,20 @@ const ProfilePage = ({ userData: initialUserData, superlikeStatus, onUserDataUpd
       <div className="fixed top-0 left-0 right-0 z-50">
         <div className="absolute inset-0 bg-gradient-to-b from-[#0A0B0F] via-[#0A0B0F]/95 to-transparent backdrop-blur-xl"></div>
         <div className="relative w-full py-6">
-          <div className="text-center mb-2">
-            <h1 className="font-game-title text-3xl bg-gradient-to-r from-[#4B7BF5] to-[#8A2BE2] text-transparent bg-clip-text">
-              Battle Profile
-            </h1>
-          </div>
-          
           <div className="text-center mb-4">
-            <p className="font-game-mono text-gray-400">@{localUserData?.username || 'Anonymous'}</p>
+            <h1 className="font-game-title text-3xl bg-gradient-to-r from-[#4B7BF5] to-[#8A2BE2] text-transparent bg-clip-text">
+              @{localUserData?.username || 'Anonymous'}
+            </h1>
           </div>
         </div>
 
         <div className="px-4 pb-4">
           <div className="flex gap-2 max-w-md mx-auto">
             <TabButton 
-              isActive={activeTab === 'combat'} 
-              onClick={() => setActiveTab('combat')}
+              isActive={activeTab === 'stats'} 
+              onClick={() => setActiveTab('stats')}
             >
-              Stats
-            </TabButton>
-            <TabButton 
-              isActive={activeTab === 'battle'} 
-              onClick={() => setActiveTab('battle')}
-            >
-              Records
+              My Stats
             </TabButton>
             <TabButton 
               isActive={activeTab === 'alliance'} 
@@ -214,8 +227,7 @@ const ProfilePage = ({ userData: initialUserData, superlikeStatus, onUserDataUpd
 
       <div className="flex-1 overflow-auto pt-[180px] pb-20 px-4">
         <div className="max-w-md mx-auto">
-          {activeTab === 'combat' && renderCombatStats()}
-          {activeTab === 'battle' && renderBattleRecords()}
+          {activeTab === 'stats' && renderMyStats()}
           {activeTab === 'alliance' && renderAllianceProgram()}
         </div>
       </div>
