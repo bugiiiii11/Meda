@@ -292,7 +292,7 @@ const TasksPage = ({ userData: initialUserData, onUserDataUpdate }) => {
           {/* Points/Check container */}
           <div className="flex items-center ml-4">
             {!completed ? (
-              <span className="font-game-mono text-[#FFD700] text-lg animate-glow-pulse">
+              <span className="font-game-title text-[#FFD700] text-lg animate-glow-pulse">
                 +{task.points}
               </span>
             ) : (
@@ -376,7 +376,7 @@ const TasksPage = ({ userData: initialUserData, onUserDataUpdate }) => {
                 {getAchievementTitle()}
               </span>
             </div>
-            <span className="font-game-mono text-[#FFD700]">
+            <span className="font-game-title text-[#FFD700]">
               +{currentTier.reward}
             </span>
           </div>
@@ -468,7 +468,7 @@ const TasksPage = ({ userData: initialUserData, onUserDataUpdate }) => {
       <div className="flex-1 overflow-auto pt-[180px] pb-20 px-4">
         <div className="max-w-md mx-auto">
           {error && (
-            <div className="mb-4 p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 font-game-mono">
+            <div className="mb-4 p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 font-game-title">
               {error}
             </div>
           )}
