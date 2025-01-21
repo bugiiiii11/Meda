@@ -5,7 +5,6 @@ import './App.css';
 import TopBar from './components/TopBar/TopBar';
 import MemeStack from './components/MemeStack/MemeStack';
 import Navigation from './components/Navigation/Navigation';
-import DesktopRestriction from './components/DesktopRestriction/DesktopRestriction';
 import DetailsPage from './components/DetailsPage/DetailsPage';
 import TasksPage from './components/TasksPage';
 import ProfilePage from './components/ProfilePage';
@@ -53,14 +52,14 @@ const LoadingScreen = () => (
 
     {/* Loading bar section */}
     <div className="relative w-full px-6 mb-20">
-      <div className="w-full h-3 bg-[#1A1B2E] rounded-full overflow-hidden border border-white/5">
-        <div className="relative h-full bg-gradient-to-r from-[#4B7BF5] to-[#8A2BE2] animate-load-progress">
-          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-progress-shine" />
+      <div className="max-w-3xl mx-auto"> {/* Added container for wider bar */}
+        <div className="w-full h-4 bg-[#1A1B2E] rounded-full overflow-hidden border border-white/5">
+          <div className="loading-progress-bar"></div>
         </div>
+        <p className="font-game-mono text-gray-400 mt-4 text-center">
+          Initializing Battle System...
+        </p>
       </div>
-      <p className="font-game-mono text-gray-400 mt-4 text-center">
-        Initializing Battle System...
-      </p>
     </div>
   </div>
 );
@@ -77,11 +76,9 @@ function App() {
   const [userData, setUserData] = useState(null);
   const [superlikeStatus, setSuperlikeStatus] = useState({
     canSuperlike: true,
-    remainingSuperlikes: 6,
+    remainingSuperlikes: 3,
     nextResetIn: 24
   });
-  const [isDesktop, setIsDesktop] = useState(false);
-  const [isWhitelisted, setIsWhitelisted] = useState(false);
 
   const handleUserDataUpdate = async (telegramId) => {
     if (!telegramId) return;
@@ -192,25 +189,6 @@ function App() {
     }
   };
 
-  const checkIfDesktop = () => {
-    const userAgent = navigator.userAgent.toLowerCase();
-    const isMobile = /iphone|ipad|ipod|android|blackberry|windows phone/g.test(userAgent);
-    return !isMobile;
-  };
-  
-  const checkWhitelist = async (telegramId) => {
-    try {
-      const response = await fetch(`${ENDPOINTS.users.whitelist}/${telegramId}`, {
-        headers: getHeaders()
-      });
-      const data = await response.json();
-      return data.success && data.data.isWhitelisted;
-    } catch (error) {
-      console.error('Error checking whitelist:', error);
-      return false;
-    }
-  };
-
   useEffect(() => {
     async function initializeApp() {
       console.log('App Environment:', {
@@ -219,11 +197,7 @@ function App() {
         apiUrl: import.meta.env.VITE_API_URL,
         botUsername: import.meta.env.VITE_BOT_USERNAME
       });
-
-      // Add desktop check at the start
-      const desktop = checkIfDesktop();
-      setIsDesktop(desktop);
-
+    
       try {
         setMemes(dummyMemes.map(meme => ({
           ...meme,
@@ -253,20 +227,10 @@ function App() {
                 lastName: 'User'
               };
               setUserData(mockUser);
-              // Even in development, check whitelist if on desktop
-              if (desktop) {
-                setIsWhitelisted(true); // For development, consider all users whitelisted
-              }
             } else {
               throw new Error('No Telegram user data in production');
             }
           } else {
-            // Real Telegram user (production or development)
-            if (desktop) {
-              const whitelisted = await checkWhitelist(tgUser.id.toString());
-              setIsWhitelisted(whitelisted);
-            }
-            
             // Get referral ID from URL if it exists
             const urlParams = new URLSearchParams(window.location.search);
             const referralId = urlParams.get('ref');
@@ -383,10 +347,6 @@ function App() {
       fetchSuperlikeStatus(userData.telegramId);
     }
   }, [userData?.telegramId]);
-
-  if (isDesktop && !isWhitelisted) {
-    return <DesktopRestriction />;
-  }
 
   if (initError) {
     return (
