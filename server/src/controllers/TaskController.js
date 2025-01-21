@@ -84,32 +84,63 @@ class TaskController {
           const currentValue = task.category === 'referrals' 
             ? user.referralStats.referredUsers.length
             : user.pointsBreakdown[task.category];
-
+        
+          console.log('Achievement Debug - Initial Values:', {
+            taskId,
+            category: task.category,
+            currentValue,
+            userPoints: user.pointsBreakdown,
+            totalPoints: user.totalPoints
+          });
+        
           // Find the next uncompleted tier
           const completedTiers = user.completedTasks
             .filter(t => t.taskId === taskId)
             .map(t => t.achievementTier);
-
+        
+          console.log('Achievement Debug - Tiers:', {
+            completedTiers,
+            availableTiers: task.tiers.map(t => ({
+              level: t.level,
+              min: t.min,
+              max: t.max,
+              wouldTrigger: currentValue === t.max
+            }))
+          });
+        
           const nextTier = task.tiers.find(tier => 
             !completedTiers.includes(tier.level) && 
-            currentValue == tier.max
+            currentValue === tier.max  // Our updated condition
           );
-
+        
+          console.log('Achievement Debug - Selected Tier:', {
+            nextTier,
+            currentValue,
+            wouldAward: nextTier ? `Would award ${nextTier.reward} points` : 'No tier selected'
+          });
+        
           if (!nextTier) {
             throw new Error('No achievement tier reached');
           }
-
+        
           // Award points using the achievement method
           const result = await user.completeAchievement(
             task.category,
             nextTier.level,
             nextTier.reward
           );
-
+        
+          console.log('Achievement Debug - After Completion:', {
+            success: result.success,
+            reward: nextTier.reward,
+            newTotalPoints: user.totalPoints,
+            newPointsBreakdown: user.pointsBreakdown
+          });
+        
           if (!result.success) {
             throw new Error('Failed to complete achievement');
           }
-
+        
           // Create points transaction
           await new PointsTransaction({
             user: telegramId,
@@ -122,7 +153,7 @@ class TaskController {
             },
             description: `Completed ${task.label} - Tier ${nextTier.level}`
           }).save({ session });
-
+        
           break;
         }
       }
