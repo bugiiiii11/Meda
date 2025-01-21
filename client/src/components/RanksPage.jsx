@@ -58,7 +58,7 @@ const RanksPage = () => {
         return (
           <div className="w-8 h-8 rounded-full bg-gradient-to-r from-[#2A1B3D] to-[#1A1B2E] 
             flex items-center justify-center border border-white/10">
-            <span className="font-game-mono text-gray-400 text-sm">#{index + 1}</span>
+            <span className="font-game-title text-[#FFD700] text-sm">#{index + 1}</span>
           </div>
         );
     }
@@ -97,10 +97,9 @@ const RanksPage = () => {
           </div>
           
           <div className="flex items-center gap-2">
-            <span className="font-game-mono text-[#FFD700] text-lg animate-glow-pulse">
+            <span className="font-game-title text-[#FFD700] text-lg animate-glow-pulse">
               {formatNumber(points)}
             </span>
-            <span className="font-game-mono text-gray-400 text-sm">pts</span>
           </div>
         </div>
       </div>

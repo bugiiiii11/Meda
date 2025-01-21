@@ -89,13 +89,13 @@ const MemeCard = ({ meme, onSwipe, isTop, isMobile, onDragStart, onDragEnd, isAn
               <div className="flex items-center gap-4">
                 <div className="flex items-center gap-2">
                   <span className="text-lg">⚡</span>
-                  <span className="font-game-mono text-white">
+                  <span className="font-game-title text-white">
                     {engagementData.likes.toLocaleString()}
                   </span>
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="text-lg animate-glow-pulse">⭐</span>
-                  <span className="font-game-mono text-white">
+                  <span className="font-game-title text-white">
                     {engagementData.superLikes.toLocaleString()}
                   </span>
                 </div>
