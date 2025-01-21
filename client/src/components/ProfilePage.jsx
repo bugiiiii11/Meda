@@ -105,7 +105,7 @@ const ProfilePage = ({ userData: initialUserData, superlikeStatus, onUserDataUpd
   const renderMyStats = () => (
     <div className="space-y-3">
       <StatCard 
-        icon="🗱" 
+        icon="🔮" 
         label="Meda Energy" 
         value={localUserData?.totalPoints || 0}
       />
