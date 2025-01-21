@@ -1,3 +1,5 @@
+const path = require('path');
+
 const handleWelcomeMessage = async (bot, chatId, firstName, referralId = '') => {
   try {
     // Construct WebApp URL with referral parameter if it exists
@@ -20,12 +22,17 @@ const handleWelcomeMessage = async (bot, chatId, firstName, referralId = '') => 
       console.error('Error sending photo:', photoError);
       // Continue with the welcome message even if photo fails
     }
+    
+    await bot.sendPhoto(
+      chatId,
+      path.join(__dirname, '../../client/public/intro_meda.png')
+    );
 
     // Send welcome message with play button
     await bot.sendMessage(
       chatId,
-      `Welcome to Meda Portal, ${firstName}! 🎮\n\n` +
-      `Discover your favorite web3 gaming projects by swiping right! 🚀\n\n` +
+      `Welcome to Meda Portal, ${firstName}!\n\n` +
+      `Discover your favorite Telegram gaming projects by swiping right! 🚀\n\n` +
       `🔥 Coming Soon:\n` +
       `• More Epic Games\n` +
       `• Web3 Gaming Launchpad\n` +
@@ -36,7 +43,7 @@ const handleWelcomeMessage = async (bot, chatId, firstName, referralId = '') => 
           inline_keyboard: [
             [
               {
-                text: '🚀 Start App 🚀',
+                text: '🚀 Start App',
                 web_app: { url: webAppUrl }
               }
             ]
