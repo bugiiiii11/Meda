@@ -12,13 +12,19 @@ const handleWelcomeMessage = async (bot, chatId, firstName, referralId = '') => 
     // Send welcome message with play button
     await bot.sendMessage(
       chatId,
-      `Welcome to Meda Portal, ${firstName}!\n\nDiscover your favorite Telegram gaming projects by swiping with your finger! 🚀\n\n🔥 Coming Soon:\n- More Epic Games\n- Web3 Gaming Launchpad\n- Meda Token Airdrop\n\nReady to revolutionize your gaming experience? Let's begin! 🎮`,
+      `Welcome to Meda Portal, ${firstName}! 🎮\n\n` +
+  `Discover your favorite web3 gaming projects by swiping right! 🚀\n\n` +
+  `🔥 Coming Soon:\n` +
+  `• More Epic Games\n` +
+  `• Web3 Gaming Launchpad\n` +
+  `• Meda Token Airdrop\n\n` +
+  `Ready to level up your gaming journey? Let's go! ⚔️`,
       {
         reply_markup: {
           inline_keyboard: [
             [
               {
-                text: '▶️ Play',
+                text: '🚀 Start App',
                 web_app: { url: webAppUrl }
               }
             ]
