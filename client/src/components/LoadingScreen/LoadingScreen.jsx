@@ -1,4 +1,3 @@
-// src/components/LoadingScreen/LoadingScreen.jsx
 import React from 'react';
 
 const LoadingScreen = ({ error }) => {
@@ -58,7 +57,7 @@ const LoadingScreen = ({ error }) => {
         ))}
       </div>
 
-      {/* Main content - removed animate-pulse class */}
+      {/* Main content */}
       <div className="relative flex-1 flex items-center justify-center overflow-hidden">
         <img
           src="/loading.png"
@@ -79,18 +78,45 @@ const LoadingScreen = ({ error }) => {
         />
       </div>
 
-      {/* Loading bar section */}
+      {/* Loading bar section - updated with wider bar and new gradient */}
       <div className="relative w-full px-6 mb-20">
-        <div className="w-full h-3 bg-[#1A1B2E] rounded-full overflow-hidden border border-white/5">
-          {/* Loading bar with shine effect */}
-          <div className="relative h-full bg-gradient-to-r from-[#4B7BF5] to-[#8A2BE2] animate-load-progress">
-            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-progress-shine"></div>
+        <div className="max-w-3xl mx-auto"> {/* Added container for wider bar */}
+          <div className="w-full h-4 bg-[#1A1B2E] rounded-full overflow-hidden border border-white/5">
+            <div 
+              className="h-full bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600"
+              style={{
+                animation: 'loadProgress 5s ease-in-out'
+              }}
+            />
           </div>
+          <p className="font-game-mono text-gray-400 mt-4 text-center">
+            Initializing Battle System...
+          </p>
         </div>
-        <p className="font-game-mono text-gray-400 mt-4 text-center">
-          Initializing Battle System...
-        </p>
       </div>
+
+      <style jsx>{`
+        @keyframes loadProgress {
+          0% {
+            width: 0%;
+          }
+          10% {
+            width: 20%;
+          }
+          30% {
+            width: 40%;
+          }
+          50% {
+            width: 60%;
+          }
+          80% {
+            width: 80%;
+          }
+          100% {
+            width: 100%;
+          }
+        }
+      `}</style>
     </div>
   );
 };
