@@ -368,50 +368,43 @@ const TasksPage = ({ userData: initialUserData, onUserDataUpdate }) => {
     return (
       <>
         <div className="w-full p-4 rounded-xl bg-gradient-to-r from-[#2A1B3D] to-[#1A1B2E] border border-white/5 relative overflow-hidden">
-          {/* Achievement header */}
-          <div className="flex justify-between items-center mb-4">
-            <div className="flex items-center gap-3">
-              <div className="w-12 h-12 flex items-center justify-center text-4xl">
-                {icon}
-              </div>
-              <div>
-                <span className="font-game-title text-white">
-                  {getAchievementTitle()}
-                </span>
-                <div className="text-sm text-[#FFD700] font-game-mono mt-1">
-                  +{currentTier.reward} points
-                </div>
-              </div>
+          {/* First line: Title and Reward */}
+          <div className="flex justify-between items-center mb-3">
+            <div className="flex items-center gap-2">
+              <span className="text-xl">{icon}</span>
+              <span className="font-game-title text-white">
+                {getAchievementTitle()}
+              </span>
+            </div>
+            <span className="font-game-mono text-[#FFD700]">
+              +{currentTier.reward}
+            </span>
+          </div>
+  
+          {/* Second line: Progress bar */}
+          <div className="w-full h-3 bg-[#1E1E22] rounded-full overflow-hidden relative mb-2">
+            <div 
+              className="h-full rounded-full relative overflow-hidden transition-all duration-500 flex items-center"
+              style={{ 
+                width: `${progress}%`,
+                background: 'linear-gradient(90deg, #4B7BF5, #8A2BE2)'
+              }}
+            >
+              <div 
+                className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent"
+                style={{ animation: 'progressShine 2s infinite' }}
+              />
             </div>
           </div>
   
-          {/* Progress tracking section - Updated layout */}
-          <div className="flex items-center gap-3">
-            {/* Current value */}
-            <div className="font-game-mono text-[#4B7BF5] min-w-[50px]">
+          {/* Third line: Progress numbers */}
+          <div className="flex justify-between">
+            <span className="font-game-mono text-[#4B7BF5]">
               {current.toLocaleString()}
-            </div>
-            
-            {/* Progress bar */}
-            <div className="flex-1 h-3 bg-[#1E1E22] rounded-full overflow-hidden relative">
-              <div 
-                className="h-full rounded-full relative overflow-hidden transition-all duration-500 flex items-center"
-                style={{ 
-                  width: `${progress}%`,
-                  background: 'linear-gradient(90deg, #4B7BF5, #8A2BE2)'
-                }}
-              >
-                <div 
-                  className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent"
-                  style={{ animation: 'progressShine 2s infinite' }}
-                />
-              </div>
-            </div>
-  
-            {/* Max value */}
-            <div className="font-game-mono text-gray-400 min-w-[50px] text-right">
+            </span>
+            <span className="font-game-mono text-gray-400">
               {currentTier.max.toLocaleString()}
-            </div>
+            </span>
           </div>
         </div>
   
