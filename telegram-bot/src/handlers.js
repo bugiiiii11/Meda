@@ -9,16 +9,19 @@ const handleWelcomeMessage = async (bot, chatId, firstName, referralId = '') => 
       }
     }
 
-    // Send welcome message with play button
+    // First send the image
+    await bot.sendPhoto(chatId, 'intro_meda.png');
+
+    // Then send welcome message with play button
     await bot.sendMessage(
       chatId,
-      `Welcome to Meda Portal, ${firstName}! 🎮\n\n` +
-  `Discover your favorite web3 gaming projects by swiping right! 🚀\n\n` +
-  `🔥 Coming Soon:\n` +
-  `• More Epic Games\n` +
-  `• Web3 Gaming Launchpad\n` +
-  `• Meda Token Airdrop\n\n` +
-  `Ready to level up your gaming journey? Let's go! ⚔️`,
+      `Welcome to Meda Portal, ${firstName}!\n\n` +
+      `Discover your favorite Telegram gaming projects by swiping right! 🚀\n\n` +
+      `🔥 Coming Soon:\n` +
+      `• More Epic Games\n` +
+      `• Web3 Gaming Launchpad\n` +
+      `• Meda Token Airdrop\n\n` +
+      `Ready to level up your gaming journey? Let's go! ⚔️`,
       {
         reply_markup: {
           inline_keyboard: [
