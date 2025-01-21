@@ -128,7 +128,7 @@ const RanksPage = () => {
               isActive={activeTab === 'users'} 
               onClick={() => setActiveTab('users')}
             >
-              Meda Heroes
+              Warriors
             </TabButton>
             <TabButton 
               isActive={activeTab === 'projects'} 
