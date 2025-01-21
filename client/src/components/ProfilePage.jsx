@@ -1,3 +1,4 @@
+//ProfilePage.jsx
 import React, { useState, useEffect } from 'react';
 import { ENDPOINTS, getHeaders } from '../config/api';
 
@@ -132,7 +133,7 @@ const ProfilePage = ({ userData: initialUserData, superlikeStatus, onUserDataUpd
       <StatCard 
         icon="🎖️" 
         label="Achievements" 
-        value="0" 
+        value={localUserData?.pointsBreakdown?.achievements || 0}
       />
       <StatCard 
         icon="🏰" 
