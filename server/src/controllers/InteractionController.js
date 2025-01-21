@@ -124,8 +124,7 @@ class InteractionController {
 
           const nextTier = achievementTask.tiers.find(tier => 
             !completedTiers.includes(tier.level) && 
-            currentValue >= tier.min && 
-            currentValue <= tier.max
+            currentValue == tier.max
           );
 
           if (nextTier) {
