@@ -399,10 +399,10 @@ const TasksPage = ({ userData: initialUserData, onUserDataUpdate }) => {
   
           {/* Third line: Progress numbers */}
           <div className="flex justify-between">
-            <span className="font-game-mono text-[#4B7BF5]">
+            <span className="font-game-title text-white text-base">
               {current.toLocaleString()}
             </span>
-            <span className="font-game-mono text-gray-400">
+            <span className="font-game-title text-[#8A2BE2] text-base">
               {currentTier.max.toLocaleString()}
             </span>
           </div>
