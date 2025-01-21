@@ -1,18 +1,26 @@
-// src/commands.js
 const setupCommands = async (bot) => {
-    const commands = [
-      { command: 'start', description: 'Start the bot' },
-      { command: 'menu', description: 'Show main menu' },
-      { command: 'profile', description: 'View your profile' },
-      { command: 'tasks', description: 'View available tasks' }
-    ];
-  
-    try {
-      await bot.setMyCommands(commands);
-      console.log('Bot commands set successfully');
-    } catch (error) {
-      console.error('Error setting bot commands:', error);
-    }
-  };
-  
-  module.exports = { setupCommands };
+  const commands = [
+    { command: 'start', description: 'Start the bot' }
+  ];
+
+  try {
+    await bot.setMyCommands(commands);
+
+    // Set bot menu button to show play button
+    await bot.setChatMenuButton({
+      menuButton: {
+        type: 'web_app',
+        text: 'Play',
+        web_app: {
+          url: process.env.WEBAPP_URL
+        }
+      }
+    });
+
+    console.log('Bot commands and menu button configured successfully');
+  } catch (error) {
+    console.error('Error setting bot commands:', error);
+  }
+};
+
+module.exports = { setupCommands };
