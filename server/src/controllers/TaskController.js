@@ -92,8 +92,7 @@ class TaskController {
 
           const nextTier = task.tiers.find(tier => 
             !completedTiers.includes(tier.level) && 
-            currentValue >= tier.min && 
-            currentValue <= tier.max
+            currentValue == tier.max
           );
 
           if (!nextTier) {
