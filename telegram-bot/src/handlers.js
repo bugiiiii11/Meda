@@ -1,5 +1,3 @@
-const path = require('path');
-
 const handleWelcomeMessage = async (bot, chatId, firstName, referralId = '') => {
   try {
     // Construct WebApp URL with referral parameter if it exists
@@ -11,33 +9,16 @@ const handleWelcomeMessage = async (bot, chatId, firstName, referralId = '') => 
       }
     }
 
-    // Add error handling and logging for the image sending
-    try {
-      await bot.sendPhoto(
-        chatId, 
-        `${process.env.PUBLIC_URL}/intro_meda.png`  // Assuming you have PUBLIC_URL in your env
-        // or just use the absolute path to your public folder
-      );
-    } catch (photoError) {
-      console.error('Error sending photo:', photoError);
-      // Continue with the welcome message even if photo fails
-    }
-    
-    await bot.sendPhoto(
-      chatId,
-      path.join(__dirname, '../../client/public/intro_meda.png')
-    );
-
     // Send welcome message with play button
     await bot.sendMessage(
       chatId,
       `Welcome to Meda Portal, ${firstName}!\n\n` +
-      `Discover your favorite Telegram gaming projects by swiping right! 🚀\n\n` +
-      `🔥 Coming Soon:\n` +
-      `• More Epic Games\n` +
-      `• Web3 Gaming Launchpad\n` +
-      `• Meda Token Airdrop\n\n` +
-      `Ready to level up your gaming journey? Let's go! ⚔️`,
+  `Discover your favorite Telegram gaming projects by swiping right! 🚀\n\n` +
+  `🔥 Coming Soon:\n` +
+  `• More Epic Games\n` +
+  `• Web3 Gaming Launchpad\n` +
+  `• Meda Token Airdrop\n\n` +
+  `Ready to level up your gaming journey? Let's go! ⚔️`,
       {
         reply_markup: {
           inline_keyboard: [
