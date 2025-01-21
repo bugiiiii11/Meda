@@ -84,7 +84,7 @@ class TaskController {
           const currentValue = task.category === 'referrals' 
             ? user.referralStats.referredUsers.length
             : user.pointsBreakdown[task.category];
-        
+
           // Find the next uncompleted tier
           const completedTiers = user.completedTasks
             .filter(t => t.taskId === taskId)
@@ -92,24 +92,24 @@ class TaskController {
 
           const nextTier = task.tiers.find(tier => 
             !completedTiers.includes(tier.level) && 
-            currentValue === tier.max  // Our updated condition
+            currentValue === tier.max
           );
-        
+
           if (!nextTier) {
             throw new Error('No achievement tier reached');
           }
-        
+
           // Award points using the achievement method
           const result = await user.completeAchievement(
             task.category,
             nextTier.level,
             nextTier.reward
           );
-        
+
           if (!result.success) {
             throw new Error('Failed to complete achievement');
           }
-        
+
           // Create points transaction
           await new PointsTransaction({
             user: telegramId,
@@ -122,7 +122,7 @@ class TaskController {
             },
             description: `Completed ${task.label} - Tier ${nextTier.level}`
           }).save({ session });
-        
+
           break;
         }
       }
