@@ -24,7 +24,7 @@ const dummyMemes = [
       description: "Unleash your inner CEO!",
       sector: "Play", 
       sectorUrl: "https://t.me/hamster_koMbat_bot/start?startapp=kentId1812207291",
-      projectType: "Telegram App",
+      projectType: "Game Hub",
       buttons: [
         {
           label: "Open Website",
@@ -66,7 +66,7 @@ const dummyMemes = [
       description: "Unleash your inner CEO!",
       sector: "Play", 
       sectorUrl: "https://t.me/hamster_koMbat_bot/start?startapp=kentId1812207291",
-      projectType: "Telegram App",
+      projectType: "Game Hub",
       buttons: [
         {
           label: "Open Website",
@@ -108,7 +108,7 @@ const dummyMemes = [
       description: "Play for airdrop🪂 Heal the world!",
       sector: "Play", 
       sectorUrl: "https://t.me/catizenbot/gameapp?startapp=rp_47060003",
-      projectType: "Telegram Game",
+      projectType: "Tapping Game",
       buttons: [
         {
           label: "Open Website",
@@ -146,7 +146,7 @@ const dummyMemes = [
       description: "Play for airdrop🪂 Heal the world!",
       sector: "Play", 
       sectorUrl: "https://t.me/catizenbot/gameapp?startapp=rp_47060003",
-      projectType: "Telegram Game",
+      projectType: "Tapping Game",
       buttons: [
         {
           label: "Open Website",
@@ -181,10 +181,10 @@ const dummyMemes = [
       priceChange24h: -1,
       contract: "0x7404ac09adf614603d9c16a7ce85a1101f3514ba",
       buyLink: "https://app.uniswap.org/explore/tokens/base/0x7404ac09adf614603d9c16a7ce85a1101f3514ba",
-      description: "Gaming protocol that turbocharges games",
+      description: "Gaming protocol that turbocharges games!",
       sector: "Play", 
       sectorUrl: "https://t.me/play_gamestore_bot/",
-      projectType: "Telegram APP",
+      projectType: "Game Hub",
       buttons: [
         {
           label: "Open Website",
@@ -223,10 +223,10 @@ const dummyMemes = [
       priceChange24h: -1,
       contract: "0x7404ac09adf614603d9c16a7ce85a1101f3514ba",
       buyLink: "https://app.uniswap.org/explore/tokens/base/0x7404ac09adf614603d9c16a7ce85a1101f3514ba",
-      description: "Gaming protocol that turbocharges games",
+      description: "Gaming protocol that turbocharges games!",
       sector: "Play", 
       sectorUrl: "https://t.me/play_gamestore_bot/",
-      projectType: "Telegram APP",
+      projectType: "Game Hub",
       buttons: [
         {
           label: "Open Website",
@@ -268,7 +268,7 @@ const dummyMemes = [
       description: "Tap on blocks to discover rewards",
       sector: "Play", 
       sectorUrl: "https://t.me/tonsofdungeons_bot/TOD?startapp=cXd5q9uDl0-wSmOjSC-ipA",
-      projectType: "Telegram Game",
+      projectType: "Tapping Game",
       buttons: [
         {
           label: "Website",
@@ -306,7 +306,7 @@ const dummyMemes = [
       description: "Tap on blocks to discover rewards",
       sector: "Play", 
       sectorUrl: "https://t.me/tonsofdungeons_bot/TOD?startapp=cXd5q9uDl0-wSmOjSC-ipA",
-      projectType: "Telegram Game",
+      projectType: "Tapping Game",
       buttons: [
         {
           label: "Website",
@@ -344,7 +344,7 @@ const dummyMemes = [
       description: "Grow your dog and fight with other players!",
       sector: "Play", 
       sectorUrl: "https://t.me/Dogiators_bot/game?startapp=htiHhZ7ACF2YDNaw",
-      projectType: "Telegram Game",
+      projectType: "PvP Game",
       buttons: [
         {
           label: "Join Telegram",
@@ -370,7 +370,7 @@ const dummyMemes = [
       description: "Grow your dog and fight with other players!",
       sector: "Play", 
       sectorUrl: "https://t.me/Dogiators_bot/game?startapp=htiHhZ7ACF2YDNaw",
-      projectType: "Telegram Game",
+      projectType: "PvP Game",
       buttons: [
         {
           label: "Join Telegram",
@@ -396,7 +396,7 @@ const dummyMemes = [
       description: "Web3 snake game!",
     sector: "Play", 
     sectorUrl: "https://t.me/DragonSlither_bot/Dragon?startapp=460453938",
-    projectType: "Telegram Game",
+    projectType: "Snake Game",
     buttons: [
       {
         label: "Website",
@@ -430,7 +430,7 @@ const dummyMemes = [
       description: "Web3 snake game!",
       sector: "Play", 
       sectorUrl: "https://t.me/DragonSlither_bot/Dragon?startapp=460453938",
-      projectType: "Telegram Game",
+      projectType: "Snake Game",
       buttons: [
         {
           label: "Website",
@@ -454,17 +454,17 @@ const dummyMemes = [
     weight: 1,
     logo: "/assets/logos/logo_rocky.png",
     projectDetails: {
-      hasToken: false, 
-      network: null,
-      price: null,
-      marketCap: null,
-      priceChange24h: null,
-      contract: null,
-      buyLink: null,
-      description: "Telegram tapping game!",
+      hasToken: true,
+      network: "TON",
+      price: "0.003",
+      marketCap: "0.24B",
+      priceChange24h: -1,
+      contract: "EQCD7lrrxpOcq5A5R6nTLeF1kuIbl1BKCe5OnanGe3cB4FVB",
+      buyLink: "https://app.ston.fi/swap?ft=EQCD7lrrxpOcq5A5R6nTLeF1kuIbl1BKCe5OnanGe3cB4FVB&tt=EQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAM9c&chartVisible=false",
+      description: "Bet on BTC going up or down!",
       sector: "Play", 
       sectorUrl: "https://t.me/rocky_rabbit_bot/play?startapp=frId460453938",
-      projectType: "Telegram Game",
+      projectType: "Gamble",
       buttons: [
         {
           label: "Website",
@@ -488,21 +488,21 @@ const dummyMemes = [
   {
     id: 14,
     projectName: "Rocky Rabit",
-    content: "/assets/memes/game13.png",
+    content: "/assets/memes/game14.png",
     weight: 1,
     logo: "/assets/logos/logo_rocky.png",
     projectDetails: {
-      hasToken: false, 
-      network: null,
-      price: null,
-      marketCap: null,
-      priceChange24h: null,
-      contract: null,
-      buyLink: null,
-      description: "Telegram tapping game!",
+      hasToken: true,
+      network: "TON",
+      price: "0.003",
+      marketCap: "0.24B",
+      priceChange24h: -1,
+      contract: "EQCD7lrrxpOcq5A5R6nTLeF1kuIbl1BKCe5OnanGe3cB4FVB",
+      buyLink: "https://app.ston.fi/swap?ft=EQCD7lrrxpOcq5A5R6nTLeF1kuIbl1BKCe5OnanGe3cB4FVB&tt=EQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAM9c&chartVisible=false",
+      description: "Bet on BTC going up or down!",
       sector: "Play", 
       sectorUrl: "https://t.me/rocky_rabbit_bot/play?startapp=frId460453938",
-      projectType: "Telegram Game",
+      projectType: "Gamble",
       buttons: [
         {
           label: "Website",
@@ -616,7 +616,7 @@ const dummyMemes = [
       description: "Build your mining empire and reign as the richest crypto cat!",
       sector: "Play", 
       sectorUrl: "https://t.me/hash_cats_bot/app?startapp=fGoPIoI2Gb",
-      projectType: "Gambling App",
+      projectType: "Mining Game",
       buttons: [
         {
           label: "Join Telegram",
@@ -625,6 +625,10 @@ const dummyMemes = [
         {
           label: "Follow X",
           url: "https://x.com/HashCatsGame"
+        },
+        {
+          label: "TGE Info",
+          url: "https://x.com/HashCatsGame/status/1880599565436375486"
         }
       ]
     }
@@ -646,7 +650,7 @@ const dummyMemes = [
       description: "Build your mining empire and reign as the richest crypto cat!",
       sector: "Play", 
       sectorUrl: "https://t.me/hash_cats_bot/app?startapp=fGoPIoI2Gb",
-      projectType: "Gambling App",
+      projectType: "Mining Game",
       buttons: [
         {
           label: "Join Telegram",
@@ -655,6 +659,10 @@ const dummyMemes = [
         {
           label: "Follow X",
           url: "https://x.com/HashCatsGame"
+        },
+        {
+          label: "TGE Info",
+          url: "https://x.com/HashCatsGame/status/1880599565436375486"
         }
       ]
     }
@@ -676,7 +684,7 @@ const dummyMemes = [
       description: "Become a shitcoinaire!",
       sector: "Play", 
       sectorUrl: "https://t.me/boinker_bot/boinkapp?startapp=boink1812207291",
-      projectType: "Telegram Game",
+      projectType: "Tapping Game",
       buttons: [
         {
           label: "Join Telegram",
@@ -706,7 +714,7 @@ const dummyMemes = [
       description: "Become a shitcoinaire!",
       sector: "Play", 
       sectorUrl: "https://t.me/boinker_bot/boinkapp?startapp=boink1812207291",
-      projectType: "Telegram Game",
+      projectType: "Tapping Game",
       buttons: [
         {
           label: "Join Telegram",
@@ -736,7 +744,7 @@ const dummyMemes = [
       description: "Web3 snake game!",
       sector: "Play", 
       sectorUrl: "https://t.me/Snakelite_official_bot/Snakelite?startapp=L9TklWjj",
-      projectType: "Telegram Game",
+      projectType: "Snake Game",
       buttons: [
         {
           label: "Open Website",
@@ -774,7 +782,7 @@ const dummyMemes = [
       description: "Web3 snake game!",
       sector: "Play", 
       sectorUrl: "https://t.me/Snakelite_official_bot/Snakelite?startapp=L9TklWjj",
-      projectType: "Telegram Game",
+      projectType: "Snake Game",
       buttons: [
         {
           label: "Open Website",
