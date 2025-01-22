@@ -17,7 +17,9 @@ class PriceService {
     this.uniqueTokens = {
       'hamster-kombat': ['1','2'],
       'catizen': ['3','4'],
-      'play-2': ['5','6']
+      'play-2': ['5','6'],
+      'watcoing': ['15','16'],
+      'rabbitcoin-2': ['13','14']
     };
     
     this.cache = new Map();
