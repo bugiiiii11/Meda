@@ -209,14 +209,14 @@ const TasksPage = ({ userData: initialUserData, onUserDataUpdate }) => {
     { 
       id: 'twitter', 
       label: 'Follow X', 
-      link: 'https://x.com/cryptomedatech', 
+      link: 'https://x.com/medaportal', 
       points: 10,
       icon: <TwitterIcon />
     },
     { 
       id: 'news-1', 
       label: 'The Latest News', 
-      link: 'https://x.com/cryptomedatech/status/1867623339931680995', 
+      link: 'https://x.com/MedaPortal/status/1882101008530276532', 
       points: 10,
       icon: <TwitterIcon />
     }
