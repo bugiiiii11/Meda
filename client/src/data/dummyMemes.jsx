@@ -523,10 +523,10 @@ const dummyMemes = [
     priceChange24h: null,
     contract: null,
     buyLink: null,
-    description: "Telegram tapping game!",
+    description: "Bet on BTC going up or down!",
     sector: "Play", 
     sectorUrl: "https://t.me/rocky_rabbit_bot/play?startapp=frId460453938",
-    projectType: "Telegram Game",
+    projectType: "Gambling App",
     buttons: [
       {
         label: "Website",
@@ -566,10 +566,10 @@ const dummyMemes = [
     priceChange24h: null,
     contract: null,
     buyLink: null,
-    description: "Telegram tapping game!",
+    description: "Bet on BTC going up or down!",
     sector: "Play", 
     sectorUrl: "https://t.me/rocky_rabbit_bot/play?startapp=frId460453938",
-    projectType: "Telegram Game",
+    projectType: "Gambling App",
     buttons: [
       {
         label: "Website",
@@ -586,6 +586,318 @@ const dummyMemes = [
       {
         label: "Youtube",
         url: "https://www.youtube.com/@rockyrabbitio"
+      }
+    ]
+  }
+},
+{
+  id: 15,
+  projectName: "WATcoin",
+  content: "/assets/memes/game15.png",
+  weight: 1,
+  logo: "/assets/logos/logo_wat.png",
+  engagement: {
+    likes: 0,
+    superLikes: 0,
+    dislikes: 0
+  },
+  projectDetails: {
+    hasToken: true, 
+    network: "TON",
+    price: "0.003",
+    marketCap: "0.24B",
+    priceChange24h: -1,
+    contract: "EQCEqz2x3-Ub_EO4Y5798NNoqKw1tP_tJ6b9y-X0C4uvs8Zf",
+    buyLink: "https://app.ston.fi/swap?ft=EQCqnhZndBGbwjPpV8K_8WOK58ZkQPXlS_bshau9DKWnAF-p&tt=EQCEqz2x3-Ub_EO4Y5798NNoqKw1tP_tJ6b9y-X0C4uvs8Zf&chartVisible=false",
+    description: "Play GAMEE games, earn WAT!",
+    sector: "Play", 
+    sectorUrl: "https://t.me/gamee/start?startapp=ref_460453938",
+    projectType: "Game Hub",
+    buttons: [
+      {
+        label: "Website",
+        url: "https://points.gamee.com/"
+      },
+      {
+        label: "Price Chart",
+        url: "https://www.geckoterminal.com/ton/pools/EQA4c2edlFI4soyArI9Qa71dzt1a2zkO-a44u5RrQ7QG8rA9"
+      },
+      {
+        label: "Join Telegram",
+        url: "https://t.me/watcoin"
+      },
+      {
+        label: "Follow X",
+        url: "https://x.com/WatBird"
+      }
+    ]
+  }
+},
+{
+  id: 16,
+  projectName: "WATcoin",
+  content: "/assets/memes/game16.png",
+  weight: 1,
+  logo: "/assets/logos/logo_wat.png",
+  engagement: {
+    likes: 0,
+    superLikes: 0,
+    dislikes: 0
+  },
+  projectDetails: {
+    hasToken: true, 
+    network: "TON",
+    price: "0.003",
+    marketCap: "0.24B",
+    priceChange24h: -1,
+    contract: "EQCEqz2x3-Ub_EO4Y5798NNoqKw1tP_tJ6b9y-X0C4uvs8Zf",
+    buyLink: "https://app.ston.fi/swap?ft=EQCqnhZndBGbwjPpV8K_8WOK58ZkQPXlS_bshau9DKWnAF-p&tt=EQCEqz2x3-Ub_EO4Y5798NNoqKw1tP_tJ6b9y-X0C4uvs8Zf&chartVisible=false",
+    description: "Play GAMEE games, earn WAT!",
+    sector: "Play", 
+    sectorUrl: "https://t.me/gamee/start?startapp=ref_460453938",
+    projectType: "Game Hub",
+    buttons: [
+      {
+        label: "Website",
+        url: "https://points.gamee.com/"
+      },
+      {
+        label: "Price Chart",
+        url: "https://www.geckoterminal.com/ton/pools/EQA4c2edlFI4soyArI9Qa71dzt1a2zkO-a44u5RrQ7QG8rA9"
+      },
+      {
+        label: "Join Telegram",
+        url: "https://t.me/watcoin"
+      },
+      {
+        label: "Follow X",
+        url: "https://x.com/WatBird"
+      }
+    ]
+  }
+},
+{
+  id: 17,
+  projectName: "HashCats",
+  content: "/assets/memes/game17.png",
+  weight: 1,
+  logo: "/assets/logos/logo_hash.png",
+  engagement: {
+    likes: 0,
+    superLikes: 0,
+    dislikes: 0
+  },
+  projectDetails: {
+    hasToken: false, 
+    network: null,
+    price: null,
+    marketCap: null,
+    priceChange24h: null,
+    contract: null,
+    buyLink: null,
+    description: "Build your mining empire and reign as the richest crypto cat!",
+    sector: "Play", 
+    sectorUrl: "https://t.me/hash_cats_bot/app?startapp=fGoPIoI2Gb",
+    projectType: "Gambling App",
+    buttons: [
+      {
+        label: "Join Telegram",
+        url: "https://t.me/hash_cats"
+      },
+      {
+        label: "Follow X",
+        url: "https://x.com/HashCatsGame"
+      }
+    ]
+  }
+},
+{
+  id: 18,
+  projectName: "HashCats",
+  content: "/assets/memes/game18.png",
+  weight: 1,
+  logo: "/assets/logos/logo_hash.png",
+  engagement: {
+    likes: 0,
+    superLikes: 0,
+    dislikes: 0
+  },
+  projectDetails: {
+    hasToken: false, 
+    network: null,
+    price: null,
+    marketCap: null,
+    priceChange24h: null,
+    contract: null,
+    buyLink: null,
+    description: "Build your mining empire and reign as the richest crypto cat!",
+    sector: "Play", 
+    sectorUrl: "https://t.me/hash_cats_bot/app?startapp=fGoPIoI2Gb",
+    projectType: "Gambling App",
+    buttons: [
+      {
+        label: "Join Telegram",
+        url: "https://t.me/hash_cats"
+      },
+      {
+        label: "Follow X",
+        url: "https://x.com/HashCatsGame"
+      }
+    ]
+  }
+},
+{
+  id: 19,
+  projectName: "Boinkers",
+  content: "/assets/memes/game19.png",
+  weight: 1,
+  logo: "/assets/logos/logo_boinkers.png",
+  engagement: {
+    likes: 0,
+    superLikes: 0,
+    dislikes: 0
+  },
+  projectDetails: {
+    hasToken: false, 
+    network: null,
+    price: null,
+    marketCap: null,
+    priceChange24h: null,
+    contract: null,
+    buyLink: null,
+    description: "Become a shitcoinaire!",
+    sector: "Play", 
+    sectorUrl: "https://t.me/boinker_bot/boinkapp?startapp=boink1812207291",
+    projectType: "Telegram Game",
+    buttons: [
+      {
+        label: "Join Telegram",
+        url: "https://t.me/boinkersNews"
+      },
+      {
+        label: "Follow X",
+        url: "https://x.com/BoinkersIO"
+      }
+    ]
+  }
+},
+{
+  id: 20,
+  projectName: "Boinkers",
+  content: "/assets/memes/game20.png",
+  weight: 1,
+  logo: "/assets/logos/logo_boinkers.png",
+  engagement: {
+    likes: 0,
+    superLikes: 0,
+    dislikes: 0
+  },
+  projectDetails: {
+    hasToken: false, 
+    network: null,
+    price: null,
+    marketCap: null,
+    priceChange24h: null,
+    contract: null,
+    buyLink: null,
+    description: "Become a shitcoinaire!",
+    sector: "Play", 
+    sectorUrl: "https://t.me/boinker_bot/boinkapp?startapp=boink1812207291",
+    projectType: "Telegram Game",
+    buttons: [
+      {
+        label: "Join Telegram",
+        url: "https://t.me/boinkersNews"
+      },
+      {
+        label: "Follow X",
+        url: "https://x.com/BoinkersIO"
+      }
+    ]
+  }
+},
+{
+  id: 21,
+  projectName: "Snake Lite",
+  content: "/assets/memes/game21.png",
+  weight: 1,
+  logo: "/assets/logos/logo_snakelite.png",
+  engagement: {
+    likes: 0,
+    superLikes: 0,
+    dislikes: 0
+  },
+  projectDetails: {
+    hasToken: false, 
+    network: null,
+    price: null,
+    marketCap: null,
+    priceChange24h: null,
+    contract: null,
+    buyLink: null,
+    description: "Web3 snake game!",
+    sector: "Play", 
+    sectorUrl: "https://t.me/Snakelite_official_bot/Snakelite?startapp=L9TklWjj",
+    projectType: "Telegram Game",
+    buttons: [
+      {
+        label: "Open Website",
+        url: "https://snakelite.io/"
+      },
+      {
+        label: "Telegram Channel",
+        url: "https://t.me/SnakeLiteAnnouncement"
+      },
+      {
+        label: "Follow X",
+        url: "https://x.com/snakeliteio"
+      },
+      {
+        label: "Telegram Chat",
+        url: "https://t.me/SnakeLiteio"
+      }
+    ]
+  }
+},
+{
+  id: 22,
+  projectName: "Snake Lite",
+  content: "/assets/memes/game22.png",
+  weight: 1,
+  logo: "/assets/logos/logo_snakelite.png",
+  engagement: {
+    likes: 0,
+    superLikes: 0,
+    dislikes: 0
+  },
+  projectDetails: {
+    hasToken: false, 
+    network: null,
+    price: null,
+    marketCap: null,
+    priceChange24h: null,
+    contract: null,
+    buyLink: null,
+    description: "Web3 snake game!",
+    sector: "Play", 
+    sectorUrl: "https://t.me/Snakelite_official_bot/Snakelite?startapp=L9TklWjj",
+    projectType: "Telegram Game",
+    buttons: [
+      {
+        label: "Open Website",
+        url: "https://snakelite.io/"
+      },
+      {
+        label: "Telegram Channel",
+        url: "https://t.me/SnakeLiteAnnouncement"
+      },
+      {
+        label: "Follow X",
+        url: "https://x.com/snakeliteio"
+      },
+      {
+        label: "Telegram Chat",
+        url: "https://t.me/SnakeLiteio"
       }
     ]
   }
