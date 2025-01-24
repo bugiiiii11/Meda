@@ -5,6 +5,7 @@ import './App.css';
 import TopBar from './components/TopBar/TopBar';
 import MemeStack from './components/MemeStack/MemeStack';
 import Navigation from './components/Navigation/Navigation';
+import DesktopRestriction from './components/DesktopRestriction/DesktopRestriction';
 import DetailsPage from './components/DetailsPage/DetailsPage';
 import TasksPage from './components/TasksPage';
 import ProfilePage from './components/ProfilePage';
@@ -79,6 +80,8 @@ function App() {
     remainingSuperlikes: 3,
     nextResetIn: 24
   });
+  const [isDesktop, setIsDesktop] = useState(false);
+  const [isWhitelisted, setIsWhitelisted] = useState(false);
 
   const handleUserDataUpdate = async (telegramId) => {
     if (!telegramId) return;
@@ -189,6 +192,25 @@ function App() {
     }
   };
 
+  const checkIfDesktop = () => {
+    const userAgent = navigator.userAgent.toLowerCase();
+    const isMobile = /iphone|ipad|ipod|android|blackberry|windows phone/g.test(userAgent);
+    return !isMobile;
+  };
+  
+  const checkWhitelist = async (telegramId) => {
+    try {
+      const response = await fetch(`${ENDPOINTS.users.whitelist}/${telegramId}`, {
+        headers: getHeaders()
+      });
+      const data = await response.json();
+      return data.success && data.data.isWhitelisted;
+    } catch (error) {
+      console.error('Error checking whitelist:', error);
+      return false;
+    }
+  };
+
   useEffect(() => {
     async function initializeApp() {
       console.log('App Environment:', {
@@ -197,7 +219,11 @@ function App() {
         apiUrl: import.meta.env.VITE_API_URL,
         botUsername: import.meta.env.VITE_BOT_USERNAME
       });
-    
+
+      // Add desktop check at the start
+      const desktop = checkIfDesktop();
+      setIsDesktop(desktop);
+
       try {
         setMemes(dummyMemes.map(meme => ({
           ...meme,
@@ -227,10 +253,20 @@ function App() {
                 lastName: 'User'
               };
               setUserData(mockUser);
+              // Even in development, check whitelist if on desktop
+              if (desktop) {
+                setIsWhitelisted(true); // For development, consider all users whitelisted
+              }
             } else {
               throw new Error('No Telegram user data in production');
             }
           } else {
+            // Real Telegram user (production or development)
+            if (desktop) {
+              const whitelisted = await checkWhitelist(tgUser.id.toString());
+              setIsWhitelisted(whitelisted);
+            }
+            
             // Get referral ID from URL if it exists
             const urlParams = new URLSearchParams(window.location.search);
             const referralId = urlParams.get('ref');
@@ -347,6 +383,10 @@ function App() {
       fetchSuperlikeStatus(userData.telegramId);
     }
   }, [userData?.telegramId]);
+
+  if (isDesktop && !isWhitelisted) {
+    return <DesktopRestriction />;
+  }
 
   if (initError) {
     return (
