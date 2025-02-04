@@ -1,7 +1,5 @@
 // config/api.js
-const BASE_URL = import.meta.env.VITE_ENV === 'production'
-  ? 'https://meda-production.up.railway.app'
-  : 'http://localhost:3001';
+const BASE_URL = import.meta.env.VITE_API_URL;
 
 export const ENDPOINTS = {
   base: BASE_URL,
@@ -11,7 +9,7 @@ export const ENDPOINTS = {
     debug: `${BASE_URL}/api/interactions/debug`
   },
   memes: {
-    withEngagement: `${BASE_URL}/api/memes/withEngagement`, // Changed API_URL to BASE_URL
+    withEngagement: `${BASE_URL}/api/memes/withEngagement`,
     create: `${BASE_URL}/api/memes/create`,
     next: `${BASE_URL}/api/memes/next`,
     interact: `${BASE_URL}/api/memes/interact`
