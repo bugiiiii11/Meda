@@ -82,7 +82,7 @@ const Navigation = ({ activeTab, onTabChange }) => {
     { id: 'memes', icon: SwipeIcon, label: 'Swipe' },
     { id: 'tasks', icon: TaskIcon, label: 'Quests' },
     { id: 'ranks', icon: RankIcon, label: 'Arena' },
-    { id: 'profile', icon: ProfileIcon, label: 'Hero' }
+    { id: 'profile', icon: ProfileIcon, label: 'Profile' }
   ];
 
   return (
