@@ -11,7 +11,8 @@ const app = express();
 // CORS configuration
 app.use(cors({
   origin: [
-    'https://meda-gamma.vercel.app', 
+    'https://meda-gamma.vercel.app',
+    'https://medadev.vercel.app',
     'http://meda-production.up.railway.app',
     'http://localhost:3000',
     'http://localhost:3001',
