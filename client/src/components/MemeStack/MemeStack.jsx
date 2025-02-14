@@ -127,29 +127,33 @@ console.log('===== DEBUG: MemeStack Props =====');
 
   // Initialize memes
   React.useEffect(() => {
-    if (memes.length > 0 && !currentMeme && !nextMeme) {
-      console.log('Initializing first and second memes');
-      
-      // Get first meme
-      const firstMeme = getWeightedRandomMeme();
-      console.log('First meme:', {
-        id: firstMeme.id,
-        engagement: firstMeme.engagement
-      });
-      
-      // Set current meme and notify
-      setCurrentMeme(firstMeme);
-      onMemeChange(firstMeme);
-      
-      // Get second meme (getWeightedRandomMeme will automatically avoid the first meme)
-      const secondMeme = getWeightedRandomMeme();
-      console.log('Second meme:', {
-        id: secondMeme.id,
-        engagement: secondMeme.engagement
-      });
-      setNextMeme(secondMeme);
-    }
-  }, [memes, getWeightedRandomMeme, onMemeChange]);
+      if (memes.length > 0 && !currentMeme && !nextMeme) {
+        console.log('===== DEBUG: Initializing MemeStack =====');
+        
+        // Get first meme - use propCurrentMeme if provided, otherwise get random
+        const firstMeme = propCurrentMeme || getWeightedRandomMeme();
+        console.log('First meme:', {
+          id: firstMeme.id,
+          projectName: firstMeme.projectName,
+          engagement: firstMeme.engagement || { likes: 0, superLikes: 0, dislikes: 0 }
+        });
+        
+        // Set current meme and notify
+        setCurrentMeme(firstMeme);
+        onMemeChange(firstMeme);
+        
+        // Get second meme (getWeightedRandomMeme will automatically avoid the first meme)
+        const secondMeme = getWeightedRandomMeme();
+        console.log('Second meme:', {
+          id: secondMeme.id,
+          projectName: secondMeme.projectName,
+          engagement: secondMeme.engagement || { likes: 0, superLikes: 0, dislikes: 0 }
+        });
+        setNextMeme(secondMeme);
+        
+        console.log('===== END: MemeStack Initialization =====');
+      }
+    }, [memes, getWeightedRandomMeme, onMemeChange, propCurrentMeme]);
 
   const transitionToNextMeme = React.useCallback(() => {
     if (!nextMeme) return;
