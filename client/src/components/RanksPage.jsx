@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { ENDPOINTS } from '../config/api';
 
-const RanksPage = () => {
+const RanksPage = ({ onGameSelect }) => {
   const [leaderboardData, setLeaderboardData] = useState({
     users: [],
     projects: []
@@ -77,14 +77,15 @@ const RanksPage = () => {
     </button>
   );
 
-  const RankCard = ({ rank, name, points }) => (
-    <div className="group relative">
+  const RankCard = ({ rank, name, points, onClick }) => (
+    <div className="group relative" onClick={onClick}>
       {/* Glow effect */}
       <div className="absolute inset-0 bg-gradient-to-r from-[#4B7BF5]/5 to-[#8A2BE2]/5 rounded-xl blur-lg group-hover:blur-xl transition-all duration-300"></div>
       
       {/* Card content */}
-      <div className="relative bg-gradient-to-r from-[#2A1B3D] to-[#1A1B2E] rounded-xl p-4 border border-white/5 
-        transform transition-all duration-300 hover:scale-[1.02] hover:border-white/10">
+      <div className={`relative bg-gradient-to-r from-[#2A1B3D] to-[#1A1B2E] rounded-xl p-4 border border-white/5 
+        transform transition-all duration-300 hover:scale-[1.02] hover:border-white/10
+        ${onClick ? 'cursor-pointer' : ''}`}>
         <div className="flex items-center gap-4">
           <div className="w-12 flex items-center justify-center">
             {getRankIcon(rank)}
@@ -117,7 +118,7 @@ const RanksPage = () => {
         <div className="relative w-full py-6">
           <div className="text-center">
             <h1 className="font-game-title text-3xl bg-gradient-to-r from-[#4B7BF5] to-[#8A2BE2] text-transparent bg-clip-text">
-                Champions Hall</h1>
+              Champions Hall</h1>
           </div>
         </div>
 
@@ -165,6 +166,7 @@ const RanksPage = () => {
                       rank={index}
                       name={project.name}
                       points={project.totalPoints}
+                      onClick={() => onGameSelect?.(project.name)}
                     />
                   ))
               }
