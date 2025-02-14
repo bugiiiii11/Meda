@@ -134,6 +134,16 @@ function App() {
     setCurrentMeme(meme);
   };
 
+  const handleGameSelect = (gameName) => {
+    // Find a random meme for the selected game
+    const gameMemesPool = memes.filter(meme => meme.projectName === gameName);
+    if (gameMemesPool.length > 0) {
+      const randomMeme = gameMemesPool[Math.floor(Math.random() * gameMemesPool.length)];
+      setCurrentMeme(randomMeme);
+      setActiveTab('memes');
+    }
+  };
+
   const fetchMemes = async () => {
     try {
       console.log('Fetching memes with engagement data...');
@@ -445,7 +455,10 @@ function App() {
           onUserDataUpdate={() => handleUserDataUpdate(userData?.telegramId)}
         />
       ) : activeTab === 'ranks' ? (
-        <RanksPage userData={userData} />
+        <RanksPage 
+          userData={userData} 
+          onGameSelect={handleGameSelect}
+        />
       ) : (
         <ProfilePage 
           userData={userData} 
