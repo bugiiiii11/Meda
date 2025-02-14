@@ -135,12 +135,32 @@ function App() {
   };
 
   const handleGameSelect = (gameName) => {
+    console.log('=== Game Select Debug ===');
+    console.log('Selected game name:', gameName);
+    console.log('Total memes available:', memes.length);
+    
     // Find a random meme for the selected game
     const gameMemesPool = memes.filter(meme => meme.projectName === gameName);
+    console.log('Filtered memes for game:', gameMemesPool.length);
+    console.log('Game memes:', gameMemesPool.map(m => ({
+      id: m.id,
+      projectName: m.projectName,
+      content: m.content
+    })));
+    
     if (gameMemesPool.length > 0) {
-      const randomMeme = gameMemesPool[Math.floor(Math.random() * gameMemesPool.length)];
+      const randomIndex = Math.floor(Math.random() * gameMemesPool.length);
+      const randomMeme = gameMemesPool[randomIndex];
+      console.log('Selected random meme:', {
+        index: randomIndex,
+        memeId: randomMeme.id,
+        projectName: randomMeme.projectName
+      });
+      
       setCurrentMeme(randomMeme);
       setActiveTab('memes');
+    } else {
+      console.warn('No memes found for game:', gameName);
     }
   };
 
