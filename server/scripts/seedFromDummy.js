@@ -751,7 +751,7 @@ const dummyMemes = [
           url: "https://snakelite.io/"
         },
         {
-          label: "Telegram Channel",
+          label: "Telegram News",
           url: "https://t.me/SnakeLiteAnnouncement"
         },
         {
@@ -789,7 +789,7 @@ const dummyMemes = [
           url: "https://snakelite.io/"
         },
         {
-          label: "Telegram Channel",
+          label: "Telegram News",
           url: "https://t.me/SnakeLiteAnnouncement"
         },
         {
@@ -827,7 +827,7 @@ const dummyMemes = [
           url: "https://kittyverse.ai/"
         },
         {
-          label: "Telegram Channel",
+          label: "Telegram News",
           url: "https://t.me/kittyverse_ai"
         },
         {
@@ -861,7 +861,7 @@ const dummyMemes = [
           url: "https://www.dragonz.land/"
         },
         {
-          label: "Telegram Channel",
+          label: "Telegram News",
           url: "https://t.me/dragonz_land_announcement"
         },
         {
@@ -925,7 +925,7 @@ const dummyMemes = [
           url: "https://bombie.xyz/"
         },
         {
-          label: "Telegram Channel",
+          label: "Telegram News",
           url: "https://t.me/BombieNews"
         },
         {
