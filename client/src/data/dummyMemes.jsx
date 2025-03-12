@@ -23,7 +23,7 @@ const dummyMemes = [
     priceChange24h: -1,
     contract: "EQAJ8uWd7EBqsmpSWaRdf_I-8R8-XHwh3gsNKhy-UrdrPcUo",
     buyLink: "https://www.binance.com/en/trade/HMSTR_USDT?ref=37754157",
-    description: "Unleash your inner CEO!",
+    description: "Hamster Kombat is a former tap-to-earn game turned expansive HamsterVerse ecosystem, where players engage in a variety of mini-games and dApps beyond its original tapping mechanic. The $HMSTR token, released on September 26, 2024, on The Open Network (TON), saw no presale but powers its 300 million-strong user base.",
     sector: "Play", 
     sectorUrl: "https://t.me/hamster_koMbat_bot/start?startapp=kentId1812207291",
     projectType: "Game Hub",
@@ -70,7 +70,7 @@ const dummyMemes = [
     priceChange24h: -1,
     contract: "EQAJ8uWd7EBqsmpSWaRdf_I-8R8-XHwh3gsNKhy-UrdrPcUo",
     buyLink: "https://www.binance.com/en/trade/HMSTR_USDT?ref=37754157",
-    description: "Unleash your inner CEO!",
+    description: "Hamster Kombat is a former tap-to-earn game turned expansive HamsterVerse ecosystem, where players engage in a variety of mini-games and dApps beyond its original tapping mechanic. The $HMSTR token, released on September 26, 2024, on The Open Network (TON), saw no presale but powers its 300 million-strong user base.",
     sector: "Play", 
     sectorUrl: "https://t.me/hamster_koMbat_bot/start?startapp=kentId1812207291",
     projectType: "Game Hub",
@@ -117,7 +117,7 @@ const dummyMemes = [
     priceChange24h: -1,
     contract: "EQD-cvR0Nz6XAyRBvbhz-abTrRC6sI5tvHvvpeQraV9UAAD7",
     buyLink: "https://www.binance.com/en/trade/CATI_USDT?ref=37754157&type=spot",
-    description: "Play for airdrop🪂 Heal the world!",
+    description: "Catizen is a puzzle-based game where players raise and merge virtual cats, integrating GameFi and AI for a unique pet-owning experience. The $CATI token, released on September 20, 2024, on The Open Network (TON) without a presale, fuels its 34 million active users, with plans for further economic enhancements in 2025.",
     sector: "Play", 
     sectorUrl: "https://t.me/catizenbot/gameapp?startapp=rp_47060003",
     projectType: "Tapping Game",
@@ -160,10 +160,10 @@ const dummyMemes = [
     priceChange24h: -1,
     contract: "EQD-cvR0Nz6XAyRBvbhz-abTrRC6sI5tvHvvpeQraV9UAAD7",
     buyLink: "https://www.binance.com/en/trade/CATI_USDT?ref=37754157&type=spot",
-    description: "Play for airdrop🪂 Heal the world!",
-    sector: "Play", 
-    sectorUrl: "https://t.me/catizenbot/gameapp?startapp=rp_47060003",
-    projectType: "Tapping Game",
+    description: "Catizen is a puzzle-based game where players raise and merge virtual cats, integrating GameFi and AI for a unique pet-owning experience. The $CATI token, released on September 20, 2024, on The Open Network (TON) without a presale, fuels its 34 million active users, with plans for further economic enhancements in 2025.",
+      sector: "Play", 
+      sectorUrl: "https://t.me/catizenbot/gameapp?startapp=rp_47060003",
+      projectType: "Tapping Game",
     buttons: [
       {
         label: "Open Website",
@@ -203,7 +203,7 @@ const dummyMemes = [
     priceChange24h: -1,
     contract: "0x7404ac09adf614603d9c16a7ce85a1101f3514ba",
     buyLink: "https://app.uniswap.org/explore/tokens/base/0x7404ac09adf614603d9c16a7ce85a1101f3514ba",
-    description: "Gaming protocol that turbocharges games!",
+    description: "Play is a Telegram mini-app offering a variety of casual games where users can engage in fun activities to earn points. No token has been released, but there’s speculation about a potential airdrop in the future tied to its growing ecosystem.",
     sector: "Play", 
     sectorUrl: "https://t.me/play_gamestore_bot/",
     projectType: "Game Hub",
@@ -250,7 +250,7 @@ const dummyMemes = [
     priceChange24h: -1,
     contract: "0x7404ac09adf614603d9c16a7ce85a1101f3514ba",
     buyLink: "https://app.uniswap.org/explore/tokens/base/0x7404ac09adf614603d9c16a7ce85a1101f3514ba",
-    description: "Gaming protocol that turbocharges games!",
+    description: "Play is a Telegram mini-app offering a variety of casual games where users can engage in fun activities to earn points. No token has been released, but there’s speculation about a potential airdrop in the future tied to its growing ecosystem.",
     sector: "Play", 
     sectorUrl: "https://t.me/play_gamestore_bot/",
     projectType: "Game Hub",
@@ -297,7 +297,7 @@ const dummyMemes = [
     priceChange24h: null,
     contract: null,
     buyLink: null,
-    description: "Tap on blocks to discover rewards",
+    description: "TONs of Dungeons is an adventure game where players explore dungeons, collect treasures, and avoid traps to earn rewards. No token has been released yet, but a major airdrop is planned to incentivize player engagement.",
     sector: "Play", 
     sectorUrl: "https://t.me/tonsofdungeons_bot/TOD?startapp=cXd5q9uDl0-wSmOjSC-ipA",
     projectType: "Tapping Game",
@@ -340,7 +340,7 @@ const dummyMemes = [
     priceChange24h: null,
     contract: null,
     buyLink: null,
-    description: "Tap on blocks to discover rewards",
+    description: "TONs of Dungeons is an adventure game where players explore dungeons, collect treasures, and avoid traps to earn rewards. No token has been released yet, but a major airdrop is planned to incentivize player engagement.",
     sector: "Play", 
     sectorUrl: "https://t.me/tonsofdungeons_bot/TOD?startapp=cXd5q9uDl0-wSmOjSC-ipA",
     projectType: "Tapping Game",
@@ -383,7 +383,7 @@ const dummyMemes = [
     priceChange24h: null,
     contract: null,
     buyLink: null,
-    description: "Grow your dog and fight with other players!",
+    description: "Dogiators is a 3D tap-to-earn game where players level up virtual dogs through battles and tasks to earn rewards. No token has been released, but an upcoming airdrop is anticipated to reward active players.",
     sector: "Play", 
     sectorUrl: "https://t.me/Dogiators_bot/game?startapp=htiHhZ7ACF2YDNaw",
     projectType: "PvP Game",
@@ -414,7 +414,7 @@ const dummyMemes = [
     priceChange24h: null,
     contract: null,
     buyLink: null,
-    description: "Grow your dog and fight with other players!",
+    description: "Dogiators is a 3D tap-to-earn game where players level up virtual dogs through battles and tasks to earn rewards. No token has been released, but an upcoming airdrop is anticipated to reward active players.",
     sector: "Play", 
     sectorUrl: "https://t.me/Dogiators_bot/game?startapp=htiHhZ7ACF2YDNaw",
     projectType: "PvP Game",
@@ -428,7 +428,7 @@ const dummyMemes = [
 },
 {
   id: 11,
-  projectName: "Dragon Slighter",
+  projectName: "Dragon Slither",
   content: "/assets/memes/game11.png",
   weight: 1,
   logo: "/assets/logos/logo_dragon.png",
@@ -445,7 +445,7 @@ const dummyMemes = [
     priceChange24h: null,
     contract: null,
     buyLink: null,
-    description: "Web3 snake game!",
+    description: "Dragon Slither is a snake-type game on Telegram where players guide a 2D dragon to collect items and grow longer, earning points in a blockchain-powered arena. The $DRAGON token was released in 2024 on the Sei Network, with plans for the upcoming $DGN token in 2025.  ",
     sector: "Play", 
     sectorUrl: "https://t.me/DragonSlither_bot/Dragon?startapp=460453938",
     projectType: "Snake Game",
@@ -467,7 +467,7 @@ const dummyMemes = [
 },
 {
   id: 12,
-  projectName: "Dragon Slighter",
+  projectName: "Dragon Slither",
   content: "/assets/memes/game12.png",
   weight: 1,
   logo: "/assets/logos/logo_dragon.png",
@@ -484,7 +484,7 @@ const dummyMemes = [
     priceChange24h: null,
     contract: null,
     buyLink: null,
-    description: "Web3 snake game!",
+    description: "Dragon Slither is a snake-type game on Telegram where players guide a 2D dragon to collect items and grow longer, earning points in a blockchain-powered arena. The $DRAGON token was released in 2024 on the Sei Network, with plans for the upcoming $DGN token in 2025.  ",
     sector: "Play", 
     sectorUrl: "https://t.me/DragonSlither_bot/Dragon?startapp=460453938",
     projectType: "Snake Game",
@@ -523,7 +523,7 @@ const dummyMemes = [
     priceChange24h: -1,
     contract: "EQCD7lrrxpOcq5A5R6nTLeF1kuIbl1BKCe5OnanGe3cB4FVB",
     buyLink: "https://app.ston.fi/swap?ft=EQCD7lrrxpOcq5A5R6nTLeF1kuIbl1BKCe5OnanGe3cB4FVB&tt=EQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAM9c&chartVisible=false",
-    description: "Bet on BTC going up or down!",
+    description: "Rocky Rabbit is a tap-to-earn game where players train virtual rabbits for challenges, evolving into a broader play-to-earn platform. The $RBTC (RabBitcoin) token, released on September 23, 2024, on The Open Network (TON) without a presale, drives its 30 million active users toward new P2E features.",
     sector: "Play", 
     sectorUrl: "https://t.me/rocky_rabbit_bot/play?startapp=frId460453938",
     projectType: "Gamble",
@@ -566,7 +566,7 @@ const dummyMemes = [
     priceChange24h: -1,
     contract: "EQCD7lrrxpOcq5A5R6nTLeF1kuIbl1BKCe5OnanGe3cB4FVB",
     buyLink: "https://app.ston.fi/swap?ft=EQCD7lrrxpOcq5A5R6nTLeF1kuIbl1BKCe5OnanGe3cB4FVB&tt=EQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAM9c&chartVisible=false",
-    description: "Bet on BTC going up or down!",
+    description: "Rocky Rabbit is a tap-to-earn game where players train virtual rabbits for challenges, evolving into a broader play-to-earn platform. The $RBTC (RabBitcoin) token, released on September 23, 2024, on The Open Network (TON) without a presale, drives its 30 million active users toward new P2E features.",
     sector: "Play", 
     sectorUrl: "https://t.me/rocky_rabbit_bot/play?startapp=frId460453938",
     projectType: "Gamble",
@@ -609,7 +609,7 @@ const dummyMemes = [
     priceChange24h: -1,
     contract: "EQCEqz2x3-Ub_EO4Y5798NNoqKw1tP_tJ6b9y-X0C4uvs8Zf",
     buyLink: "https://app.ston.fi/swap?ft=EQCqnhZndBGbwjPpV8K_8WOK58ZkQPXlS_bshau9DKWnAF-p&tt=EQCEqz2x3-Ub_EO4Y5798NNoqKw1tP_tJ6b9y-X0C4uvs8Zf&chartVisible=false",
-    description: "Play GAMEE games, earn WAT!",
+    description: "WATCoin (WatBird) is a tap-to-earn game developed by Animoca Brands’ GAMEE, where players earn rewards through simple tasks and mini-games. The $WAT token was released on September 23, 2024, on The Open Network (TON). ",
     sector: "Play", 
     sectorUrl: "https://t.me/gamee/start?startapp=ref_460453938",
     projectType: "Game Hub",
@@ -652,7 +652,7 @@ const dummyMemes = [
     priceChange24h: -1,
     contract: "EQCEqz2x3-Ub_EO4Y5798NNoqKw1tP_tJ6b9y-X0C4uvs8Zf",
     buyLink: "https://app.ston.fi/swap?ft=EQCqnhZndBGbwjPpV8K_8WOK58ZkQPXlS_bshau9DKWnAF-p&tt=EQCEqz2x3-Ub_EO4Y5798NNoqKw1tP_tJ6b9y-X0C4uvs8Zf&chartVisible=false",
-    description: "Play GAMEE games, earn WAT!",
+    description: "WATCoin (WatBird) is a tap-to-earn game developed by Animoca Brands’ GAMEE, where players earn rewards through simple tasks and mini-games. The $WAT token was released on September 23, 2024, on The Open Network (TON). ",
     sector: "Play", 
     sectorUrl: "https://t.me/gamee/start?startapp=ref_460453938",
     projectType: "Game Hub",
@@ -695,10 +695,10 @@ const dummyMemes = [
     priceChange24h: null,
     contract: null,
     buyLink: null,
-    description: "Build your mining empire and reign as the richest crypto cat!",
+    description: "Hashcats is a tap-to-earn game where players merge and upgrade virtual cats to boost their earnings in a crypto-themed setting. No token has been released yet, but an airdrop is speculated as part of its growing ecosystem. ",
     sector: "Play", 
     sectorUrl: "https://t.me/hash_cats_bot/app?startapp=fGoPIoI2Gb",
-    projectType: "Mining Game",
+    projectType: "Tapping Game",
     buttons: [
       {
         label: "Join Telegram",
@@ -734,10 +734,10 @@ const dummyMemes = [
     priceChange24h: null,
     contract: null,
     buyLink: null,
-    description: "Build your mining empire and reign as the richest crypto cat!",
+    description: "Hashcats is a tap-to-earn game where players merge and upgrade virtual cats to boost their earnings in a crypto-themed setting. No token has been released yet, but an airdrop is speculated as part of its growing ecosystem. ",
     sector: "Play", 
     sectorUrl: "https://t.me/hash_cats_bot/app?startapp=fGoPIoI2Gb",
-    projectType: "Mining Game",
+    projectType: "Tapping Game",
     buttons: [
       {
         label: "Join Telegram",
@@ -773,7 +773,7 @@ const dummyMemes = [
     priceChange24h: null,
     contract: null,
     buyLink: null,
-    description: "Become a shitcoinaire!",
+    description: "Boinkers is a casual tap-to-earn game where players accumulate points through simple, repetitive actions and upgrades. No token has been released, but an upcoming airdrop is hinted at to reward its active community.",
     sector: "Play", 
     sectorUrl: "https://t.me/boinker_bot/boinkapp?startapp=boink1812207291",
     projectType: "Tapping Game",
@@ -808,7 +808,7 @@ const dummyMemes = [
     priceChange24h: null,
     contract: null,
     buyLink: null,
-    description: "Become a shitcoinaire!",
+    description: "Boinkers is a casual tap-to-earn game where players accumulate points through simple, repetitive actions and upgrades. No token has been released, but an upcoming airdrop is hinted at to reward its active community.",
     sector: "Play", 
     sectorUrl: "https://t.me/boinker_bot/boinkapp?startapp=boink1812207291",
     projectType: "Tapping Game",
@@ -843,7 +843,7 @@ const dummyMemes = [
     priceChange24h: null,
     contract: null,
     buyLink: null,
-    description: "Web3 snake game!",
+    description: "Snake Lite is a Telegram mini-app game that modernizes the classic Snake gameplay, where players navigate a snake to collect items and earn points, integrating tap-to-earn mechanics with Web3 features. There’s no confirmed token presale or airdrop as of February 2025; however, its TGE is tentatively scheduled for Q1 2025 on The Open Network (TON), with community speculation on X suggesting a potential airdrop to reward early players around that time.",
     sector: "Play", 
     sectorUrl: "https://t.me/Snakelite_official_bot/Snakelite?startapp=L9TklWjj",
     projectType: "Snake Game",
@@ -886,7 +886,7 @@ const dummyMemes = [
     priceChange24h: null,
     contract: null,
     buyLink: null,
-    description: "Web3 snake game!",
+    description: "Snake Lite is a Telegram mini-app game that modernizes the classic Snake gameplay, where players navigate a snake to collect items and earn points, integrating tap-to-earn mechanics with Web3 features. There’s no confirmed token presale or airdrop as of February 2025; however, its TGE is tentatively scheduled for Q1 2025 on The Open Network (TON), with community speculation on X suggesting a potential airdrop to reward early players around that time.",
     sector: "Play", 
     sectorUrl: "https://t.me/Snakelite_official_bot/Snakelite?startapp=L9TklWjj",
     projectType: "Snake Game",
@@ -910,6 +910,158 @@ const dummyMemes = [
     ]
   }
 },
+{
+  id: 23,
+  projectName: "Kitty Verse",
+  content: "/assets/memes/game23.png",
+  weight: 2,
+  logo: "/assets/logos/logo_kitty.png",
+  engagement: {
+    likes: 0,
+    superLikes: 0,
+    dislikes: 0
+  },
+  projectDetails: {
+    hasToken: false, 
+    network: null,
+    price: null,
+    marketCap: null,
+    priceChange24h: null,
+    contract: null,
+    buyLink: null,
+    description: "Tap into Kittyverse, an innovative P2E game on Telegram! Earn $KITTY with fun kitty taps—airdrop coming soon. Presale live now—grab it cheap! Join 1.5M monthly players on TON’s purr-fect adventure!",
+      sector: "Play", 
+      sectorUrl: "https://t.me/kittyverse_ai_bot/play?startapp=u1812207291",
+      projectType: "Snake Game",
+      buttons: [
+        {
+          label: "Open Website",
+          url: "https://kittyverse.ai/"
+        },
+        {
+          label: "Telegram Channel",
+          url: "https://t.me/kittyverse_ai"
+        },
+        {
+          label: "Follow X",
+          url: "https://x.com/kittyverse_ai"
+        }
+      ]
+    }
+  },
+{
+  id: 24,
+    projectName: "Dragonz Land",
+    content: "/assets/memes/game24.png",
+    weight: 2,
+    logo: "/assets/logos/logo_dragonz.png",
+    engagement: {
+    likes: 0,
+    superLikes: 0,
+    dislikes: 0
+  },
+  projectDetails: {
+    hasToken: false, 
+    network: null,
+    price: null,
+    marketCap: null,
+    priceChange24h: null,
+    contract: null,
+    buyLink: null,
+    description: "Hatch & battle Dragonz in Dragonz Land, a P2E Telegram hit! Upgrade hives, fight for $DRAGON—over 50% of the token supply is used for airdrops. Mint NFTs and join 200K+ monthly players on TON’s epic adventure!",
+      sector: "Play", 
+      sectorUrl: "https://t.me/dragonz_land_bot/app?startapp=ref-67c49a3ccb30b54ee16c7fed",
+      projectType: "Tapping Game",
+      buttons: [
+        {
+          label: "Open Website",
+          url: "https://www.dragonz.land/"
+        },
+        {
+          label: "Telegram Channel",
+          url: "https://t.me/dragonz_land_announcement"
+        },
+        {
+          label: "Follow X",
+          url: "https://x.com/dragonzlandx"
+        }
+      ]
+    }
+  },
+{
+  id: 25,
+    projectName: "Rhinova",
+    content: "/assets/memes/game25.png",
+    weight: 1,
+    logo: "/assets/logos/logo_rhinova.png",
+  engagement: {
+    likes: 0,
+    superLikes: 0,
+    dislikes: 0
+  },
+  projectDetails: {
+    hasToken: false, 
+    network: null,
+    price: null,
+    marketCap: null,
+    priceChange24h: null,
+    contract: null,
+    buyLink: null,
+    description: "Fight epic battles in Rhinova, a P2E Telegram game! Buy a $8 Luminary NFT, strategize, and earn up to $1,200 in events. Join 20K+ monthly players in this TON-powered adventure by GameOnCyborg & GotGame_DAO!",
+      sector: "Play", 
+      sectorUrl: "https://t.me/rhinova_bot/rhinovagame?startapp=27ESDnk6AjZ",
+      projectType: "Tapping Game",
+      buttons: [
+        {
+          label: "Follow X",
+          url: "https://x.com/rhinova_game"
+        },
+        {
+          label: "Telegram Chat",
+          url: "https://t.me/rhinovachat"
+        }
+      ]
+    }
+  },
+{
+  id: 26,
+    projectName: "Bombie",
+    content: "/assets/memes/game26.png",
+    weight: 2,
+    logo: "/assets/logos/logo_bombie.png",
+  engagement: {
+    likes: 0,
+    superLikes: 0,
+    dislikes: 0
+  },
+  projectDetails: {
+    hasToken: false, 
+    network: null,
+    price: null,
+    marketCap: null,
+    priceChange24h: null,
+    contract: null,
+    buyLink: null,
+    description: "Blast zombies in Bombie, a thrilling P2E shooter! Upgrade skills, loot chests, and battle in arenas. Earn $Bombie tokens—70% of supply prepared for airdrops, no vesting. Join over 2M monthly players in this Web3 hit from Catizen!",
+      sector: "Play", 
+      sectorUrl: "https://t.me/Snakelite_official_bot/Snakelite?startapp=L9TklWjj",
+      projectType: "Tapping Game",
+      buttons: [
+        {
+          label: "Open Website",
+          url: "https://bombie.xyz/"
+        },
+        {
+          label: "Telegram Channel",
+          url: "https://t.me/BombieNews"
+        },
+        {
+          label: "Follow X",
+          url: "https://x.com/Bombie_xyz"
+        }
+      ]
+    }
+  },
 
 ];
 
