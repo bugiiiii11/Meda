@@ -803,6 +803,40 @@ const dummyMemes = [
       ]
     }
   },
+  {
+    id: 23,
+    projectName: "Kitty Verse",
+    content: "/assets/memes/game23.png",
+    weight: 1,
+    logo: "/assets/logos/logo_kitty.png",
+    projectDetails: {
+      hasToken: false, 
+      network: null,
+      price: null,
+      marketCap: null,
+      priceChange24h: null,
+      contract: null,
+      buyLink: null,
+      description: "WTap into Kittyverse, an innovative P2E game on Telegram! Earn $KITTY with fun kitty taps—airdrop coming soon. Presale live now—grab it cheap! Join 1.5M monthly players on TON’s purr-fect adventure!",
+      sector: "Play", 
+      sectorUrl: "https://t.me/Snakelite_official_bot/Snakelite?startapp=L9TklWjj",
+      projectType: "Tapping Game",
+      buttons: [
+        {
+          label: "Open Website",
+          url: "https://kittyverse.ai"
+        },
+        {
+          label: "Telegram Channel",
+          url: "https://t.me/SnakeLiteAnnouncement"
+        },
+        {
+          label: "Follow X",
+          url: "https://x.com/kittyverse_ai"
+        }
+      ]
+    }
+  },
   
   ];
 
